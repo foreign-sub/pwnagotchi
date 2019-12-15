@@ -15,10 +15,11 @@ jobs:
         python-version: 3.7
     - name: Install dependencies
       run: |
+        PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
         sudo apt install linuxbrew-wrapper
         brew install openmpi
         sudo apt-get install build-essential
-        PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+        brew install gcc
         brew install openmpi
         python -m pip install --upgrade pip
         pip install -r requirements.txt
