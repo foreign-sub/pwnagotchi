@@ -13,7 +13,7 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.7
-    - name: Install brew
+    - name: Install brew and dependencies
       run: |
         HOMEBREW_REPOSITORY="$HOME/Homebrew"
         export PATH="$HOMEBREW_REPOSITORY/bin:$PATH"
@@ -32,8 +32,6 @@ jobs:
         sudo apt-get install build-essential
         brew install gcc
         brew install openmpi
-    - name: Install dependencies
-      run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Lint with flake8
