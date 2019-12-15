@@ -28,8 +28,6 @@ jobs:
         export HOMEBREW_NO_AUTO_UPDATE=1
         export HOMEBREW_NO_ANALYTICS=1
         brew help # trigger vendored ruby installation
-    - name: Install openmpi
-      run: |
         brew install openmpi
         sudo apt-get install build-essential
         brew install gcc
