@@ -43,7 +43,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test
       run: |
-        sudo apt-get install build-essential libpcap-dev net-tools libnetfilter_queue libnetfilter_queue-dev
+        sudo apt-get install build-essential libpcap-dev net-tools libnetfilter-queue libnetfilter-queue-dev
         wget "https://github.com/bettercap/bettercap/releases/download/v2.26/bettercap_linux_amd64_v2.26.zip"
         unzip bettercap_linux_amd64_v2.26.zip
         # ... check the sha256 digest before doing this ...
