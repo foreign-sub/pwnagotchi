@@ -8,7 +8,6 @@ from functools import lru_cache
 from flask import Response
 
 import pwnagotchi.plugins as plugins
-
 """
 2do:
     - make+test the cache handling multiple clients
@@ -91,9 +90,7 @@ class Webgpsmap(plugins.Plugin):
                         response_data = bytes(
                             json.dumps(
                                 self.load_gps_from_dir(
-                                    self.config["bettercap"]["handshakes"]
-                                )
-                            ),
+                                    self.config["bettercap"]["handshakes"])),
                             "utf-8",
                         )
                         response_status = 200
@@ -165,8 +162,7 @@ class Webgpsmap(plugins.Plugin):
         all_files = os.listdir(handshake_dir)
         # print(all_files)
         all_pcap_files = [
-            os.path.join(handshake_dir, filename)
-            for filename in all_files
+            os.path.join(handshake_dir, filename) for filename in all_files
             if filename.endswith(".pcap")
         ]
         all_geo_or_gps_files = []
@@ -200,7 +196,8 @@ class Webgpsmap(plugins.Plugin):
         #    all_geo_or_gps_files = set(all_geo_or_gps_files) - set(SKIP)   # remove skipped networks? No!
 
         if newest_only:
-            all_geo_or_gps_files = set(all_geo_or_gps_files) - set(self.ALREADY_SENT)
+            all_geo_or_gps_files = set(all_geo_or_gps_files) - set(
+                self.ALREADY_SENT)
 
         logging.info(
             f"[webgpsmap] Found {len(all_geo_or_gps_files)} position-data files from {len(all_pcap_files)} handshakes. Fetching positions ..."
@@ -209,11 +206,9 @@ class Webgpsmap(plugins.Plugin):
         for pos_file in all_geo_or_gps_files:
             try:
                 pos = self._get_pos_from_file(pos_file)
-                if (
-                    not pos.type() == PositionFile.GPS
-                    and not pos.type() == PositionFile.GEO
-                    and not pos.type() == PositionFile.PAWGPS
-                ):
+                if (not pos.type() == PositionFile.GPS
+                        and not pos.type() == PositionFile.GEO
+                        and not pos.type() == PositionFile.PAWGPS):
                     continue
 
                 ssid, mac = pos.ssid(), pos.mac()
@@ -265,9 +260,8 @@ class Webgpsmap(plugins.Plugin):
         Returns the html page
         """
         try:
-            template_file = (
-                os.path.dirname(os.path.realpath(__file__)) + "/" + "webgpsmap.html"
-            )
+            template_file = (os.path.dirname(os.path.realpath(__file__)) +
+                             "/" + "webgpsmap.html")
             html_data = open(template_file, "r").read()
         except Exception as error:
             logging.error(
@@ -301,8 +295,8 @@ class PositionFile:
         Returns the mac from filename
         """
         parsed_mac = re.search(
-            r".*_?([a-zA-Z0-9]{12})\.(?:gps|geo|paw-gps)\.json", self._filename
-        )
+            r".*_?([a-zA-Z0-9]{12})\.(?:gps|geo|paw-gps)\.json",
+            self._filename)
         if parsed_mac:
             mac = parsed_mac.groups()[0]
             return mac
@@ -313,8 +307,7 @@ class PositionFile:
         Returns the ssid from filename
         """
         parsed_ssid = re.search(
-            r"(.+)_[a-zA-Z0-9]{12}\.(?:gps|geo|paw-gps)\.json", self._filename
-        )
+            r"(.+)_[a-zA-Z0-9]{12}\.(?:gps|geo|paw-gps)\.json", self._filename)
         if parsed_ssid:
             return parsed_ssid.groups()[0]
         return None
@@ -350,7 +343,8 @@ class PositionFile:
             part2 = part2.ljust(6, "0")[:6]
             # timezone fix: 0200 >>> 02:00
             if len(part3) == 4:
-                part3 = part3[1:2].rjust(2, "0") + ":" + part3[3:4].rjust(2, "0")
+                part3 = part3[1:2].rjust(2, "0") + ":" + part3[3:4].rjust(
+                    2, "0")
             date_iso_formated = part1 + "." + part2 + "+" + part3
             dateObj = datetime.datetime.fromisoformat(date_iso_formated)
             return_ts = int("%.0f" % dateObj.timestamp())
@@ -375,7 +369,8 @@ class PositionFile:
             except OSError as error:
                 logging.error(f"[webgpsmap] OS error: {format(error)}")
             except:
-                logging.error(f"[webgpsmap] Unexpected error: {sys.exc_info()[0]}")
+                logging.error(
+                    f"[webgpsmap] Unexpected error: {sys.exc_info()[0]}")
                 raise
         return return_pass
 
