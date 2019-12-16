@@ -2,7 +2,7 @@ crypto==1.4.1
 requests==2.21.0
 PyYAML==5.2
 scapy==2.4.3
-gym==0.14.0
+gym==0.15.4
 stable-baselines==2.7.0
 tensorflow==2.0.0
 tensorflow-estimator==1.14.0
