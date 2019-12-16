@@ -19,7 +19,7 @@ import pwnagotchi.plugins as plugins
         https://blogs.kent.ac.uk/websolutions/2015/01/29/filtering-map-markers-with-leaflet-js-a-brief-technical-overview/
         http://www.digital-geography.com/filter-leaflet-maps-slider/
         http://bl.ocks.org/zross/47760925fcb1643b4225
-    - 
+    -
 """
 
 
