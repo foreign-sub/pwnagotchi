@@ -78,7 +78,7 @@ class MemTemp(plugins.Plugin):
             temp = pwnagotchi.temperature() + 273.15
             symbol = "k"
         else:
-            # default to celsius 
+            # default to celsius
             temp = pwnagotchi.temperature()
             symbol = "c"
 

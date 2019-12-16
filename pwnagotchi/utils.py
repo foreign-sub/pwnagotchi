@@ -32,7 +32,8 @@ def load_config(args):
     if not os.path.exists(default_config_path):
         os.makedirs(default_config_path)
 
-    ref_defaults_file = os.path.join(os.path.dirname(pwnagotchi.__file__), 'defaults.yml')
+    ref_defaults_file = os.path.join(
+        os.path.dirname(pwnagotchi.__file__), 'defaults.yml')
     ref_defaults_data = None
 
     # check for a config.yml file on /boot/
@@ -61,7 +62,8 @@ def load_config(args):
             defaults_data = fp.read()
 
         if ref_defaults_data != defaults_data:
-            print("!!! file in %s is different than release defaults, overwriting !!!" % args.config)
+            print(
+                "!!! file in %s is different than release defaults, overwriting !!!" % args.config)
             shutil.copy(ref_defaults_file, args.config)
 
     # load the defaults
@@ -153,12 +155,14 @@ def do_rotate(filename, stats, cfg):
     counter = 2
 
     while os.path.exists(archive_filename):
-        archive_filename = os.path.join(base_path, "%s-%d.gz" % (name, counter))
+        archive_filename = os.path.join(
+            base_path, "%s-%d.gz" % (name, counter))
         counter += 1
 
     log_filename = archive_filename.replace('gz', 'log')
 
-    print("%s is %d bytes big, rotating to %s ..." % (filename, stats.st_size, log_filename))
+    print("%s is %d bytes big, rotating to %s ..." %
+          (filename, stats.st_size, log_filename))
 
     shutil.move(filename, log_filename)
 
@@ -183,7 +187,8 @@ def log_rotation(filename, cfg):
         if stats.st_size >= max_size:
             do_rotate(filename, stats, cfg)
     else:
-        raise Exception("log rotation is enabled but log.rotation.size was not specified")
+        raise Exception(
+            "log rotation is enabled but log.rotation.size was not specified")
 
 
 def setup_logging(args, config):
@@ -284,7 +289,8 @@ def extract_from_pcap(path, fields):
         if field == WifiInfo.BSSID:
             from scapy.all import Dot11Beacon, Dot11ProbeResp, Dot11AssoReq, Dot11ReassoReq, Dot11, sniff
             subtypes.add('beacon')
-            bpf_filter = " or ".join([f"wlan type mgt subtype {subtype}" for subtype in subtypes])
+            bpf_filter = " or ".join(
+                [f"wlan type mgt subtype {subtype}" for subtype in subtypes])
             packets = sniff(offline=path, filter=bpf_filter)
             try:
                 for packet in packets:
@@ -301,7 +307,8 @@ def extract_from_pcap(path, fields):
             subtypes.add('beacon')
             subtypes.add('assoc-req')
             subtypes.add('reassoc-req')
-            bpf_filter = " or ".join([f"wlan type mgt subtype {subtype}" for subtype in subtypes])
+            bpf_filter = " or ".join(
+                [f"wlan type mgt subtype {subtype}" for subtype in subtypes])
             packets = sniff(offline=path, filter=bpf_filter)
             try:
                 for packet in packets:
@@ -315,17 +322,20 @@ def extract_from_pcap(path, fields):
         elif field == WifiInfo.ENCRYPTION:
             from scapy.all import Dot11Beacon, sniff
             subtypes.add('beacon')
-            bpf_filter = " or ".join([f"wlan type mgt subtype {subtype}" for subtype in subtypes])
+            bpf_filter = " or ".join(
+                [f"wlan type mgt subtype {subtype}" for subtype in subtypes])
             packets = sniff(offline=path, filter=bpf_filter)
             try:
                 for packet in packets:
                     if packet.haslayer(Dot11Beacon) and hasattr(packet[Dot11Beacon], 'network_stats'):
                         stats = packet[Dot11Beacon].network_stats()
                         if 'crypto' in stats:
-                            results[field] = stats['crypto']  # set with encryption types
+                            # set with encryption types
+                            results[field] = stats['crypto']
                             break
                 else:  # magic
-                    raise FieldNotFoundError("Could not find field [ENCRYPTION]")
+                    raise FieldNotFoundError(
+                        "Could not find field [ENCRYPTION]")
             except Exception:
                 raise FieldNotFoundError("Could not find field [ENCRYPTION]")
         elif field == WifiInfo.CHANNEL:
@@ -333,7 +343,8 @@ def extract_from_pcap(path, fields):
             from pwnagotchi.mesh.wifi import freq_to_channel
             packets = sniff(offline=path, count=1)
             try:
-                results[field] = freq_to_channel(packets[0][RadioTap].ChannelFrequency)
+                results[field] = freq_to_channel(
+                    packets[0][RadioTap].ChannelFrequency)
             except Exception:
                 raise FieldNotFoundError("Could not find field [CHANNEL]")
         elif field == WifiInfo.RSSI:
@@ -347,6 +358,7 @@ def extract_from_pcap(path, fields):
 
     return results
 
+
 @contextlib.contextmanager
 def ensure_write(filename, mode='w'):
     path = os.path.dirname(filename)
@@ -358,6 +370,7 @@ def ensure_write(filename, mode='w'):
         os.fsync(f.fileno())
 
     os.replace(tmp, filename)
+
 
 class StatusFile(object):
     def __init__(self, path, data_format='raw'):
