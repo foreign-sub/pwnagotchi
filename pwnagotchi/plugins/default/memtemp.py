@@ -87,6 +87,10 @@ class MemTemp(plugins.Plugin):
                 ),
             )
 
+    def on_unload(self, ui):
+        with ui._lock:
+            ui.remove_element('memtemp')
+
     def on_ui_update(self, ui):
         if self.options["scale"] == "fahrenheit":
             temp = (pwnagotchi.temperature() * 9 / 5) + 32
