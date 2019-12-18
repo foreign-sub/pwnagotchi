@@ -4,7 +4,7 @@ PWN_VERSION=master
 all: clean install image
 
 install:
-	curl https://releases.hashicorp.com/packer/1.3.5/packer_1.3.5_linux_amd64.zip -o /tmp/packer.zip
+	curl https://releases.hashicorp.com/packer/1.4.5/packer_1.4.5_linux_amd64.zip -o /tmp/packer.zip
 	unzip /tmp/packer.zip -d /tmp
 	sudo mv /tmp/packer /usr/bin/packer
 	git clone https://github.com/solo-io/packer-builder-arm-image /tmp/packer-builder-arm-image
