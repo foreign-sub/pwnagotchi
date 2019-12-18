@@ -10,4 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: make
-      run: make all
+      run: |
+        sudo apt-get install qemu
+        make all
