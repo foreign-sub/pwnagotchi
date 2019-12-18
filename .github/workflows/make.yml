@@ -1,6 +1,9 @@
 name: make
 
-on: [push]
+on:
+  push:
+    branches:
+    - master
 
 jobs:
   build:
@@ -12,5 +15,5 @@ jobs:
     - name: make
       run: |
         sudo apt-get update
-        sudo apt-get install qemu --fix-missing
+        sudo apt-get install qemu-user --fix-missing
         make all
