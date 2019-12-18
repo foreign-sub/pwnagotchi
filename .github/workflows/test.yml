@@ -1,0 +1,59 @@
+name: Python application
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install brew and dependencies
+      run: |
+        HOMEBREW_REPOSITORY="$HOME/Homebrew"
+        export PATH="$HOMEBREW_REPOSITORY/bin:$PATH"
+        rm -rf $HOMEBREW_REPOSITORY
+        git clone --depth=1 https://github.com/Homebrew/brew "$HOMEBREW_REPOSITORY"
+        HOMEBREW_CORE_TAP_DIR="$HOMEBREW_REPOSITORY/Library/Taps/homebrew/homebrew-core"
+        mkdir -p "$HOMEBREW_CORE_TAP_DIR"
+        rm -rf "$HOMEBREW_CORE_TAP_DIR"
+        git clone https://github.com/Homebrew/linuxbrew-core "$HOMEBREW_CORE_TAP_DIR"
+        export HOMEBREW_GITHUB_USER=linuxbrewtestbot
+        export HOMEBREW_DEVELOPER=1
+        export HOMEBREW_NO_AUTO_UPDATE=1
+        export HOMEBREW_NO_ANALYTICS=1
+        brew help # trigger vendored ruby installation
+        brew install openmpi
+        sudo apt-get install build-essential
+        brew install gcc
+        brew install openmpi
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --ignore=F821
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test
+      run: |
+        sudo apt-get install build-essential libpcap-dev net-tools libnetfilter-queue libnetfilter-queue-dev
+        wget "https://github.com/bettercap/bettercap/releases/download/v2.26/bettercap_linux_amd64_v2.26.zip"
+        unzip bettercap_linux_amd64_v2.26.zip
+        # ... check the sha256 digest before doing this ...
+        sudo mv bettercap /usr/bin/
+        # install the caplets and the web ui in /usr/local/share/bettercap and quit
+        sudo bettercap -eval "caplets.update; ui.update; quit"
+        wget "https://github.com/evilsocket/pwngrid/releases/download/v1.10.1/pwngrid_linux_amd64_v1.10.1.zip"
+        unzip pwngrid_linux_amd64_v1.10.1.zip
+        # ... check the sha256 digest before doing this ...
+        sudo mv pwngrid /usr/bin/
+        # generate the keypair
+        sudo pwngrid -generate -keys /etc/pwnagotchi
+        sudo pwnagotchi --manual --debug
