@@ -33,9 +33,8 @@ def load_config(args):
     if not os.path.exists(default_config_path):
         os.makedirs(default_config_path)
 
-    ref_defaults_file = os.path.join(
-        os.path.dirname(pwnagotchi.__file__), "defaults.yml"
-    )
+    ref_defaults_file = os.path.join(os.path.dirname(pwnagotchi.__file__),
+                                     "defaults.yml")
     ref_defaults_data = None
 
     # check for a config.yml file on /boot/
@@ -66,8 +65,7 @@ def load_config(args):
         if ref_defaults_data != defaults_data:
             print(
                 "!!! file in %s is different than release defaults, overwriting !!!"
-                % args.config
-            )
+                % args.config)
             shutil.copy(ref_defaults_file, args.config)
 
     # load the defaults
@@ -83,7 +81,8 @@ def load_config(args):
                 if user_config:
                     config = merge_config(user_config, config)
     except yaml.YAMLError as ex:
-        print("There was an error processing the configuration file:\n%s " % ex)
+        print("There was an error processing the configuration file:\n%s " %
+              ex)
         exit(1)
 
     # the very first step is to normalize the display name so we don't need dozens of if/elif around
@@ -93,69 +92,69 @@ def load_config(args):
     elif config["ui"]["display"]["type"] in ("papirus", "papi"):
         config["ui"]["display"]["type"] = "papirus"
 
-    elif config["ui"]["display"]["type"] in ("oledhat",):
+    elif config["ui"]["display"]["type"] in ("oledhat", ):
         config["ui"]["display"]["type"] = "oledhat"
 
     elif config["ui"]["display"]["type"] in (
-        "ws_1",
-        "ws1",
-        "waveshare_1",
-        "waveshare1",
+            "ws_1",
+            "ws1",
+            "waveshare_1",
+            "waveshare1",
     ):
         config["ui"]["display"]["type"] = "waveshare_1"
 
     elif config["ui"]["display"]["type"] in (
-        "ws_2",
-        "ws2",
-        "waveshare_2",
-        "waveshare2",
+            "ws_2",
+            "ws2",
+            "waveshare_2",
+            "waveshare2",
     ):
         config["ui"]["display"]["type"] = "waveshare_2"
 
     elif config["ui"]["display"]["type"] in (
-        "ws_27inch",
-        "ws27inch",
-        "waveshare_27inch",
-        "waveshare27inch",
+            "ws_27inch",
+            "ws27inch",
+            "waveshare_27inch",
+            "waveshare27inch",
     ):
         config["ui"]["display"]["type"] = "waveshare27inch"
 
     elif config["ui"]["display"]["type"] in (
-        "ws_29inch",
-        "ws29inch",
-        "waveshare_29inch",
-        "waveshare29inch",
+            "ws_29inch",
+            "ws29inch",
+            "waveshare_29inch",
+            "waveshare29inch",
     ):
         config["ui"]["display"]["type"] = "waveshare29inch"
 
-    elif config["ui"]["display"]["type"] in ("lcdhat",):
+    elif config["ui"]["display"]["type"] in ("lcdhat", ):
         config["ui"]["display"]["type"] = "lcdhat"
 
     elif config["ui"]["display"]["type"] in ("dfrobot", "df"):
         config["ui"]["display"]["type"] = "dfrobot"
 
     elif config["ui"]["display"]["type"] in (
-        "ws_154inch",
-        "ws154inch",
-        "waveshare_154inch",
-        "waveshare154inch",
+            "ws_154inch",
+            "ws154inch",
+            "waveshare_154inch",
+            "waveshare154inch",
     ):
         config["ui"]["display"]["type"] = "waveshare154inch"
 
     elif config["ui"]["display"]["type"] in (
-        "waveshare144lcd",
-        "ws_144inch",
-        "ws144inch",
-        "waveshare_144inch",
-        "waveshare144inch",
+            "waveshare144lcd",
+            "ws_144inch",
+            "ws144inch",
+            "waveshare_144inch",
+            "waveshare144inch",
     ):
         config["ui"]["display"]["type"] = "waveshare144lcd"
 
     elif config["ui"]["display"]["type"] in (
-        "ws_213d",
-        "ws213d",
-        "waveshare_213d",
-        "waveshare213d",
+            "ws_213d",
+            "ws213d",
+            "waveshare_213d",
+            "waveshare213d",
     ):
         config["ui"]["display"]["type"] = "waveshare213d"
 
@@ -195,15 +194,14 @@ def do_rotate(filename, stats, cfg):
     counter = 2
 
     while os.path.exists(archive_filename):
-        archive_filename = os.path.join(base_path, "%s-%d.gz" % (name, counter))
+        archive_filename = os.path.join(base_path,
+                                        "%s-%d.gz" % (name, counter))
         counter += 1
 
     log_filename = archive_filename.replace("gz", "log")
 
-    print(
-        "%s is %d bytes big, rotating to %s ..."
-        % (filename, stats.st_size, log_filename)
-    )
+    print("%s is %d bytes big, rotating to %s ..." %
+          (filename, stats.st_size, log_filename))
 
     shutil.move(filename, log_filename)
 
@@ -229,8 +227,7 @@ def log_rotation(filename, cfg):
             do_rotate(filename, stats, cfg)
     else:
         raise Exception(
-            "log rotation is enabled but log.rotation.size was not specified"
-        )
+            "log rotation is enabled but log.rotation.size was not specified")
 
 
 def setup_logging(args, config):
@@ -341,8 +338,7 @@ def extract_from_pcap(path, fields):
 
             subtypes.add("beacon")
             bpf_filter = " or ".join(
-                [f"wlan type mgt subtype {subtype}" for subtype in subtypes]
-            )
+                [f"wlan type mgt subtype {subtype}" for subtype in subtypes])
             packets = sniff(offline=path, filter=bpf_filter)
             try:
                 for packet in packets:
@@ -368,12 +364,12 @@ def extract_from_pcap(path, fields):
             subtypes.add("assoc-req")
             subtypes.add("reassoc-req")
             bpf_filter = " or ".join(
-                [f"wlan type mgt subtype {subtype}" for subtype in subtypes]
-            )
+                [f"wlan type mgt subtype {subtype}" for subtype in subtypes])
             packets = sniff(offline=path, filter=bpf_filter)
             try:
                 for packet in packets:
-                    if packet.haslayer(Dot11Elt) and hasattr(packet[Dot11Elt], "info"):
+                    if packet.haslayer(Dot11Elt) and hasattr(
+                            packet[Dot11Elt], "info"):
                         results[field] = packet[Dot11Elt].info.decode("utf-8")
                         break
                 else:  # magic
@@ -385,21 +381,20 @@ def extract_from_pcap(path, fields):
 
             subtypes.add("beacon")
             bpf_filter = " or ".join(
-                [f"wlan type mgt subtype {subtype}" for subtype in subtypes]
-            )
+                [f"wlan type mgt subtype {subtype}" for subtype in subtypes])
             packets = sniff(offline=path, filter=bpf_filter)
             try:
                 for packet in packets:
                     if packet.haslayer(Dot11Beacon) and hasattr(
-                        packet[Dot11Beacon], "network_stats"
-                    ):
+                            packet[Dot11Beacon], "network_stats"):
                         stats = packet[Dot11Beacon].network_stats()
                         if "crypto" in stats:
                             # set with encryption types
                             results[field] = stats["crypto"]
                             break
                 else:  # magic
-                    raise FieldNotFoundError("Could not find field [ENCRYPTION]")
+                    raise FieldNotFoundError(
+                        "Could not find field [ENCRYPTION]")
             except Exception:
                 raise FieldNotFoundError("Could not find field [ENCRYPTION]")
         elif field == WifiInfo.CHANNEL:
@@ -408,7 +403,8 @@ def extract_from_pcap(path, fields):
 
             packets = sniff(offline=path, count=1)
             try:
-                results[field] = freq_to_channel(packets[0][RadioTap].ChannelFrequency)
+                results[field] = freq_to_channel(
+                    packets[0][RadioTap].ChannelFrequency)
             except Exception:
                 raise FieldNotFoundError("Could not find field [CHANNEL]")
         elif field == WifiInfo.RSSI:
@@ -458,21 +454,16 @@ class StatusFile(object):
         return default
 
     def newer_then_minutes(self, minutes):
-        return (
-            self._updated is not None
-            and ((datetime.now() - self._updated).seconds / 60) < minutes
-        )
+        return (self._updated is not None
+                and ((datetime.now() - self._updated).seconds / 60) < minutes)
 
     def newer_then_hours(self, hours):
-        return (
-            self._updated is not None
-            and ((datetime.now() - self._updated).seconds / (60 * 60)) < hours
-        )
+        return (self._updated is not None and
+                ((datetime.now() - self._updated).seconds / (60 * 60)) < hours)
 
     def newer_then_days(self, days):
-        return (
-            self._updated is not None and (datetime.now() - self._updated).days < days
-        )
+        return (self._updated is not None
+                and (datetime.now() - self._updated).days < days)
 
     def update(self, data=None):
         self._updated = datetime.now()
