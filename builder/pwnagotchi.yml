@@ -234,7 +234,7 @@
     when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
 
   - name: install requirements
-    command: "cat requirements.txt | xargs -n 1 pip install"
+    command: "pip freeze | sed -e '/^\s*#.*$/d' -e '/^\s*$/d' | xargs -n 1 pip install"
     args:
       chdir: /usr/local/src/pwnagotchi
 
