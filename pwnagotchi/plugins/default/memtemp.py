@@ -89,7 +89,7 @@ class MemTemp(plugins.Plugin):
 
     def on_unload(self, ui):
         with ui._lock:
-            ui.remove_element('memtemp')
+            ui.remove_element("memtemp")
 
     def on_ui_update(self, ui):
         if self.options["scale"] == "fahrenheit":
@@ -106,13 +106,13 @@ class MemTemp(plugins.Plugin):
         if self.options["orientation"] == "vertical":
             ui.set(
                 "memtemp",
-                " mem:%s%%\n cpu:%s%%\ntemp:%s%s" %
-                (self.mem_usage(), self.cpu_load(), temp, symbol),
+                " mem:%s%%\n cpu:%s%%\ntemp:%s%s"
+                % (self.mem_usage(), self.cpu_load(), temp, symbol),
             )
         else:
             # default to horizontal
             ui.set(
                 "memtemp",
-                " mem cpu temp\n %s%% %s%%  %s%s" %
-                (self.mem_usage(), self.cpu_load(), temp, symbol),
+                " mem cpu temp\n %s%% %s%%  %s%s"
+                % (self.mem_usage(), self.cpu_load(), temp, symbol),
             )
