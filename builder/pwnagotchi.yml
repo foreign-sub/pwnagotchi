@@ -234,7 +234,7 @@
     when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
 
   - name: install requirements
-    command: "pip freeze | xargs -n 1 pip install"
+    command: "python3 -m pip freeze | xargs -n 1 pip install"
     args:
       chdir: /usr/local/src/pwnagotchi
 
