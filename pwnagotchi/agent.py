@@ -33,13 +33,15 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
         AsyncTrainer.__init__(self, config)
 
         self._started_at = time.time()
-        self._filter = (None if config["main"]["filter"] is None else
-                        re.compile(config["main"]["filter"]))
+        self._filter = (
+            None
+            if config["main"]["filter"] is None
+            else re.compile(config["main"]["filter"])
+        )
         self._current_channel = 0
         self._tot_aps = 0
         self._aps_on_channel = 0
-        self._supported_channels = utils.iface_channels(
-            config["main"]["iface"])
+        self._supported_channels = utils.iface_channels(config["main"]["iface"])
         self._view = view
         self._view.set_agent(self)
         self._web_ui = Server(self, config["ui"])
@@ -54,11 +56,13 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
         if not os.path.exists(config["bettercap"]["handshakes"]):
             os.makedirs(config["bettercap"]["handshakes"])
 
-        logging.info("%s@%s (v%s)", pwnagotchi.name(), self.fingerprint(),
-                     pwnagotchi.version)
+        logging.info(
+            "%s@%s (v%s)", pwnagotchi.name(), self.fingerprint(), pwnagotchi.version
+        )
         for _, plugin in plugins.loaded.items():
-            logging.debug("plugin '%s' v%s", plugin.__class__.__name__,
-                          plugin.__version__)
+            logging.debug(
+                "plugin '%s' v%s", plugin.__class__.__name__, plugin.__version__
+            )
 
     def config(self):
         return self._config
@@ -82,12 +86,11 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
         mon_iface = self._config["main"]["iface"]
         self.run("set wifi.interface %s" % mon_iface)
         self.run("set wifi.ap.ttl %d" % self._config["personality"]["ap_ttl"])
-        self.run("set wifi.sta.ttl %d" %
-                 self._config["personality"]["sta_ttl"])
-        self.run("set wifi.rssi.min %d" %
-                 self._config["personality"]["min_rssi"])
-        self.run("set wifi.handshakes.file %s" %
-                 self._config["bettercap"]["handshakes"])
+        self.run("set wifi.sta.ttl %d" % self._config["personality"]["sta_ttl"])
+        self.run("set wifi.rssi.min %d" % self._config["personality"]["min_rssi"])
+        self.run(
+            "set wifi.handshakes.file %s" % self._config["bettercap"]["handshakes"]
+        )
         self.run("set wifi.handshakes.aggregate false")
 
     def start_monitor_mode(self):
@@ -109,8 +112,7 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
                     logging.info("starting monitor interface ...")
                     self.run("!%s" % mon_start_cmd)
                 else:
-                    logging.info("waiting for monitor interface %s ...",
-                                 mon_iface)
+                    logging.info("waiting for monitor interface %s ...", mon_iface)
                     time.sleep(1)
 
         logging.info("supported channels: %s", self._supported_channels)
@@ -168,20 +170,22 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
             logging.debug("RECON %ds", recon_time)
             self.run("wifi.recon.channel clear")
         else:
-            logging.debug("RECON %ds ON CHANNELS %s", recon_time,
-                          ",".join(map(str, channels)))
+            logging.debug(
+                "RECON %ds ON CHANNELS %s", recon_time, ",".join(map(str, channels))
+            )
             try:
-                self.run("wifi.recon.channel %s" %
-                         ",".join(map(str, channels)))
+                self.run("wifi.recon.channel %s" % ",".join(map(str, channels)))
             except Exception as e:
                 logging.exception("error")
 
         self.wait_for(recon_time, sleeping=False)
 
     def _filter_included(self, ap):
-        return (self._filter is None
-                or self._filter.match(ap["hostname"]) is not None
-                or self._filter.match(ap["mac"]) is not None)
+        return (
+            self._filter is None
+            or self._filter.match(ap["hostname"]) is not None
+            or self._filter.match(ap["mac"]) is not None
+        )
 
     def set_access_points(self, aps):
         self._access_points = aps
@@ -198,9 +202,11 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
             for ap in s["wifi"]["aps"]:
                 if ap["encryption"] == "" or ap["encryption"] == "OPEN":
                     continue
-                elif (ap["hostname"] not in whitelist
-                      and ap["mac"].lower() not in whitelist
-                      and ap["mac"][:8].lower() not in whitelist):
+                elif (
+                    ap["hostname"] not in whitelist
+                    and ap["mac"].lower() not in whitelist
+                    and ap["mac"][:8].lower() not in whitelist
+                ):
                     if self._filter_included(ap):
                         aps.append(ap)
         except Exception as e:
@@ -260,24 +266,28 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
             self._view.set("aps", "%d" % self._tot_aps)
             self._view.set("sta", "%d" % tot_stas)
         else:
-            self._aps_on_channel = len([
-                ap for ap in self._access_points
-                if ap["channel"] == self._current_channel
-            ])
-            stas_on_channel = sum([
-                len(ap["clients"]) for ap in self._access_points
-                if ap["channel"] == self._current_channel
-            ])
-            self._view.set("aps",
-                           "%d (%d)" % (self._aps_on_channel, self._tot_aps))
+            self._aps_on_channel = len(
+                [
+                    ap
+                    for ap in self._access_points
+                    if ap["channel"] == self._current_channel
+                ]
+            )
+            stas_on_channel = sum(
+                [
+                    len(ap["clients"])
+                    for ap in self._access_points
+                    if ap["channel"] == self._current_channel
+                ]
+            )
+            self._view.set("aps", "%d (%d)" % (self._aps_on_channel, self._tot_aps))
             self._view.set("sta", "%d (%d)" % (stas_on_channel, tot_stas))
 
     def _update_handshakes(self, new_shakes=0):
         if new_shakes > 0:
             self._epoch.track(handshake=True, inc=new_shakes)
 
-        tot = utils.total_unique_handshakes(
-            self._config["bettercap"]["handshakes"])
+        tot = utils.total_unique_handshakes(self._config["bettercap"]["handshakes"])
         txt = "%d (%d)" % (len(self._handshakes), tot)
 
         if self._last_pwnd is not None:
@@ -347,8 +357,7 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
                 self._update_counters()
 
                 for h in [
-                        e for e in self.events()
-                        if e["tag"] == "wifi.client.handshake"
+                    e for e in self.events() if e["tag"] == "wifi.client.handshake"
                 ]:
                     filename = h["data"]["file"]
                     sta_mac = h["data"]["station"]
@@ -358,19 +367,18 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
                     if key not in self._handshakes:
                         self._handshakes[key] = h
                         new_shakes += 1
-                        ap_and_station = self._find_ap_sta_in(
-                            sta_mac, ap_mac, s)
+                        ap_and_station = self._find_ap_sta_in(sta_mac, ap_mac, s)
                         if ap_and_station is None:
-                            logging.warning(
-                                "!!! captured new handshake: %s !!!", key)
+                            logging.warning("!!! captured new handshake: %s !!!", key)
                             self._last_pwnd = ap_mac
-                            plugins.on("handshake", self, filename, ap_mac,
-                                       sta_mac)
+                            plugins.on("handshake", self, filename, ap_mac, sta_mac)
                         else:
                             (ap, sta) = ap_and_station
                             self._last_pwnd = (
-                                ap["hostname"] if ap["hostname"] != ""
-                                and ap["hostname"] != "<hidden>" else ap_mac)
+                                ap["hostname"]
+                                if ap["hostname"] != "" and ap["hostname"] != "<hidden>"
+                                else ap_mac
+                            )
                             logging.warning(
                                 "!!! captured new handshake on channel %d, %d dBm: %s (%s) -> %s [%s (%s)] !!!",
                                 ap["channel"],
@@ -422,8 +430,7 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
         else:
             self._history[who] += 1
 
-        return self._history[who] < self._config["personality"][
-            "max_interactions"]
+        return self._history[who] < self._config["personality"]["max_interactions"]
 
     def associate(self, ap, throttle=0):
         if self.is_stale():
@@ -431,7 +438,8 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
             return
 
         if self._config["personality"]["associate"] and self._should_interact(
-                ap["mac"]):
+            ap["mac"]
+        ):
             self._view.on_assoc(ap)
 
             try:
@@ -459,8 +467,7 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
             logging.debug("recon is stale, skipping deauth(%s)", sta["mac"])
             return
 
-        if self._config["personality"]["deauth"] and self._should_interact(
-                sta["mac"]):
+        if self._config["personality"]["deauth"] and self._should_interact(sta["mac"]):
             self._view.on_deauth(sta)
 
             try:
@@ -502,11 +509,13 @@ class Agent(Client, Automata, AsyncAdvertiser, AsyncTrainer):
         if channel != self._current_channel:
             if self._current_channel != 0 and wait > 0:
                 if verbose:
-                    logging.info("waiting for %ds on channel %d ...", wait,
-                                 self._current_channel)
+                    logging.info(
+                        "waiting for %ds on channel %d ...", wait, self._current_channel
+                    )
                 else:
-                    logging.debug("waiting for %ds on channel %d ...", wait,
-                                  self._current_channel)
+                    logging.debug(
+                        "waiting for %ds on channel %d ...", wait, self._current_channel
+                    )
                 self.wait_for(wait)
             if verbose and self._epoch.any_activity:
                 logging.info("CHANNEL %d", channel)
