@@ -234,7 +234,7 @@
     when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
 
   - name: install requirements
-    command: "pip3 install -r requirements.txt"
+    command: "cat requirements.txt | xargs -n 1 pip install"
     args:
       chdir: /usr/local/src/pwnagotchi
 
