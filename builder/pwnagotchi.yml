@@ -234,9 +234,8 @@
     when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
 
   - name: install requirements
-    command: "python3 -m pip freeze | xargs -n 1 pip install"
-    args:
-      chdir: /usr/local/src/pwnagotchi
+    pip:
+      requirements: /usr/local/src/pwnagotchi/requirements.txt
 
   - name: install opencv-python
     pip:
