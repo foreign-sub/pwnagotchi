@@ -196,6 +196,9 @@
       regexp: "#EPD_SIZE=2.0"
       line: "EPD_SIZE=2.0"
 
+  - name: update setuptools and wheel
+    command: python3 -m pip install --user --upgrade setuptools wheel
+
   - name: collect python pip package list
     command: "pip3 list"
     register: pip_output
@@ -225,10 +228,15 @@
       msg: "{{ pwnagotchi_version }}"
 
   - name: build pwnagotchi wheel
-    command: "python3 setup.py sdist bdist_wheel"
+    command: "python3 setup.py bdist_wheel"
     args:
       chdir: /usr/local/src/pwnagotchi
     when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
+
+  - name: install requirements
+    command: "pip3 install -r requirements.txt"
+    args:
+      chdir: /usr/local/src/pwnagotchi
 
   - name: install opencv-python
     pip:
@@ -245,8 +253,12 @@
   - name: install pwnagotchi wheel and dependencies
     pip:
       name: "{{ lookup('fileglob', '/usr/local/src/pwnagotchi/dist/pwnagotchi*.whl') }}"
-      extra_args: "--no-cache-dir"
+      extra_args: "--no-deps -v --platform=linux_armv6l --only-binary=:all: --target={{ pip_target.stdout }}" #"--no-cache-dir"
     when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
+
+  - name: install pwnagotchi wheel and dependencies
+    pip:
+      name: "{{ lookup('fileglob', '/usr/local/src/pwnagotchi/dist/pwnagotchi*.whl') }}"
 
   - name: download and install pwngrid
     unarchive:
