@@ -178,7 +178,7 @@
 
   - name: clean apt cache
     command: apt-get clean
-      become: yes
+    become: yes
 
   - name: configure dphys-swapfile
     file:
