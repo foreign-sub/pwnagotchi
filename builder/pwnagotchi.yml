@@ -55,6 +55,7 @@
         install:
           - vim
           - screen
+          - gfortran
           - golang
           - git
           - build-essential
@@ -64,7 +65,11 @@
           - unzip
           - gawk
           - libopenmpi-dev
+          - liblapack-dev
+          - liblapack3
           - libatlas-base-dev
+          - libblas-dev
+          - libblas3
           - libjasper-dev
           - libqtgui4
           - libqt4-test
