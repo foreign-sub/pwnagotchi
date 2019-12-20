@@ -240,10 +240,6 @@
       chdir: /usr/local/src/pwnagotchi
     when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
 
-  - name: install requirements
-    pip:
-      requirements: /usr/local/src/pwnagotchi/requirements.txt
-
   - name: install opencv-python
     pip:
       name: "https://www.piwheels.hostedpi.com/simple/opencv-python/opencv_python-3.4.3.18-cp37-cp37m-linux_armv6l.whl"
@@ -255,6 +251,10 @@
       name: "https://www.piwheels.hostedpi.com/simple/tensorflow/tensorflow-1.13.1-cp37-none-linux_armv6l.whl"
       extra_args: "--no-deps --no-cache-dir --platform=linux_armv6l --only-binary=:all: --target={{ pip_target.stdout }}"
     when: (pip_packages['tensorflow'] is undefined) or (pip_packages['tensorflow'] != '1.13.1')
+
+  - name: install requirements
+    pip:
+      requirements: /usr/local/src/pwnagotchi/requirements.txt
 
   - name: install pwnagotchi wheel and dependencies
     pip:
