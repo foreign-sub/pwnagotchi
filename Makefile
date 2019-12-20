@@ -1,5 +1,5 @@
 PWN_HOSTNAME=pwnagotchi
-PWN_VERSION=${GITHUB_REF#refs/heads/} 
+PWN_VERSION="${GITHUB_REF#refs/heads/}"
 
 all: clean install image
 
