@@ -245,12 +245,6 @@
     debug:
       msg: "{{ pwnagotchi_version }}"
 
-  - name: build pwnagotchi wheel
-    command: "python3 setup.py bdist_wheel"
-    args:
-      chdir: /usr/local/src/pwnagotchi
-    when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
-
   - name: install opencv-python
     pip:
       name: "https://www.piwheels.hostedpi.com/simple/opencv-python/opencv_python-3.4.3.18-cp37-cp37m-linux_armv6l.whl"
@@ -266,6 +260,12 @@
   - name: install requirements
     pip:
       requirements: /usr/local/src/pwnagotchi/requirements.txt
+
+  - name: build pwnagotchi wheel
+    command: "python3 setup.py bdist_wheel"
+    args:
+      chdir: /usr/local/src/pwnagotchi
+    when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
 
   - name: install pwnagotchi wheel and dependencies
     pip:
