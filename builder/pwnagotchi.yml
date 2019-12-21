@@ -101,7 +101,6 @@
           - fonts-dejavu
           - fonts-dejavu-core
           - fonts-dejavu-extra
-          - python3-pil
           - python3-smbus
           - libfuse-dev
           - bc
