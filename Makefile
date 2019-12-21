@@ -1,5 +1,5 @@
 PWN_HOSTNAME=pwnagotchi
-PWN_VERSION=${GITHUB_SHA:0:7}
+PWN_VERSION=${git rev-parse --short=7 $GITHUB_SHA}
 
 all: clean install image
 
