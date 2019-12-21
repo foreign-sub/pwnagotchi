@@ -1,5 +1,5 @@
 PWN_HOSTNAME=pwnagotchi
-PWN_VERSION=${GITHUB_REF}
+PWN_VERSION=${GITHUB_SHA}
 
 all: clean install image
 
@@ -12,7 +12,7 @@ install:
 	sudo cp /tmp/packer-builder-arm-image/packer-builder-arm-image /usr/bin
 
 image:
-	echo "Building image for $(PWN_HOSTNAME) $(PWN_VERSION)"
+	echo "Building image for $(PWN_HOSTNAME) @ $(PWN_VERSION)"
 	cd builder && sudo /usr/bin/packer build -var "pwn_hostname=$(PWN_HOSTNAME)" -var "pwn_version=$(PWN_VERSION)" pwnagotchi.json
 	sudo mv builder/output-pwnagotchi/image pwnagotchi-raspbian-lite-$(PWN_VERSION).img
 	sudo sha256sum pwnagotchi-raspbian-lite-$(PWN_VERSION).img > pwnagotchi-raspbian-lite-$(PWN_VERSION).sha256
