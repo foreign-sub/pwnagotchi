@@ -61,6 +61,7 @@
           - build-essential
           - python-scipy
           - python3-pybind11
+          - python3-pil
           - python3-pip
           - python3-mpi4py
           - python3-smbus
