@@ -74,6 +74,7 @@
           - libblas-dev
           - libblas3
           - libjasper-dev
+          - libjpeg-dev
           - libqtgui4
           - libqt4-test
           - libopenjp2-7
