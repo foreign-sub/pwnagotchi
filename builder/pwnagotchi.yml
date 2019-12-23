@@ -67,7 +67,6 @@
           - unzip
           - gawk
           - libopenmpi-dev
-          - liblapack-dev
           - liblapack3
           - libatlas-base-dev
           - libblas-dev
