@@ -216,9 +216,6 @@
       regexp: "#EPD_SIZE=2.0"
       line: "EPD_SIZE=2.0"
 
-  - name: update setuptools and wheel
-    command: python3 -m pip install --user --upgrade setuptools wheel pybind11
-
   - name: collect python pip package list
     command: "pip3 list"
     register: pip_output
