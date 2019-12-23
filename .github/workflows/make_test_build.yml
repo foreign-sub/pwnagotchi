@@ -1,4 +1,4 @@
-name: make
+name: make test build
 
 on:
   push:
@@ -17,4 +17,6 @@ jobs:
         export TERM=linux
         sudo apt-get update
         sudo apt-get install kpartx qemu-user-static
-        make all
+        sudo make clean
+        sudo -E env "PATH=$PATH" make install
+        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=$(echo $GITHUB_SHA | head -c7)
