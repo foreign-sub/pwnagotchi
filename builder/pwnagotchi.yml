@@ -55,7 +55,6 @@
         install:
           - vim
           - screen
-          - gfortran
           - golang
           - git
           - build-essential
