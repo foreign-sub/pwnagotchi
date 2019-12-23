@@ -58,7 +58,6 @@
           - golang
           - git
           - build-essential
-          #- python3-pybind11
           - python3-pil
           - python3-pip
           - python3-mpi4py
@@ -102,9 +101,6 @@
           - bc
           - fonts-freefont-ttf
           - fbi
-          - python3-flask
-          - python3-flask-cors
-          - python3-flaskext.wtf
 
   tasks:
   - name: change hostname
