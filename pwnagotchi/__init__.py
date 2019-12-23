@@ -1,10 +1,10 @@
-import os
 import logging
-import time
+import os
 import re
+import time
 
-import pwnagotchi.ui.view as view
 import pwnagotchi
+import pwnagotchi.ui.view as view
 
 version = "1.4.3"
 
