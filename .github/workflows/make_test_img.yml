@@ -9,26 +9,37 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      PWN_VERSION: $(echo $GITHUB_SHA | head -c7)
     steps:
     - uses: actions/checkout@v1
-    - name: make
+    - name: version
+      run: |
+        VERSION_FILE=pwnagotchi/__init__.py
+        PWN_VERSION=v$(cat $VERSION_FILE | grep version | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
+        echo "::set-env name=PWN_VERSION::${PWN_VERSION}"
+        PWN_DESC=$(git describe --tags --abbrev=0 @^)
+        PWN_LOG=$(git log --pretty=format:"%h %s" ${PWN_DESC}..@)
+        echo "::set-env name=PWN_LOG::${PWN_LOG}"
+    - name: install required packages
       run: |
         export TERM=linux
         sudo apt-get update
         sudo apt-get install kpartx qemu-user-static
-        sudo make clean
+    - name: make image for ${{ env.PWN_VERSION }}
+      run: |
+        #sudo make clean
         sudo -E env "PATH=$PATH" make install
-        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=$(echo $GITHUB_SHA | head -c7)
+        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1.0.0
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ env.PWN_VERSION }}
+        release_name: Test image for ${{ env.PWN_VERSION }}
+        body: |
+         Changes in this image :
+         ${{ env.PWN_LOG }}
         draft: false
         prerelease: true
     - name: Upload Release Asset
@@ -38,6 +49,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./pwnagotchi-raspbian-lite-${PWN_VERSION}.zip
-        asset_name: pwnagotchi-raspbian-lite-${PWN_VERSION}.zip
+        asset_path: ./pwnagotchi-raspbian-lite-${{ env.PWN_VERSION }}.zip
+        asset_name: pwnagotchi-raspbian-lite-${{ env.PWN_VERSION }}.zip
         asset_content_type: application/zip
