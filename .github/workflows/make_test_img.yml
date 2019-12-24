@@ -27,10 +27,9 @@ jobs:
       uses: actions/create-release@v1.0.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PWN_VERSION: ${{ steps.make.outputs.PWN_VERSION }}
       with:
-        tag_name: ${PWN_VERSION}
-        release_name: Test image for ${PWN_VERSION}
+        tag_name: ${{ steps.make.outputs.PWN_VERSION }}
+        release_name: Test image for ${{ steps.make.outputs.PWN_VERSION }}
         draft: false
         prerelease: true
     - name: Upload Release Asset
@@ -38,9 +37,8 @@ jobs:
       uses: actions/upload-release-asset@v1.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PWN_VERSION: ${{ steps.make.outputs.PWN_VERSION }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./pwnagotchi-raspbian-lite-${PWN_VERSION}.zip
-        asset_name: pwnagotchi-raspbian-lite-${PWN_VERSION}.zip
+        asset_path: ./pwnagotchi-raspbian-lite-${{ steps.make.outputs.PWN_VERSION }}.zip
+        asset_name: pwnagotchi-raspbian-lite-${{ steps.make.outputs.PWN_VERSION }}.zip
         asset_content_type: application/zip
