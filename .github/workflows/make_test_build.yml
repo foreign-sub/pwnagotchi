@@ -12,11 +12,16 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+    - name: version
+      run: |
+        VERSION_FILE=pwnagotchi/__init__.py
+        PWN_VERSION=v$(cat $VERSION_FILE | grep version | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
+        echo "::set-env name=PWN_VERSION::${PWN_VERSION}"
     - name: make
       run: |
         export TERM=linux
         sudo apt-get update
-        sudo apt-get install kpartx qemu-user-static
+        sudo apt-get install qemu-system-arm qemu-user-static binfmt-support bmap-tools kpartx
         sudo make clean
         sudo -E env "PATH=$PATH" make install
-        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=$(echo $GITHUB_SHA | head -c7)
+        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
