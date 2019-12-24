@@ -29,7 +29,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${PWN_VERSION}
-        release_name: Test image ${PWN_VERSION}
+        release_name: Test image for ${PWN_VERSION}
         draft: false
         prerelease: true
     - name: Upload Release Asset
