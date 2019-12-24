@@ -9,8 +9,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      PWN_VERSION: $(echo $GITHUB_SHA | head -c7)
     steps:
     - uses: actions/checkout@v1
     - name: make
@@ -21,6 +19,7 @@ jobs:
         sudo make clean
         sudo -E env "PATH=$PATH" make install
         sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=$(echo $GITHUB_SHA | head -c7)
+        echo "::set-env name=PWN_VERSION::$(echo $GITHUB_SHA | head -c7)"
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1.0.0
