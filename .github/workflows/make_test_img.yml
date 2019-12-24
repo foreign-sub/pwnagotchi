@@ -27,6 +27,7 @@ jobs:
       uses: actions/create-release@v1.0.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PWN_VERSION: ${{ steps.make.outputs.PWN_VERSION }}
       with:
         tag_name: ${PWN_VERSION}
         release_name: Test image for ${PWN_VERSION}
