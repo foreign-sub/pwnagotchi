@@ -66,6 +66,8 @@
           - unzip
           - gawk
           - libopenmpi-dev
+          - libgfortran5
+          - liblapack3
           - libatlas-base-dev
           - libjasper-dev
           - libjpeg-dev
