@@ -21,7 +21,7 @@ jobs:
       run: |
         export TERM=linux
         sudo apt-get update
-        sudo apt-get install qemu-system-arm qemu-user-static binfmt-support bmap-tools kpartx
+        sudo apt-get install qemu-system-arm qemu-user-static bmap-tools kpartx
         sudo make clean
         sudo -E env "PATH=$PATH" make install
         sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
