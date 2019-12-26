@@ -27,6 +27,20 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
+    - name: Init packer cache
+      id: packer-cache
+      uses: actions/cache@v1
+      with:
+        path: /tmp/packer
+        key: cache-${{ runner.os }}-packer-${{ github.sha }}
+        restore-keys: cache-${{ runner.os }}-packer-          
+    - name: Init packer-builder cache
+      id: builder-cache
+      uses: actions/cache@v1
+      with:
+        path: /tmp/packer-builder-arm-image
+        key: cache-${{ runner.os }}-packer-builder-arm-image-${{ github.sha }}
+        restore-keys: cache-${{ runner.os }}-packer-builder-arm-image-
     - name: Get version
       run: |
         VERSION_FILE=pwnagotchi/__init__.py
