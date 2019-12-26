@@ -46,8 +46,9 @@ jobs:
         unzip /tmp/packer.zip -d /tmp
         sudo mv /tmp/packer /usr/bin/packer
         curl https://github.com/solo-io/packer-builder-arm-image/releases/download/v0.1.3/packer-builder-arm-image -o /tmp/arm-image
+        sudo chmod +x /tmp/arm-image
         sudo mv /tmp/arm-image /usr/bin/packer-builder-arm-image
-        #sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
+        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
     - name: Set cache permissions
       run: |
         sudo chmod -R 777 /tmp/packer-builder-arm-image
