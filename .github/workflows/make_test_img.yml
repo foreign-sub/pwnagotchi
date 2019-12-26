@@ -17,7 +17,7 @@ jobs:
         PWN_VERSION=v$(cat $VERSION_FILE | grep version | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
         echo "::set-env name=PWN_VERSION::${PWN_VERSION}"
         PWN_DESC=$(git describe --tags --abbrev=0 @^)
-        PWN_LOG=$(git log --pretty=format:"%h %s" ${PWN_DESC}..@)
+        PWN_LOG=$(git log --pretty=format:"%h %s%n" ${PWN_DESC}..@)
         echo "::set-env name=PWN_LOG::${PWN_LOG}"
     - name: install required packages
       run: |
