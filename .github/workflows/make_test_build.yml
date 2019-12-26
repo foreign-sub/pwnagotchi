@@ -12,9 +12,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Get packer sum
+    - name: Get packer-builder sum
       run: |
-        curl https://github.com/hashicorp/packer/raw/master/go.sum -o go.sum
+        curl https://github.com/solo-io/packer-builder-arm-image/raw/master/go.sum -o go.sum
     - name: Init go cache
       id: go-cache
       uses: actions/cache@v1
@@ -63,3 +63,6 @@ jobs:
         cd /tmp/packer-builder-arm-image && go mod tidy
         sudo chmod -R 777 /tmp/packer-builder-arm-image
         sudo chmod -R 777 ~/go/pkg/mod
+    - name: Build done
+      run: |
+        echo "Build done"
