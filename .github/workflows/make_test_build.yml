@@ -12,7 +12,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/cache@v1
+    - name: Init pip cache
+      id: pip-cache
+      uses: actions/cache@v1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -21,7 +23,9 @@ jobs:
     - name: Get packer sum
       run: |
         curl https://github.com/hashicorp/packer/raw/master/go.sum -o go.sum
-    - uses: actions/cache@v1
+    - name: Init go cache
+      id: go-cache
+      uses: actions/cache@v1
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
