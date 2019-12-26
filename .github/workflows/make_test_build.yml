@@ -17,7 +17,7 @@ jobs:
         curl https://github.com/solo-io/packer-builder-arm-image/raw/master/go.sum -o go.sum
     - name: Init go cache
       id: go-cache
-      uses: actions/cache@master
+      uses: actions/cache@v1.0.3
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
