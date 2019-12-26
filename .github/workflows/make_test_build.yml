@@ -1,4 +1,4 @@
-name: make test build
+name: Make test build
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
-    - name: get packer sum
+    - name: Get packer sum
       run: |
         curl https://github.com/hashicorp/packer/raw/master/go.sum -o go.sum
     - uses: actions/cache@v1
@@ -27,16 +27,17 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
-    - name: version
+    - name: Get version
       run: |
         VERSION_FILE=pwnagotchi/__init__.py
         PWN_VERSION=v$(cat $VERSION_FILE | grep version | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
         echo "::set-env name=PWN_VERSION::${PWN_VERSION}"
-    - name: make
+    - name: Install required packages
       run: |
         export TERM=linux
         sudo apt-get update
-        sudo apt-get install qemu-system-arm qemu-user-static bmap-tools kpartx
-        sudo make clean
+        sudo apt-get install kpartx qemu-user-static
+    - name: Make image for ${{ env.PWN_VERSION }}
+      run: |
         sudo -E env "PATH=$PATH" make install
         sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
