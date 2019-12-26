@@ -12,14 +12,6 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Init pip cache
-      id: pip-cache
-      uses: actions/cache@v1
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
     - name: Get packer sum
       run: |
         curl https://github.com/hashicorp/packer/raw/master/go.sum -o go.sum
@@ -31,13 +23,6 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
-    - name: Init packer cache
-      id: packer-cache
-      uses: actions/cache@v1
-      with:
-        path: /tmp/packer
-        key: cache-${{ runner.os }}-packer-${{ github.sha }}
-        restore-keys: cache-${{ runner.os }}-packer-          
     - name: Init packer-builder cache
       id: builder-cache
       uses: actions/cache@v1
@@ -58,4 +43,8 @@ jobs:
     - name: Make image for ${{ env.PWN_VERSION }}
       run: |
         sudo -E env "PATH=$PATH" make install
-        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
+        #sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
+    - name: Set cache permissions
+      run: |
+        sudo chmod -R 777 /tmp/packer-builder-arm-image
+        sudo chmod -R 777 ~/go/pkg/mod
