@@ -20,11 +20,11 @@ jobs:
           ${{ runner.os }}-pip-
     - name: get packer sum
       run: |
-        curl https://github.com/hashicorp/packer/raw/master/go.sum -o /tmp/go.sum
+        curl https://github.com/hashicorp/packer/raw/master/go.sum -o go.sum
     - uses: actions/cache@v1
       with:
         path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('/tmp/go.sum') }}
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
     - name: version
