@@ -35,6 +35,7 @@ jobs:
         VERSION_FILE=pwnagotchi/__init__.py
         PWN_VERSION=v$(cat $VERSION_FILE | grep version | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
         echo "::set-env name=PWN_VERSION::${PWN_VERSION}"
+        PWN_DESC=$(git describe --tags --abbrev=0 @^)
         PWN_LOG="$(git log --pretty=format:'%h %s%n' ${PWN_DESC}..@)"
         echo "::set-env name=PWN_LOG::${PWN_LOG}"
     - name: Install required packages
@@ -53,6 +54,7 @@ jobs:
           sudo cp /tmp/packer-builder-arm-image/packer-builder-arm-image /usr/bin
         else
           sudo -E env "PATH=$PATH" make install
+        fi
     - name: Make image for ${{ env.PWN_VERSION }}
       run: |
         echo "skipping image"
