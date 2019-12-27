@@ -60,7 +60,7 @@ jobs:
         #sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
     - name: Set cache permissions
       run: |
-        cd /tmp/packer-builder-arm-image && go mod tidy
+        cd /tmp/packer-builder-arm-image && go mod tidy && go clean --modcache
         sudo chmod -R 777 /tmp/packer-builder-arm-image
         sudo chmod -R 777 ~/go/pkg/mod
     - name: Build done
