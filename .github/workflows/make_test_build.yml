@@ -17,7 +17,7 @@ jobs:
         curl https://github.com/solo-io/packer-builder-arm-image/raw/master/go.sum -o go.sum
     - name: Init go cache
       id: go-cache
-      uses: actions/cache@v1.0.3
+      uses: actions/cache@v1
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -56,11 +56,11 @@ jobs:
         fi
     - name: Make image for ${{ env.PWN_VERSION }}
       run: |
-        echo "skipping image"
-        #sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
+        #echo "skipping image"
+        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
     - name: Set cache permissions
       run: |
-        cd /tmp/packer-builder-arm-image && go mod tidy && go clean --modcache
+        #cd /tmp/packer-builder-arm-image && go mod tidy && go clean --modcache
         sudo chmod -R 777 /tmp/packer-builder-arm-image
         sudo chmod -R 777 ~/go/pkg/mod
     - name: Build done
