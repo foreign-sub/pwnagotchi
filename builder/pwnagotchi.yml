@@ -250,15 +250,15 @@
     debug:
       msg: "{{ pwnagotchi_version }}"
 
-  - name: install opencv-python-headless
+  - name: install opencv-python
     pip:
-      name: opencv-python-headless==3.4.7.28
+      name: opencv-python==3.4.7.28
       extra_args: "--no-deps --no-cache-dir --platform=linux_armv6l --only-binary=:all: --target={{ pip_target.stdout }}"
     when: (pip_packages['opencv-python'] is undefined) or (pip_packages['opencv-python'] != '3.4.7.28')
 
   - name: install tensorflow
     pip:
-      name: "https://www.piwheels.hostedpi.com/simple/tensorflow/tensorflow-1.13.1-cp37-none-linux_armv6l.whl"
+      name: tensorflow==1.13.1
       extra_args: "--no-deps --no-cache-dir --platform=linux_armv6l --only-binary=:all: --target={{ pip_target.stdout }}"
     when: (pip_packages['tensorflow'] is undefined) or (pip_packages['tensorflow'] != '1.13.1')
 
