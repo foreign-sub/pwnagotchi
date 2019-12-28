@@ -15,6 +15,14 @@ jobs:
     - name: Get packer-builder sum
       run: |
         curl https://github.com/solo-io/packer-builder-arm-image/raw/master/go.sum -o go.sum
+    - name: Init apt cache
+      id: apt-cache
+      uses: actions/cache@v1
+      with:
+        path: /var/cache/apt
+        key: ${{ runner.os }}-go-${{ hashFiles('/var/cache/apt') }}
+        restore-keys: |
+          ${{ runner.os }}-apt-
     - name: Init go cache
       id: go-cache
       uses: actions/cache@v1
@@ -35,8 +43,8 @@ jobs:
         VERSION_FILE=pwnagotchi/__init__.py
         PWN_VERSION=v$(cat $VERSION_FILE | grep version | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
         echo "::set-env name=PWN_VERSION::${PWN_VERSION}"
-        PWN_DESC=$(git describe --tags --abbrev=0 @^)
-        PWN_LOG="$(git log --pretty=format:'%h %s%n' ${PWN_DESC}..@)"
+        PWN_DESC="$(git describe --tags --abbrev=0 @^)"
+        PWN_LOG="$(git log --pretty=format:'%h %s' ${PWN_DESC}..@)"
         echo "::set-env name=PWN_LOG::'${PWN_LOG}'"
     - name: Install required packages
       run: |
@@ -58,7 +66,6 @@ jobs:
         fi
     - name: Make image for ${{ env.PWN_VERSION }}
       run: |
-        #echo "skipping image"
         sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
     - name: Set cache permissions
       run: |
