@@ -52,7 +52,6 @@ jobs:
     - name: Install required packages
       run: |
         export TERM=linux
-        sudo apt clean
         sudo apt-get update
         sudo apt-get install kpartx qemu-user-static
     - name: Make install for ${{ env.PWN_VERSION }}
@@ -70,8 +69,7 @@ jobs:
         fi
     - name: Make image for ${{ env.PWN_VERSION }}
       run: |
-        # disable image
-        #sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
+        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
     - name: Set cache permissions
       run: |
         sudo chmod -R 777 /var/cache/apt/archives
