@@ -7,14 +7,9 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v1
-    - name: Get packer-builder sum
-      run: |
-        curl https://github.com/solo-io/packer-builder-arm-image/raw/master/go.sum -o go.sum
     - name: Init apt cache
       id: apt-cache
       uses: actions/cache@v1
@@ -23,6 +18,21 @@ jobs:
         key: ${{ runner.os }}-apt-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-apt-
+    - name: Init packer-builder cache
+      id: builder-cache
+      uses: actions/cache@v1
+      with:
+        path: /tmp/packer-builder-arm-image
+        key: cache-${{ runner.os }}-packer-builder-arm-image-${{ github.sha }}
+        restore-keys: cache-${{ runner.os }}-packer-builder-arm-image-
+    - name: Get packer-builder go.sum
+      run: |
+        if [ -d "/tmp/packer-builder-arm-image" ]; then
+          echo "@ Using go.sum from builder cache"
+          cp /tmp/packer-builder-arm-image/go.sum go.sum
+        else
+          curl https://github.com/solo-io/packer-builder-arm-image/raw/master/go.sum -o go.sum
+        fi
     - name: Init go cache
       id: go-cache
       uses: actions/cache@v1
@@ -31,21 +41,14 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
-    - name: Init packer-builder cache
-      id: builder-cache
-      uses: actions/cache@v1
-      with:
-        path: /tmp/packer-builder-arm-image
-        key: cache-${{ runner.os }}-packer-builder-arm-image-${{ github.sha }}
-        restore-keys: cache-${{ runner.os }}-packer-builder-arm-image-
     - name: Get version
       run: |
         VERSION_FILE=pwnagotchi/__init__.py
         PWN_VERSION=v$(cat $VERSION_FILE | grep version | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
         echo "::set-env name=PWN_VERSION::${PWN_VERSION}"
         PWN_DESC="$(git describe --tags --abbrev=0 @^)"
-        PWN_LOG="$(git log --pretty=format:'%h %s' ${PWN_DESC}..@)"
-        echo "::set-env name=PWN_LOG::'${PWN_LOG}'"
+        PWN_LOG="$(git log --pretty=format:'%h %s \n' ${PWN_DESC}..@)"
+        echo "::set-env name=PWN_LOG::${PWN_LOG}"
     - name: Install required packages
       run: |
         export TERM=linux
