@@ -1,21 +1,24 @@
-from flask import render_template, render_template_string
-from flask import redirect
+import _thread
+import base64
+import json
+import logging
+import os
+import secrets
+from functools import wraps
+
 from flask import abort
 from flask import jsonify
+from flask import redirect
+from flask import render_template
+from flask import render_template_string
 from flask import request
 from flask import Response
 from flask import send_file
-from pwnagotchi import plugins
-import pwnagotchi.ui.web as web
-import pwnagotchi.grid as grid
+
 import pwnagotchi
-import logging
-import os
-import base64
-import _thread
-import secrets
-import json
-from functools import wraps
+import pwnagotchi.grid as grid
+import pwnagotchi.ui.web as web
+from pwnagotchi import plugins
 
 # https://stackoverflow.com/questions/14888799/disable-console-messages-in-flask-server
 logging.getLogger("werkzeug").setLevel(logging.ERROR)

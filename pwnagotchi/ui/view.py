@@ -1,20 +1,20 @@
 import _thread
-from threading import Lock
-import time
 import logging
 import random
+import time
+from threading import Lock
+
 from PIL import ImageDraw
 
 import pwnagotchi
-import pwnagotchi.utils as utils
 import pwnagotchi.plugins as plugins
-from pwnagotchi.voice import Voice
-
-import pwnagotchi.ui.web as web
-import pwnagotchi.ui.fonts as fonts
 import pwnagotchi.ui.faces as faces
+import pwnagotchi.ui.fonts as fonts
+import pwnagotchi.ui.web as web
+import pwnagotchi.utils as utils
 from pwnagotchi.ui.components import *
 from pwnagotchi.ui.state import State
+from pwnagotchi.voice import Voice
 
 WHITE = 0xFF
 BLACK = 0x00
