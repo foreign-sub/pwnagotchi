@@ -20,7 +20,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: /var/cache/apt
-        key: ${{ runner.os }}-go-${{ hashFiles('/var/cache/apt') }}
+        key: ${{ runner.os }}-apt-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-apt-
     - name: Init go cache
