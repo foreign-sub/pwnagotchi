@@ -87,7 +87,8 @@ class View(object):
             _thread.start_new_thread(self._refresh_handler, ())
             self._ignore_changes = ()
         else:
-            logging.warning("ui.fps is 0, the display will only update for major changes")
+            logging.warning(
+                "ui.fps is 0, the display will only update for major changes")
             self._ignore_changes = ('uptime', 'name')
 
         ROOT = self
@@ -122,7 +123,8 @@ class View(object):
         while True:
             try:
                 name = self._state.get('name')
-                self.set('name', name.rstrip('█').strip() if '█' in name else (name + ' █'))
+                self.set('name', name.rstrip('█').strip()
+                         if '█' in name else (name + ' █'))
                 self.update()
             except Exception as e:
                 logging.warning("non fatal error while updating view: %s" % e)
@@ -136,7 +138,8 @@ class View(object):
         return self._state.get(key)
 
     def on_starting(self):
-        self.set('status', self._voice.on_starting() + ("\n(v%s)" % pwnagotchi.version))
+        self.set('status', self._voice.on_starting() +
+                 ("\n(v%s)" % pwnagotchi.version))
         self.set('face', faces.AWAKE)
 
     def on_ai_ready(self):
@@ -147,13 +150,14 @@ class View(object):
 
     def on_manual_mode(self, last_session):
         self.set('mode', 'MANU')
-        self.set('face', faces.SAD if (last_session.epochs > 3 and last_session.handshakes == 0) else faces.HAPPY)
+        self.set('face', faces.SAD if (last_session.epochs >
+                                       3 and last_session.handshakes == 0) else faces.HAPPY)
         self.set('status', self._voice.on_last_session_data(last_session))
         self.set('epoch', "%04d" % last_session.epochs)
         self.set('uptime', last_session.duration)
         self.set('channel', '-')
         self.set('aps', "%d" % last_session.associated)
-        self.set('shakes', '%d (%s)' % (last_session.handshakes, \
+        self.set('shakes', '%d (%s)' % (last_session.handshakes,
                                         utils.total_unique_handshakes(self._config['bettercap']['handshakes'])))
         self.set_closest_peer(last_session.last_peer, last_session.peers)
         self.update()
@@ -198,7 +202,8 @@ class View(object):
 
             name = '▌' * num_bars
             name += '│' * (4 - num_bars)
-            name += ' %s %d (%d)' % (peer.name(), peer.pwnd_run(), peer.pwnd_total())
+            name += ' %s %d (%d)' % (peer.name(),
+                                     peer.pwnd_run(), peer.pwnd_total())
 
             if num_total > 1:
                 if num_total > 9000:
@@ -263,9 +268,11 @@ class View(object):
                     self.set('status', self._voice.on_waiting(int(secs)))
                     good_mood = self._agent.in_good_mood()
                     if step % 2 == 0:
-                        self.set('face', faces.LOOK_R_HAPPY if good_mood else faces.LOOK_R)
+                        self.set(
+                            'face', faces.LOOK_R_HAPPY if good_mood else faces.LOOK_R)
                     else:
-                        self.set('face', faces.LOOK_L_HAPPY if good_mood else faces.LOOK_L)
+                        self.set(
+                            'face', faces.LOOK_L_HAPPY if good_mood else faces.LOOK_L)
 
             time.sleep(part)
             secs -= part
@@ -365,7 +372,8 @@ class View(object):
             state = self._state
             changes = state.changes(ignore=self._ignore_changes)
             if force or len(changes):
-                self._canvas = Image.new('1', (self._width, self._height), WHITE)
+                self._canvas = Image.new(
+                    '1', (self._width, self._height), WHITE)
                 drawer = ImageDraw.Draw(self._canvas)
 
                 plugins.on('ui_update', self)
