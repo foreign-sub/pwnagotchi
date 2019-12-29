@@ -72,11 +72,6 @@ jobs:
         sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
     - name: Set cache permissions
       run: |
-        FILE=go.sum
-        if [ -f "${FILE}" ]; then
-          rm ${FILE}
-          echo "${FILE} removed"
-        fi
         sudo chmod -R 777 /tmp/packer-builder-arm-image
         sudo chmod -R 777 ~/go/pkg/mod
     - name: Create Release
