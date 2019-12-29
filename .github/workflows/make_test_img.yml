@@ -10,14 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Init apt cache
-      id: apt-cache
-      uses: actions/cache@v1
-      with:
-        path: /var/cache/apt
-        key: ${{ runner.os }}-apt-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-apt-
     - name: Init packer-builder cache
       id: builder-cache
       uses: actions/cache@v1
@@ -72,11 +64,6 @@ jobs:
         sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
     - name: Set cache permissions
       run: |
-        FILE=go.sum
-        if [ -f "${FILE}" ]; then
-          rm ${FILE}
-          echo "${FILE} removed"
-        fi
         sudo chmod -R 777 /tmp/packer-builder-arm-image
         sudo chmod -R 777 ~/go/pkg/mod
     - name: Create Release
