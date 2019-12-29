@@ -1,0 +1,72 @@
+name: Make test build
+
+on:
+  push:
+    branches:
+    - master
+    - local
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Init packer-builder cache
+      id: builder-cache
+      uses: actions/cache@v1
+      with:
+        path: /tmp/packer-builder-arm-image
+        key: cache-${{ runner.os }}-packer-builder-arm-image-${{ github.sha }}
+        restore-keys: cache-${{ runner.os }}-packer-builder-arm-image-
+    - name: Get packer-builder go.sum
+      run: |
+        if [ -d "/tmp/packer-builder-arm-image" ]; then
+          echo "@ Using go.sum from builder cache"
+          cp /tmp/packer-builder-arm-image/go.sum go.sum
+        else
+          curl https://github.com/solo-io/packer-builder-arm-image/raw/master/go.sum -o go.sum
+        fi
+    - name: Init go cache
+      id: go-cache
+      uses: actions/cache@v1
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    - name: Get version
+      run: |
+        VERSION_FILE=pwnagotchi/__init__.py
+        PWN_VERSION=v$(cat $VERSION_FILE | grep version | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
+        echo "::set-env name=PWN_VERSION::${PWN_VERSION}"
+        PWN_DESC="$(git describe --tags --abbrev=0 @^)"
+        PWN_LOG="$(git log --pretty=format:'%h %s \n' ${PWN_DESC}..@)"
+        echo "::set-env name=PWN_LOG::${PWN_LOG}"
+    - name: Install required packages
+      run: |
+        export TERM=linux
+        sudo apt-get update
+        sudo apt-get install kpartx qemu-user-static
+    - name: Make install for ${{ env.PWN_VERSION }}
+      run: |
+        if [ -d "/tmp/packer-builder-arm-image" ]; then
+          PACKER_VERSION="1.4.5"
+          curl https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o /tmp/packer.zip
+          unzip /tmp/packer.zip -d /tmp
+          sudo mv /tmp/packer /usr/bin/packer
+          cd /tmp/packer-builder-arm-image && git pull
+          cd /tmp/packer-builder-arm-image && go get -d ./... && go build
+          sudo cp /tmp/packer-builder-arm-image/packer-builder-arm-image /usr/bin
+        else
+          sudo -E env "PATH=$PATH" make install
+        fi
+    - name: Make image for ${{ env.PWN_VERSION }}
+      run: |
+        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
+    - name: Set cache permissions
+      run: |
+        sudo chmod -R 777 /tmp/packer-builder-arm-image
+        sudo chmod -R 777 ~/go/pkg/mod
+    - name: Build done
+      run: |
+        echo "Build done"
