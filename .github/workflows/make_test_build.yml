@@ -4,20 +4,13 @@ on:
   push:
     branches:
     - master
+    - local
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Init apt cache
-      id: apt-cache
-      uses: actions/cache@v1
-      with:
-        path: /var/cache/apt/archives
-        key: ${{ runner.os }}-apt-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-apt-
     - name: Init packer-builder cache
       id: builder-cache
       uses: actions/cache@v1
@@ -72,7 +65,6 @@ jobs:
         sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
     - name: Set cache permissions
       run: |
-        sudo chmod -R 777 /var/cache/apt/archives
         sudo chmod -R 777 /tmp/packer-builder-arm-image
         sudo chmod -R 777 ~/go/pkg/mod
     - name: Build done
