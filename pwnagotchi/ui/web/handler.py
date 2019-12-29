@@ -1,3 +1,14 @@
+from flask import render_template, render_template_string
+from flask import redirect
+from flask import abort
+from flask import jsonify
+from flask import request
+from flask import Response
+from flask import send_file
+from pwnagotchi import plugins
+import pwnagotchi.ui.web as web
+import pwnagotchi.grid as grid
+import pwnagotchi
 import logging
 import os
 import base64
@@ -10,19 +21,6 @@ from functools import wraps
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
 os.environ['WERKZEUG_RUN_MAIN'] = 'true'
 
-import pwnagotchi
-import pwnagotchi.grid as grid
-import pwnagotchi.ui.web as web
-from pwnagotchi import plugins
-
-from flask import send_file
-from flask import Response
-from flask import request
-from flask import jsonify
-from flask import abort
-from flask import redirect
-from flask import render_template, render_template_string
-
 
 class Handler:
     def __init__(self, config, agent, app):
@@ -33,18 +31,27 @@ class Handler:
         self._app.add_url_rule('/', 'index', self.with_auth(self.index))
         self._app.add_url_rule('/ui', 'ui', self.with_auth(self.ui))
 
-        self._app.add_url_rule('/shutdown', 'shutdown', self.with_auth(self.shutdown), methods=['POST'])
-        self._app.add_url_rule('/reboot', 'reboot', self.with_auth(self.reboot), methods=['POST'])
-        self._app.add_url_rule('/restart', 'restart', self.with_auth(self.restart), methods=['POST'])
+        self._app.add_url_rule('/shutdown', 'shutdown',
+                               self.with_auth(self.shutdown), methods=['POST'])
+        self._app.add_url_rule('/reboot', 'reboot',
+                               self.with_auth(self.reboot), methods=['POST'])
+        self._app.add_url_rule('/restart', 'restart',
+                               self.with_auth(self.restart), methods=['POST'])
 
         # inbox
         self._app.add_url_rule('/inbox', 'inbox', self.with_auth(self.inbox))
-        self._app.add_url_rule('/inbox/profile', 'inbox_profile', self.with_auth(self.inbox_profile))
-        self._app.add_url_rule('/inbox/peers', 'inbox_peers', self.with_auth(self.inbox_peers))
-        self._app.add_url_rule('/inbox/<id>', 'show_message', self.with_auth(self.show_message))
-        self._app.add_url_rule('/inbox/<id>/<mark>', 'mark_message', self.with_auth(self.mark_message))
-        self._app.add_url_rule('/inbox/new', 'new_message', self.with_auth(self.new_message))
-        self._app.add_url_rule('/inbox/send', 'send_message', self.with_auth(self.send_message), methods=['POST'])
+        self._app.add_url_rule(
+            '/inbox/profile', 'inbox_profile', self.with_auth(self.inbox_profile))
+        self._app.add_url_rule('/inbox/peers', 'inbox_peers',
+                               self.with_auth(self.inbox_peers))
+        self._app.add_url_rule('/inbox/<id>', 'show_message',
+                               self.with_auth(self.show_message))
+        self._app.add_url_rule(
+            '/inbox/<id>/<mark>', 'mark_message', self.with_auth(self.mark_message))
+        self._app.add_url_rule('/inbox/new', 'new_message',
+                               self.with_auth(self.new_message))
+        self._app.add_url_rule('/inbox/send', 'send_message',
+                               self.with_auth(self.send_message), methods=['POST'])
 
         # plugins
         plugins_with_auth = self.with_auth(self.plugins)
@@ -52,12 +59,13 @@ class Handler:
                                defaults={'name': None, 'subpath': None})
         self._app.add_url_rule('/plugins/<name>', 'plugins', plugins_with_auth, strict_slashes=False,
                                methods=['GET', 'POST'], defaults={'subpath': None})
-        self._app.add_url_rule('/plugins/<name>/<path:subpath>', 'plugins', plugins_with_auth, methods=['GET', 'POST'])
+        self._app.add_url_rule('/plugins/<name>/<path:subpath>',
+                               'plugins', plugins_with_auth, methods=['GET', 'POST'])
 
     def _check_creds(self, u, p):
         # trying to be timing attack safe
         return secrets.compare_digest(u, self._config['username']) and \
-               secrets.compare_digest(p, self._config['password'])
+            secrets.compare_digest(p, self._config['password'])
 
     def with_auth(self, f):
         @wraps(f)
@@ -144,9 +152,11 @@ class Handler:
 
             message = grid.inbox_message(id)
             if message['data']:
-                message['data'] = base64.b64decode(message['data']).decode("utf-8")
+                message['data'] = base64.b64decode(
+                    message['data']).decode("utf-8")
         except Exception as e:
-            logging.exception('error while reading pwnmail message %d' % int(id))
+            logging.exception(
+                'error while reading pwnmail message %d' % int(id))
             error = str(e)
 
         return render_template('message.html',
@@ -207,11 +217,11 @@ class Handler:
 
     # serve a message and reboot the unit
     def reboot(self):
-          try:
-              return render_template('status.html', title=pwnagotchi.name(), go_back_after=60,
-                                     message='Rebooting ...')
-          finally:
-              _thread.start_new_thread(pwnagotchi.reboot, ())
+        try:
+            return render_template('status.html', title=pwnagotchi.name(), go_back_after=60,
+                                   message='Rebooting ...')
+        finally:
+            _thread.start_new_thread(pwnagotchi.reboot, ())
 
     # serve a message and restart the unit in the other mode
     def restart(self):
