@@ -55,41 +55,34 @@
         install:
           - vim
           - screen
-          - gfortran
           - golang
           - git
           - build-essential
-          - python-scipy
           - python3-pybind11
+          - python3-pil
           - python3-pip
           - python3-mpi4py
           - python3-smbus
           - unzip
           - gawk
           - libopenmpi-dev
-          - liblapack-dev
+          - libgfortran5
           - liblapack3
           - libatlas-base-dev
-          - libblas-dev
-          - libblas3
           - libjasper-dev
+          - libjpeg-dev
           - libqtgui4
           - libqt4-test
           - libopenjp2-7
-          - libtiff5
           - tcpdump
           - lsof
-          - libilmbase23
-          - libopenexr23
           - libgstreamer1.0-0
-          - libavcodec58
-          - libavformat58
-          - libswscale5
           - libpcap-dev
           - libusb-1.0-0-dev
           - libnetfilter-queue-dev
           - libopenmpi3
           - dphys-swapfile
+          # kalipi
           - kalipi-kernel
           - kalipi-bootloader
           - kalipi-re4son-firmware
@@ -106,9 +99,24 @@
           - bc
           - fonts-freefont-ttf
           - fbi
-          - python3-flask
-          - python3-flask-cors
-          - python3-flaskext.wtf
+          # opencv
+          - libatlas3-base
+          - libwebp6
+          - libtiff5
+          - libjasper1
+          - libilmbase23
+          - libopenexr23
+          - libavcodec58
+          - libavformat58
+          - libavutil56
+          - libswscale5
+          - libgtk-3-0
+          - libpangocairo-1.0-0
+          - libpango-1.0-0
+          - libatk1.0-0
+          - libcairo-gobject2
+          - libcairo2
+          - libgdk-pixbuf2.0-0
 
   tasks:
   - name: change hostname
@@ -214,9 +222,6 @@
       regexp: "#EPD_SIZE=2.0"
       line: "EPD_SIZE=2.0"
 
-  - name: update setuptools and wheel
-    command: python3 -m pip install --user --upgrade setuptools wheel pybind11
-
   - name: collect python pip package list
     command: "pip3 list"
     register: pip_output
@@ -247,13 +252,13 @@
 
   - name: install opencv-python
     pip:
-      name: "https://www.piwheels.hostedpi.com/simple/opencv-python/opencv_python-3.4.3.18-cp37-cp37m-linux_armv6l.whl"
+      name: opencv-python==3.4.7.28
       extra_args: "--no-deps --no-cache-dir --platform=linux_armv6l --only-binary=:all: --target={{ pip_target.stdout }}"
-    when: (pip_packages['opencv-python'] is undefined) or (pip_packages['opencv-python'] != '3.4.3.18')
+    when: (pip_packages['opencv-python'] is undefined) or (pip_packages['opencv-python'] != '3.4.7.28')
 
   - name: install tensorflow
     pip:
-      name: "https://www.piwheels.hostedpi.com/simple/tensorflow/tensorflow-1.13.1-cp37-none-linux_armv6l.whl"
+      name: tensorflow==1.13.1
       extra_args: "--no-deps --no-cache-dir --platform=linux_armv6l --only-binary=:all: --target={{ pip_target.stdout }}"
     when: (pip_packages['tensorflow'] is undefined) or (pip_packages['tensorflow'] != '1.13.1')
 
@@ -270,7 +275,7 @@
   - name: install pwnagotchi wheel and dependencies
     pip:
       name: "{{ lookup('fileglob', '/usr/local/src/pwnagotchi/dist/pwnagotchi*.whl') }}"
-      extra_args: "--no-deps -v --platform=linux_armv6l --only-binary=:all: --target={{ pip_target.stdout }}" #"--no-cache-dir"
+      extra_args: "--no-cache-dir"
     when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
 
   - name: download and install pwngrid
