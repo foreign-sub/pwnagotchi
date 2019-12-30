@@ -14,10 +14,6 @@ install:
 image:
 	echo "Building image for $(PWN_HOSTNAME) @ $(PWN_VERSION)"
 	cd builder && sudo /usr/bin/packer build -var "pwn_hostname=$(PWN_HOSTNAME)" -var "pwn_version=$(PWN_VERSION)" pwnagotchi.json
-	#sudo apt-get install -y zerofree
-	device="$(sudo losetup --partscan --show --find builder/output-pwnagotchi/image)"
-	sudo zerofree "${device}p2"
-	sudo losetup --detach "$device"
 	sudo mv builder/output-pwnagotchi/image pwnagotchi-raspbian-lite-$(PWN_VERSION).img
 	sudo sha256sum pwnagotchi-raspbian-lite-$(PWN_VERSION).img > pwnagotchi-raspbian-lite-$(PWN_VERSION).sha256
 	sudo zip pwnagotchi-raspbian-lite-$(PWN_VERSION).zip pwnagotchi-raspbian-lite-$(PWN_VERSION).sha256 pwnagotchi-raspbian-lite-$(PWN_VERSION).img
