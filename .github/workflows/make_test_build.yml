@@ -3,7 +3,7 @@ name: make test build
 on:
   push:
     branches:
-    - master
+    - local
 
 jobs:
   build:
