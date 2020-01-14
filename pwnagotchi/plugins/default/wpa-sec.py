@@ -1,11 +1,13 @@
-import os
 import logging
-import requests
+import os
 from datetime import datetime
-from threading import Lock
-from pwnagotchi.utils import StatusFile
-from pwnagotchi import plugins
 from json.decoder import JSONDecodeError
+from threading import Lock
+
+import requests
+
+from pwnagotchi import plugins
+from pwnagotchi.utils import StatusFile
 
 
 class WpaSec(plugins.Plugin):

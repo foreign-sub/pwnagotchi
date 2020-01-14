@@ -1,11 +1,13 @@
-import os
 import logging
+import os
 import re
-import requests
-from threading import Lock
-from pwnagotchi.utils import StatusFile
-import pwnagotchi.plugins as plugins
 from json.decoder import JSONDecodeError
+from threading import Lock
+
+import requests
+
+import pwnagotchi.plugins as plugins
+from pwnagotchi.utils import StatusFile
 
 
 class OnlineHashCrack(plugins.Plugin):

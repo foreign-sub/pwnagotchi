@@ -1,19 +1,19 @@
 #!/usr/bin/python3
-import logging
 import argparse
-import time
-import yaml
+import logging
 import signal
+import time
+
+import yaml
 
 import pwnagotchi
 import pwnagotchi.grid as grid
-import pwnagotchi.utils as utils
 import pwnagotchi.plugins as plugins
-
-from pwnagotchi.identity import KeyPair
-from pwnagotchi.agent import Agent
-from pwnagotchi.ui.display import Display
+import pwnagotchi.utils as utils
 from pwnagotchi import restart
+from pwnagotchi.agent import Agent
+from pwnagotchi.identity import KeyPair
+from pwnagotchi.ui.display import Display
 
 
 def do_clear(display):

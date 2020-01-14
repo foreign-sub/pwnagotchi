@@ -1,19 +1,19 @@
-import time
+import _thread
 import json
+import logging
 import os
 import re
-import logging
-import _thread
+import time
 
 import pwnagotchi
-import pwnagotchi.utils as utils
 import pwnagotchi.plugins as plugins
-from pwnagotchi.ui.web.server import Server
-from pwnagotchi.automata import Automata
-from pwnagotchi.log import LastSession
-from pwnagotchi.bettercap import Client
-from pwnagotchi.mesh.utils import AsyncAdvertiser
+import pwnagotchi.utils as utils
 from pwnagotchi.ai.train import AsyncTrainer
+from pwnagotchi.automata import Automata
+from pwnagotchi.bettercap import Client
+from pwnagotchi.log import LastSession
+from pwnagotchi.mesh.utils import AsyncAdvertiser
+from pwnagotchi.ui.web.server import Server
 
 RECOVERY_DATA_FILE = "/root/.pwnagotchi-recovery"
 

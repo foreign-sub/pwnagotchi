@@ -1,18 +1,19 @@
-from datetime import datetime
-from enum import Enum
-import logging
+import contextlib
 import glob
+import gzip
+import json
+import logging
 import os
 import re
-import time
-import subprocess
-import yaml
-import json
 import shutil
-import gzip
-import contextlib
+import subprocess
 import tempfile
+import time
+from datetime import datetime
+from enum import Enum
+
 import toml
+import yaml
 
 import pwnagotchi
 
