@@ -28,10 +28,10 @@ class NetPos(plugins.Plugin):
         self.lock = threading.Lock()
 
     def on_loaded(self):
-        if "api_key" not in self.options or (
-            "api_key" in self.options and not self.options["api_key"]
-        ):
-            logging.error("NET-POS: api_key isn't set. Can't use mozilla's api.")
+        if "api_key" not in self.options or ("api_key" in self.options
+                                             and not self.options["api_key"]):
+            logging.error(
+                "NET-POS: api_key isn't set. Can't use mozilla's api.")
             return
 
         self.ready = True
@@ -55,7 +55,8 @@ class NetPos(plugins.Plugin):
             if self.ready:
                 config = agent.config()
                 display = agent.view()
-                reported = self.report.data_field_or("reported", default=list())
+                reported = self.report.data_field_or("reported",
+                                                     default=list())
                 handshake_dir = config["bettercap"]["handshakes"]
 
                 all_files = os.listdir(handshake_dir)
@@ -64,7 +65,8 @@ class NetPos(plugins.Plugin):
                     for filename in all_files
                     if filename.endswith(".net-pos.json")
                 ]
-                new_np_files = set(all_np_files) - set(reported) - set(self.skip)
+                new_np_files = set(all_np_files) - set(reported) - set(
+                    self.skip)
 
                 if new_np_files:
                     logging.debug(
@@ -78,7 +80,8 @@ class NetPos(plugins.Plugin):
                     display.update(force=True)
                     for idx, np_file in enumerate(new_np_files):
 
-                        geo_file = np_file.replace(".net-pos.json", ".geo.json")
+                        geo_file = np_file.replace(".net-pos.json",
+                                                   ".geo.json")
                         if os.path.exists(geo_file):
                             # got already the position
                             reported.append(np_file)
@@ -86,11 +89,11 @@ class NetPos(plugins.Plugin):
                             continue
 
                         try:
-                            geo_data = self._get_geo_data(np_file)  # returns json obj
+                            geo_data = self._get_geo_data(
+                                np_file)  # returns json obj
                         except requests.exceptions.RequestException as req_e:
-                            logging.error(
-                                "NET-POS: %s - RequestException: %s", np_file, req_e
-                            )
+                            logging.error("NET-POS: %s - RequestException: %s",
+                                          np_file, req_e)
                             self.skip += np_file
                             continue
                         except json.JSONDecodeError as js_e:
@@ -102,7 +105,8 @@ class NetPos(plugins.Plugin):
                             os.remove(np_file)
                             continue
                         except OSError as os_e:
-                            logging.error("NET-POS: %s - OSError: %s", np_file, os_e)
+                            logging.error("NET-POS: %s - OSError: %s", np_file,
+                                          os_e)
                             self.skip += np_file
                             continue
 
@@ -138,13 +142,14 @@ class NetPos(plugins.Plugin):
         netpos = dict()
         netpos["wifiAccessPoints"] = list()
         # 6 seems a good number to save a wifi networks location
-        for access_point in sorted(aps, key=lambda i: i["rssi"], reverse=True)[:6]:
-            netpos["wifiAccessPoints"].append(
-                {
-                    "macAddress": access_point["mac"],
-                    "signalStrength": access_point["rssi"],
-                }
-            )
+        for access_point in sorted(aps, key=lambda i: i["rssi"],
+                                   reverse=True)[:6]:
+            netpos["wifiAccessPoints"].append({
+                "macAddress":
+                access_point["mac"],
+                "signalStrength":
+                access_point["rssi"],
+            })
         return netpos
 
     def _get_geo_data(self, path, timeout=30):

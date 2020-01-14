@@ -37,8 +37,7 @@ def do_manual_mode(agent):
                 agent.last_session.avg_reward,
                 agent.last_session.min_reward,
                 agent.last_session.max_reward,
-            )
-        )
+            ))
 
     while True:
         display.on_manual_mode(agent.last_session)
@@ -64,7 +63,8 @@ def do_auto_mode(agent):
                 agent.set_channel(ch)
 
                 if not agent.is_stale() and agent.any_activity():
-                    logging.info("%d access points on channel %d" % (len(aps), ch))
+                    logging.info("%d access points on channel %d" %
+                                 (len(aps), ch))
 
                 # for each ap on this channel
                 for ap in aps:
@@ -107,7 +107,8 @@ if __name__ == "__main__":
         action="store",
         dest="user_config",
         default="/etc/pwnagotchi/config.toml",
-        help="If this file exists, configuration will be merged and this will override default values.",
+        help=
+        "If this file exists, configuration will be merged and this will override default values.",
     )
 
     parser.add_argument(
