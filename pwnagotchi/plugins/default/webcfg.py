@@ -458,10 +458,10 @@ def serializer(obj):
 
 
 class WebConfig(plugins.Plugin):
-    __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '1.0.0'
-    __license__ = 'GPL3'
-    __description__ = 'This plugin allows the user to make runtime changes.'
+    __author__ = "33197631+dadav@users.noreply.github.com"
+    __version__ = "1.0.0"
+    __license__ = "GPL3"
+    __description__ = "This plugin allows the user to make runtime changes."
 
     def __init__(self):
         self.ready = False
@@ -501,7 +501,7 @@ class WebConfig(plugins.Plugin):
             if path == "save-config":
                 try:
                     parsed_toml = toml.loads(request.get_json())
-                    with open('/etc/pwnagotchi/config.toml') as config_file:
+                    with open("/etc/pwnagotchi/config.toml") as config_file:
                         toml.dump(parsed_toml, config_file)
 
                     _thread.start_new_thread(restart, (self.mode,))
