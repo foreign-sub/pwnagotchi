@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from setuptools import setup, find_packages
-import os
 import glob
-import shutil
+import os
 import re
+import shutil
+
+from setuptools import find_packages
+from setuptools import setup
 
 
 def install_file(source_filename, dest_filename):

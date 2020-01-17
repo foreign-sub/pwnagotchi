@@ -1,8 +1,9 @@
-import subprocess
-import socket
-import requests
 import json
 import logging
+import socket
+import subprocess
+
+import requests
 
 import pwnagotchi
 

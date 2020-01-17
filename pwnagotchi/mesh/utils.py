@@ -3,10 +3,10 @@ import logging
 import time
 
 import pwnagotchi
-import pwnagotchi.utils as utils
-import pwnagotchi.ui.faces as faces
-import pwnagotchi.plugins as plugins
 import pwnagotchi.grid as grid
+import pwnagotchi.plugins as plugins
+import pwnagotchi.ui.faces as faces
+import pwnagotchi.utils as utils
 from pwnagotchi.mesh.peer import Peer
 
 

@@ -1,12 +1,12 @@
-import os
 import logging
-import time
+import os
 import re
-
-import pwnagotchi.ui.view as view
-import pwnagotchi
+import time
 
 from _version import __version__
+
+import pwnagotchi
+import pwnagotchi.ui.view as view
 
 _name = None
 
