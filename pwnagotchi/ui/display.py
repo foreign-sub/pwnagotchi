@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 import threading
 
 import pwnagotchi.plugins as plugins

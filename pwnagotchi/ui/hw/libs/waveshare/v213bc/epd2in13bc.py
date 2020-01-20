@@ -26,10 +26,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
-
 import logging
-from . import epdconfig
+
 from PIL import Image
+
+from . import epdconfig
 
 # Display resolution
 EPD_WIDTH = 104

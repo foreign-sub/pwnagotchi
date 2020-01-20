@@ -1,12 +1,14 @@
-import pwnagotchi.plugins as plugins
+import datetime
+import json
 import logging
 import os
-import json
 import re
-import datetime
-from flask import Response
 from functools import lru_cache
+
 from dateutil.parser import parse
+from flask import Response
+
+import pwnagotchi.plugins as plugins
 
 """
     webgpsmap shows existing position data stored in your /handshakes/ directory

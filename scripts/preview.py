@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-from PIL import Image
-from pwnagotchi.ui.display import Display
-import pwnagotchi.ui.faces as faces
-import sys
-import os
 import argparse
-import yaml
+import os
+import sys
+
 import toml
+import yaml
+from PIL import Image
+
+import pwnagotchi.ui.faces as faces
+from pwnagotchi.ui.display import Display
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "../"))
 

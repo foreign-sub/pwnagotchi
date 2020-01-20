@@ -1,13 +1,12 @@
+import _thread
+import contextlib
+import logging
 import os
 import re
-import tempfile
-import contextlib
 import shutil
-import _thread
-import logging
-
-from time import sleep
+import tempfile
 from distutils.dir_util import copy_tree
+from time import sleep
 
 mounts = list()
 

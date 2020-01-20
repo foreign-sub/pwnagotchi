@@ -1,5 +1,7 @@
 import logging
+
 import requests
+
 import pwnagotchi.plugins as plugins
 
 """

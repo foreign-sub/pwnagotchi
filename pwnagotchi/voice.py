@@ -1,6 +1,6 @@
-import random
 import gettext
 import os
+import random
 
 
 class Voice:

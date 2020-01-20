@@ -1,11 +1,13 @@
-import logging
-import json
-import toml
 import _thread
-import pwnagotchi.plugins as plugins
-from pwnagotchi import restart
+import json
+import logging
+
+import toml
 from flask import abort
 from flask import render_template_string
+
+import pwnagotchi.plugins as plugins
+from pwnagotchi import restart
 
 INDEX = """
 <html>

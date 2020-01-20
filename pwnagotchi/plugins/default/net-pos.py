@@ -1,9 +1,11 @@
-import logging
 import json
+import logging
 import os
 import threading
-import requests
 import time
+
+import requests
+
 import pwnagotchi.plugins as plugins
 from pwnagotchi.utils import StatusFile
 

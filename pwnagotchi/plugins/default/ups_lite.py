@@ -10,11 +10,11 @@
 import logging
 import struct
 
+import pwnagotchi
+import pwnagotchi.plugins as plugins
+import pwnagotchi.ui.fonts as fonts
 from pwnagotchi.ui.components import LabeledValue
 from pwnagotchi.ui.view import BLACK
-import pwnagotchi.ui.fonts as fonts
-import pwnagotchi.plugins as plugins
-import pwnagotchi
 
 
 # TODO: add enable switch in config.yml an cleanup all to the best place

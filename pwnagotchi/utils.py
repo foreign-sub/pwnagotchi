@@ -1,15 +1,16 @@
+import glob
+import json
+import logging
+import os
+import shutil
+import subprocess
+import sys
+import time
 from datetime import datetime
 from enum import Enum
-import logging
-import glob
-import os
-import time
-import subprocess
-import yaml
-import json
-import shutil
+
 import toml
-import sys
+import yaml
 
 import pwnagotchi
 from pwnagotchi.fs import ensure_write
