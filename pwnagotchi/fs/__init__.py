@@ -45,11 +45,11 @@ def setup_mounts(config):
     for name, options in fs_cfg["mounts"].items():
         if not options["enabled"]:
             continue
-        logging.debug("[FS] Trying to setup mount %s (%s)", name, options["mount"])
+        logging.debug("[FS] Trying to setup mount %s (%s)", name,
+                      options["mount"])
         size, unit = re.match(r"(\d+)([a-zA-Z]+)", options["size"]).groups()
-        target = os.path.join(
-            "/run/pwnagotchi/disk/", os.path.basename(options["mount"])
-        )
+        target = os.path.join("/run/pwnagotchi/disk/",
+                              os.path.basename(options["mount"]))
 
         is_mounted = is_mountpoint(target)
         logging.debug(
@@ -84,11 +84,10 @@ def setup_mounts(config):
                 options["mount"],
                 interval,
             )
-            _thread.start_new_thread(m.daemonize, (interval,))
+            _thread.start_new_thread(m.daemonize, (interval, ))
         else:
-            logging.debug(
-                "[FS] Not syncing %s, because interval is 0", options["mount"]
-            )
+            logging.debug("[FS] Not syncing %s, because interval is 0",
+                          options["mount"])
 
         mounts.append(m)
 
@@ -107,15 +106,15 @@ class MemoryFS:
         return open("/sys/class/zram-control/hot_add", "rt").read().strip("\n")
 
     def __init__(
-        self,
-        mount,
-        disk,
-        size="40M",
-        zram=True,
-        zram_alg="lz4",
-        zram_disk_size="100M",
-        zram_fs_type="ext4",
-        rsync=True,
+            self,
+            mount,
+            disk,
+            size="40M",
+            zram=True,
+            zram_alg="lz4",
+            zram_disk_size="100M",
+            zram_fs_type="ext4",
+            rsync=True,
     ):
         self.mountpoint = mount
         self.disk = disk
@@ -132,13 +131,12 @@ class MemoryFS:
         if self.zram and MemoryFS.zram_install():
             # setup zram
             self.zdev = MemoryFS.zram_dev()
-            open(f"/sys/block/zram{self.zdev}/comp_algorithm", "wt").write(
-                self.zram_alg
-            )
-            open(f"/sys/block/zram{self.zdev}/disksize", "wt").write(
-                self.zram_disk_size
-            )
-            open(f"/sys/block/zram{self.zdev}/mem_limit", "wt").write(self.size)
+            open(f"/sys/block/zram{self.zdev}/comp_algorithm",
+                 "wt").write(self.zram_alg)
+            open(f"/sys/block/zram{self.zdev}/disksize",
+                 "wt").write(self.zram_disk_size)
+            open(f"/sys/block/zram{self.zdev}/mem_limit",
+                 "wt").write(self.size)
             logging.debug("[FS] Creating fs (type: %s)", self.zram_fs_type)
             os.system(
                 f"mke2fs -t {self.zram_fs_type} /dev/zram{self.zdev} >/dev/null 2>&1"
@@ -160,9 +158,8 @@ class MemoryFS:
             sleep(interval)
 
     def sync(self, to_ram=False):
-        source, dest = (
-            (self.disk, self.mountpoint) if to_ram else (self.mountpoint, self.disk)
-        )
+        source, dest = ((self.disk, self.mountpoint) if to_ram else
+                        (self.mountpoint, self.disk))
         needed, actually_free = size_of(source), shutil.disk_usage(dest)[2]
         if actually_free >= needed:
             logging.debug("[FS] Syning %s -> %s", source, dest)
@@ -185,12 +182,12 @@ class MemoryFS:
 
         if self.zram and self.zdev is not None:
             if os.system(
-                f"mount -t {self.zram_fs_type} -o nosuid,noexec,nodev,user=pwnagotchi /dev/zram{self.zdev} {self.mountpoint}/"
+                    f"mount -t {self.zram_fs_type} -o nosuid,noexec,nodev,user=pwnagotchi /dev/zram{self.zdev} {self.mountpoint}/"
             ):
                 return False
         else:
             if os.system(
-                f"mount -t tmpfs -o nosuid,noexec,nodev,mode=0755,size={self.size} pwnagotchi {self.mountpoint}/"
+                    f"mount -t tmpfs -o nosuid,noexec,nodev,mode=0755,size={self.size} pwnagotchi {self.mountpoint}/"
             ):
                 return False
 

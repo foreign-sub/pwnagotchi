@@ -20,8 +20,7 @@ class Display(View):
         self._canvas_next_event = threading.Event()
         self._canvas_next = None
         self._render_thread_instance = threading.Thread(
-            target=self._render_thread, daemon=True
-        )
+            target=self._render_thread, daemon=True)
         self._render_thread_instance.start()
 
     def is_inky(self):
@@ -83,11 +82,8 @@ class Display(View):
     def image(self):
         img = None
         if self._canvas is not None:
-            img = (
-                self._canvas
-                if self._rotation == 0
-                else self._canvas.rotate(-self._rotation)
-            )
+            img = (self._canvas if self._rotation == 0 else
+                   self._canvas.rotate(-self._rotation))
         return img
 
     def _render_thread(self):
@@ -106,7 +102,8 @@ class Display(View):
             logging.error("%s" % e)
 
         if self._enabled:
-            self._canvas = img if self._rotation == 0 else img.rotate(self._rotation)
+            self._canvas = img if self._rotation == 0 else img.rotate(
+                self._rotation)
             if self._implementation is not None:
                 self._canvas_next = self._canvas
                 self._canvas_next_event.set()

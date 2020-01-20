@@ -188,8 +188,7 @@ class SessionStats(plugins.Plugin):
         # available in the __init__
         os.makedirs(self.options["save_directory"], exist_ok=True)
         self.session_name = "stats_{}.json".format(
-            self.clock.now().strftime("%Y_%m_%d_%H_%M")
-        )
+            self.clock.now().strftime("%Y_%m_%d_%H_%M"))
         self.session = StatusFile(
             os.path.join(self.options["save_directory"], self.session_name),
             data_format="json",
@@ -243,13 +242,15 @@ class SessionStats(plugins.Plugin):
         elif path == "epoch":
             extract_keys = ["active_for_epochs", "blind_for_epochs"]
         elif path == "session":
-            return jsonify({"files": os.listdir(self.options["save_directory"])})
+            return jsonify(
+                {"files": os.listdir(self.options["save_directory"])})
 
         with self.lock:
             data = self.stats
             if session_param and session_param != "Current":
                 file_stats = StatusFile(
-                    os.path.join(self.options["save_directory"], session_param),
+                    os.path.join(self.options["save_directory"],
+                                 session_param),
                     data_format="json",
                 )
                 data = file_stats.data_field_or("data", default=dict())

@@ -35,8 +35,7 @@ class AsyncAdvertiser(object):
     def _update_advertisement(self, s):
         self._advertisement["pwnd_run"] = len(self._handshakes)
         self._advertisement["pwnd_tot"] = utils.total_unique_handshakes(
-            self._config["bettercap"]["handshakes"]
-        )
+            self._config["bettercap"]["handshakes"])
         self._advertisement["uptime"] = pwnagotchi.uptime()
         self._advertisement["epoch"] = self._epoch.epoch
         grid.set_advertisement_data(self._advertisement)
@@ -59,9 +58,8 @@ class AsyncAdvertiser(object):
         return sum(peer.encounters for _, peer in self._peers.items())
 
     def _on_new_peer(self, peer):
-        logging.info(
-            "new peer %s detected (%d encounters)" % (peer.full_name(), peer.encounters)
-        )
+        logging.info("new peer %s detected (%d encounters)" %
+                     (peer.full_name(), peer.encounters))
         self._view.on_new_peer(peer)
         plugins.on("peer_detected", self, peer)
 

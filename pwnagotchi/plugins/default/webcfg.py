@@ -506,7 +506,7 @@ class WebConfig(plugins.Plugin):
                     with open("/etc/pwnagotchi/config.toml") as config_file:
                         toml.dump(parsed_toml, config_file)
 
-                    _thread.start_new_thread(restart, (self.mode,))
+                    _thread.start_new_thread(restart, (self.mode, ))
                     return "success"
                 except Exception as ex:
                     logging.error(ex)

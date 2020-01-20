@@ -16,7 +16,8 @@ from pwnagotchi.utils import StatusFile
 
 
 def check(version, repo, native=True):
-    logging.debug("checking remote version for %s, local is %s" % (repo, version))
+    logging.debug("checking remote version for %s, local is %s" %
+                  (repo, version))
     info = {
         "repo": repo,
         "current": version,
@@ -26,7 +27,8 @@ def check(version, repo, native=True):
         "arch": platform.machine(),
     }
 
-    resp = requests.get("https://api.github.com/repos/%s/releases/latest" % repo)
+    resp = requests.get("https://api.github.com/repos/%s/releases/latest" %
+                        repo)
     latest = resp.json()
     info["available"] = latest_ver = latest["tag_name"].replace("v", "")
     is_arm = info["arch"].startswith("arm")
@@ -44,8 +46,8 @@ def check(version, repo, native=True):
             for asset in latest["assets"]:
                 download_url = asset["browser_download_url"]
                 if download_url.endswith(".zip") and (
-                    info["arch"] in download_url or (is_arm and "armhf" in download_url)
-                ):
+                        info["arch"] in download_url or
+                    (is_arm and "armhf" in download_url)):
                     info["url"] = download_url
                     break
 
@@ -65,10 +67,13 @@ def download_and_unzip(name, path, display, update):
     target = "%s_%s.zip" % (name, update["available"])
     target_path = os.path.join(path, target)
 
-    logging.info("[update] downloading %s to %s ..." % (update["url"], target_path))
+    logging.info("[update] downloading %s to %s ..." %
+                 (update["url"], target_path))
     display.update(
         force=True,
-        new_data={"status": "Downloading %s %s ..." % (name, update["available"])},
+        new_data={
+            "status": "Downloading %s %s ..." % (name, update["available"])
+        },
     )
 
     os.system('wget -q "%s" -O "%s"' % (update["url"], target_path))
@@ -76,7 +81,9 @@ def download_and_unzip(name, path, display, update):
     logging.info("[update] extracting %s to %s ..." % (target_path, path))
     display.update(
         force=True,
-        new_data={"status": "Extracting %s %s ..." % (name, update["available"])},
+        new_data={
+            "status": "Extracting %s %s ..." % (name, update["available"])
+        },
     )
 
     os.system('unzip "%s" -d "%s"' % (target_path, path))
@@ -85,35 +92,34 @@ def download_and_unzip(name, path, display, update):
 def verify(name, path, source_path, display, update):
     display.update(
         force=True,
-        new_data={"status": "Verifying %s %s ..." % (name, update["available"])},
+        new_data={
+            "status": "Verifying %s %s ..." % (name, update["available"])
+        },
     )
 
     checksums = glob.glob("%s/*.sha256" % path)
     if len(checksums) == 0:
         if update["native"]:
-            logging.warning("[update] native update without SHA256 checksum file")
+            logging.warning(
+                "[update] native update without SHA256 checksum file")
             return False
 
     else:
         checksum = checksums[0]
 
-        logging.info("[update] verifying %s for %s ..." % (checksum, source_path))
+        logging.info("[update] verifying %s for %s ..." %
+                     (checksum, source_path))
 
         with open(checksum, "rt") as fp:
             expected = fp.read().split("=")[1].strip().lower()
 
-        real = (
-            subprocess.getoutput('sha256sum "%s"' % source_path)
-            .split(" ")[0]
-            .strip()
-            .lower()
-        )
+        real = (subprocess.getoutput(
+            'sha256sum "%s"' % source_path).split(" ")[0].strip().lower())
 
         if real != expected:
             logging.warning(
-                "[update] checksum mismatch for %s: expected=%s got=%s"
-                % (source_path, expected, real)
-            )
+                "[update] checksum mismatch for %s: expected=%s got=%s" %
+                (source_path, expected, real))
             return False
 
     return True
@@ -133,7 +139,9 @@ def install(display, update):
     logging.info("[update] installing %s ..." % name)
     display.update(
         force=True,
-        new_data={"status": "Installing %s %s ..." % (name, update["available"])},
+        new_data={
+            "status": "Installing %s %s ..." % (name, update["available"])
+        },
     )
 
     if update["native"]:
@@ -163,7 +171,8 @@ def parse_version(cmd):
         part = part.replace("v", "").strip()
         if re.search(r"^\d+\.\d+\.\d+.*$", part):
             return part
-    raise Exception('could not parse version from "%s": output=\n%s' % (cmd, out))
+    raise Exception('could not parse version from "%s": output=\n%s' %
+                    (cmd, out))
 
 
 class AutoUpdate(plugins.Plugin):
@@ -179,10 +188,10 @@ class AutoUpdate(plugins.Plugin):
         self.lock = Lock()
 
     def on_loaded(self):
-        if "interval" not in self.options or (
-            "interval" in self.options and not self.options["interval"]
-        ):
-            logging.error("[update] main.plugins.auto-update.interval is not set")
+        if "interval" not in self.options or ("interval" in self.options and
+                                              not self.options["interval"]):
+            logging.error(
+                "[update] main.plugins.auto-update.interval is not set")
             return
         self.ready = True
         logging.info("[update] plugin loaded.")
@@ -190,17 +199,16 @@ class AutoUpdate(plugins.Plugin):
     def on_internet_available(self, agent):
         with self.lock:
             logging.debug(
-                "[update] internet connectivity is available (ready %s)" % self.ready
-            )
+                "[update] internet connectivity is available (ready %s)" %
+                self.ready)
 
             if not self.ready:
                 return
 
             if self.status.newer_then_hours(self.options["interval"]):
                 logging.debug(
-                    "[update] last check happened less than %d hours ago"
-                    % self.options["interval"]
-                )
+                    "[update] last check happened less than %d hours ago" %
+                    self.options["interval"])
                 return
 
             logging.info("[update] checking for updates ...")
@@ -209,9 +217,8 @@ class AutoUpdate(plugins.Plugin):
             prev_status = display.get("status")
 
             try:
-                display.update(
-                    force=True, new_data={"status": "Checking for updates ..."}
-                )
+                display.update(force=True,
+                               new_data={"status": "Checking for updates ..."})
 
                 to_install = []
                 to_check = [
@@ -240,8 +247,7 @@ class AutoUpdate(plugins.Plugin):
                     if info["url"] is not None:
                         logging.warning(
                             "update for %s available (local version is '%s'): %s"
-                            % (repo, info["current"], info["url"])
-                        )
+                            % (repo, info["current"], info["url"]))
                         info["service"] = svc_name
                         to_install.append(info)
 
@@ -265,7 +271,8 @@ class AutoUpdate(plugins.Plugin):
                 self.status.update()
 
                 if num_installed > 0:
-                    display.update(force=True, new_data={"status": "Rebooting ..."})
+                    display.update(force=True,
+                                   new_data={"status": "Rebooting ..."})
                     pwnagotchi.reboot()
 
             except Exception as e:
@@ -273,5 +280,7 @@ class AutoUpdate(plugins.Plugin):
 
             display.update(
                 force=True,
-                new_data={"status": prev_status if prev_status is not None else ""},
+                new_data={
+                    "status": prev_status if prev_status is not None else ""
+                },
             )

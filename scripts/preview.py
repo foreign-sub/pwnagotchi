@@ -10,7 +10,8 @@ from PIL import Image
 import pwnagotchi.ui.faces as faces
 from pwnagotchi.ui.display import Display
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "../"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "../"))
 
 
 class CustomDisplay(Display):
@@ -83,17 +84,16 @@ def append_images(images, horizontal=True, xmargin=0, ymargin=0):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="This program emulates\
-                                     the pwnagotchi display"
-    )
-    parser.add_argument(
-        "--displays", help="Which displays to use.", nargs="+", default=["waveshare_2"]
-    )
+    parser = argparse.ArgumentParser(description="This program emulates\
+                                     the pwnagotchi display")
+    parser.add_argument("--displays",
+                        help="Which displays to use.",
+                        nargs="+",
+                        default=["waveshare_2"])
     parser.add_argument("--lang", help="Language to use", default="en")
-    parser.add_argument(
-        "--output", help="Path to output image (PNG)", default="preview.png"
-    )
+    parser.add_argument("--output",
+                        help="Path to output image (PNG)",
+                        default="preview.png")
     parser.add_argument(
         "--show-peer",
         dest="showpeer",
@@ -147,9 +147,9 @@ def main():
     list_of_displays = list()
     for display_type in args.displays:
         config = yaml.safe_load(
-            config_template.format(display=display_type, lang=args.lang)
-        )
-        display = CustomDisplay(config=config, state={"name": f"{display_type}>"})
+            config_template.format(display=display_type, lang=args.lang))
+        display = CustomDisplay(config=config,
+                                state={"name": f"{display_type}>"})
         list_of_displays.append(display)
 
     columns = list()
@@ -212,15 +212,16 @@ def main():
 
         # append them all together (vertical)
         columns.append(
-            append_images(
-                emotions, horizontal=False, xmargin=args.xmargin, ymargin=args.ymargin
-            )
-        )
+            append_images(emotions,
+                          horizontal=False,
+                          xmargin=args.xmargin,
+                          ymargin=args.ymargin))
 
     # append columns side by side
-    final_image = append_images(
-        columns, horizontal=True, xmargin=args.xmargin, ymargin=args.ymargin
-    )
+    final_image = append_images(columns,
+                                horizontal=True,
+                                xmargin=args.xmargin,
+                                ymargin=args.ymargin)
     final_image.save(args.output, "PNG")
 
 

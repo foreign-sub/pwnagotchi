@@ -136,18 +136,16 @@ class LastSession(object):
                     if m:
                         name, pubkey, rssi, sid, pwnd_tot, uptime = m[0]
                         if pubkey not in cache:
-                            self.last_peer = Peer(
-                                {
-                                    "session_id": sid,
-                                    "channel": 1,
-                                    "rssi": int(rssi),
-                                    "identity": pubkey,
-                                    "advertisement": {
-                                        "name": name,
-                                        "pwnd_tot": int(pwnd_tot),
-                                    },
-                                }
-                            )
+                            self.last_peer = Peer({
+                                "session_id": sid,
+                                "channel": 1,
+                                "rssi": int(rssi),
+                                "identity": pubkey,
+                                "advertisement": {
+                                    "name": name,
+                                    "pwnd_tot": int(pwnd_tot),
+                                },
+                            })
                             self.peers += 1
                             cache[pubkey] = self.last_peer
                         else:
@@ -165,11 +163,14 @@ class LastSession(object):
         self.duration = "%02d:%02d:%02d" % (hours, mins, secs)
         self.duration_human = []
         if hours > 0:
-            self.duration_human.append("%d %s" % (hours, self.voice.hhmmss(hours, "h")))
+            self.duration_human.append("%d %s" %
+                                       (hours, self.voice.hhmmss(hours, "h")))
         if mins > 0:
-            self.duration_human.append("%d %s" % (mins, self.voice.hhmmss(mins, "m")))
+            self.duration_human.append("%d %s" %
+                                       (mins, self.voice.hhmmss(mins, "m")))
         if secs > 0:
-            self.duration_human.append("%d %s" % (secs, self.voice.hhmmss(secs, "s")))
+            self.duration_human.append("%d %s" %
+                                       (secs, self.voice.hhmmss(secs, "s")))
 
         self.duration_human = ", ".join(self.duration_human)
         self.avg_reward /= self.epochs if self.epochs else 1
@@ -209,7 +210,8 @@ class LastSession(object):
             self.last_session_id = hashlib.md5(lines[0].encode()).hexdigest()
             self.last_saved_session_id = self._get_last_saved_session_id()
 
-            logging.debug("parsing last session logs (%d lines) ..." % len(lines))
+            logging.debug("parsing last session logs (%d lines) ..." %
+                          len(lines))
 
             self._parse_stats()
         self.parsed = True
@@ -262,8 +264,7 @@ def log_rotation(filename, cfg):
             do_rotate(filename, stats, cfg)
     else:
         raise Exception(
-            "log rotation is enabled but log.rotation.size was not specified"
-        )
+            "log rotation is enabled but log.rotation.size was not specified")
 
 
 def parse_max_size(s):
@@ -292,15 +293,14 @@ def do_rotate(filename, stats, cfg):
     counter = 2
 
     while os.path.exists(archive_filename):
-        archive_filename = os.path.join(base_path, "%s-%d.gz" % (name, counter))
+        archive_filename = os.path.join(base_path,
+                                        "%s-%d.gz" % (name, counter))
         counter += 1
 
     log_filename = archive_filename.replace("gz", "log")
 
-    print(
-        "%s is %d bytes big, rotating to %s ..."
-        % (filename, stats.st_size, log_filename)
-    )
+    print("%s is %d bytes big, rotating to %s ..." %
+          (filename, stats.st_size, log_filename))
 
     shutil.move(filename, log_filename)
 

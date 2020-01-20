@@ -13,9 +13,8 @@ from setuptools import setup
 def install_file(source_filename, dest_filename):
     # do not overwrite network configuration if it exists already
     # https://github.com/evilsocket/pwnagotchi/issues/483
-    if dest_filename.startswith("/etc/network/interfaces.d/") and os.path.exists(
-        dest_filename
-    ):
+    if dest_filename.startswith(
+            "/etc/network/interfaces.d/") and os.path.exists(dest_filename):
         print("%s exists, skipping ..." % dest_filename)
         return
 
@@ -53,9 +52,8 @@ def version(version_file):
     with open(version_file, "rt") as vf:
         version_file_content = vf.read()
 
-    version_match = re.search(
-        r"__version__\s*=\s*[\"\']([^\"\']+)", version_file_content
-    )
+    version_match = re.search(r"__version__\s*=\s*[\"\']([^\"\']+)",
+                              version_file_content)
     if version_match:
         return version_match.groups()[0]
 
@@ -74,7 +72,8 @@ pwnagotchi_version = version(VERSION_FILE)
 setup(
     name="pwnagotchi",
     version=pwnagotchi_version,
-    description="(⌐■_■) - Deep Reinforcement Learning instrumenting bettercap for WiFI pwning.",
+    description=
+    "(⌐■_■) - Deep Reinforcement Learning instrumenting bettercap for WiFI pwning.",
     author="evilsocket && the dev team",
     author_email="evilsocket@gmail.com",
     url="https://pwnagotchi.ai/",

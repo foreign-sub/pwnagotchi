@@ -24,7 +24,11 @@ class Waveshare213bc(DisplayImpl):
         self._layout["friend_name"] = (40, 78)
         self._layout["shakes"] = (0, 93)
         self._layout["mode"] = (187, 93)
-        self._layout["status"] = {"pos": (91, 15), "font": fonts.Medium, "max": 20}
+        self._layout["status"] = {
+            "pos": (91, 15),
+            "font": fonts.Medium,
+            "max": 20
+        }
         return self._layout
 
     def initialize(self):
