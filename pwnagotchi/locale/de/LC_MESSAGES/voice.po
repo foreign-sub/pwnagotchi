@@ -247,4 +247,3 @@ msgstr "Minute"
 
 msgid "second"
 msgstr "Sekunde"
-
