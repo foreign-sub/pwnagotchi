@@ -16,15 +16,15 @@ class AsyncAdvertiser(object):
         self._view = view
         self._keypair = keypair
         self._advertisement = {
-            'name': pwnagotchi.name(),
-            'version': pwnagotchi.__version__,
-            'identity': self._keypair.fingerprint,
-            'face': faces.FRIEND,
-            'pwnd_run': 0,
-            'pwnd_tot': 0,
-            'uptime': 0,
-            'epoch': 0,
-            'policy': self._config['personality']
+            "name": pwnagotchi.name(),
+            "version": pwnagotchi.__version__,
+            "identity": self._keypair.fingerprint,
+            "face": faces.FRIEND,
+            "pwnd_run": 0,
+            "pwnd_tot": 0,
+            "uptime": 0,
+            "epoch": 0,
+            "policy": self._config["personality"],
         }
         self._peers = {}
         self._closest_peer = None
@@ -33,40 +33,42 @@ class AsyncAdvertiser(object):
         return self._keypair.fingerprint
 
     def _update_advertisement(self, s):
-        self._advertisement['pwnd_run'] = len(self._handshakes)
-        self._advertisement['pwnd_tot'] = utils.total_unique_handshakes(
-            self._config['bettercap']['handshakes'])
-        self._advertisement['uptime'] = pwnagotchi.uptime()
-        self._advertisement['epoch'] = self._epoch.epoch
+        self._advertisement["pwnd_run"] = len(self._handshakes)
+        self._advertisement["pwnd_tot"] = utils.total_unique_handshakes(
+            self._config["bettercap"]["handshakes"]
+        )
+        self._advertisement["uptime"] = pwnagotchi.uptime()
+        self._advertisement["epoch"] = self._epoch.epoch
         grid.set_advertisement_data(self._advertisement)
 
     def start_advertising(self):
-        if self._config['personality']['advertise']:
+        if self._config["personality"]["advertise"]:
             _thread.start_new_thread(self._adv_poller, ())
 
             grid.set_advertisement_data(self._advertisement)
             grid.advertise(True)
-            self._view.on_state_change('face', self._on_face_change)
+            self._view.on_state_change("face", self._on_face_change)
         else:
             logging.warning("advertising is disabled")
 
     def _on_face_change(self, old, new):
-        self._advertisement['face'] = new
+        self._advertisement["face"] = new
         grid.set_advertisement_data(self._advertisement)
 
     def cumulative_encounters(self):
         return sum(peer.encounters for _, peer in self._peers.items())
 
     def _on_new_peer(self, peer):
-        logging.info("new peer %s detected (%d encounters)" %
-                     (peer.full_name(), peer.encounters))
+        logging.info(
+            "new peer %s detected (%d encounters)" % (peer.full_name(), peer.encounters)
+        )
         self._view.on_new_peer(peer)
-        plugins.on('peer_detected', self, peer)
+        plugins.on("peer_detected", self, peer)
 
     def _on_lost_peer(self, peer):
         logging.info("lost peer %s" % peer.full_name())
         self._view.on_lost_peer(peer)
-        plugins.on('peer_lost', self, peer)
+        plugins.on("peer_lost", self, peer)
 
     def _adv_poller(self):
         # give the system a few seconds to start the first time so that any expressions

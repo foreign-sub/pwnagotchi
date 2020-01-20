@@ -13,7 +13,7 @@ API_ADDRESS = "http://127.0.0.1:8666/api/v1"
 def is_connected():
     try:
         # check DNS
-        host = socket.gethostbyname('api.pwnagotchi.ai')
+        host = socket.gethostbyname("api.pwnagotchi.ai")
         if host:
             # check connectivity itself
             socket.create_connection((host, 443), timeout=30)
@@ -24,7 +24,7 @@ def is_connected():
 
 
 def call(path, obj=None):
-    url = '%s%s' % (API_ADDRESS, path)
+    url = "%s%s" % (API_ADDRESS, path)
     if obj is None:
         r = requests.get(url, headers=None, timeout=(30.0, 60.0))
     elif isinstance(obj, dict):
@@ -38,7 +38,7 @@ def call(path, obj=None):
 
 
 def advertise(enabled=True):
-    return call("/mesh/%s" % 'true' if enabled else 'false')
+    return call("/mesh/%s" % "true" if enabled else "false")
 
 
 def set_advertisement_data(data):
@@ -65,27 +65,27 @@ def closest_peer():
 def update_data(last_session):
     brain = {}
     try:
-        with open('/root/brain.json') as fp:
+        with open("/root/brain.json") as fp:
             brain = json.load(fp)
     except:
         pass
 
     data = {
-        'session': {
-            'duration': last_session.duration,
-            'epochs': last_session.epochs,
-            'train_epochs': last_session.train_epochs,
-            'avg_reward': last_session.avg_reward,
-            'min_reward': last_session.min_reward,
-            'max_reward': last_session.max_reward,
-            'deauthed': last_session.deauthed,
-            'associated': last_session.associated,
-            'handshakes': last_session.handshakes,
-            'peers': last_session.peers,
+        "session": {
+            "duration": last_session.duration,
+            "epochs": last_session.epochs,
+            "train_epochs": last_session.train_epochs,
+            "avg_reward": last_session.avg_reward,
+            "min_reward": last_session.min_reward,
+            "max_reward": last_session.max_reward,
+            "deauthed": last_session.deauthed,
+            "associated": last_session.associated,
+            "handshakes": last_session.handshakes,
+            "peers": last_session.peers,
         },
-        'uname': subprocess.getoutput("uname -a"),
-        'brain': brain,
-        'version': pwnagotchi.__version__
+        "uname": subprocess.getoutput("uname -a"),
+        "brain": brain,
+        "version": pwnagotchi.__version__,
     }
 
     logging.debug("updating grid data: %s" % data)
@@ -95,10 +95,7 @@ def update_data(last_session):
 
 def report_ap(essid, bssid):
     try:
-        call("/report/ap", {
-            'essid': essid,
-            'bssid': bssid,
-        })
+        call("/report/ap", {"essid": essid, "bssid": bssid})
         return True
     except Exception as e:
         logging.exception("error while reporting ap %s(%s)" % (essid, bssid))
@@ -120,4 +117,4 @@ def mark_message(id, mark):
 
 
 def send_message(to, message):
-    return call("/unit/%s/inbox" % to, message.encode('utf-8'))
+    return call("/unit/%s/inbox" % to, message.encode("utf-8"))
