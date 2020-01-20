@@ -154,7 +154,7 @@ class AutoUpdate(plugins.Plugin):
         self.lock = Lock()
 
     def on_loaded(self):
-        if 'interval' not in self.options or ('interval' in self.options and self.options['interval'] is None):
+        if 'interval' not in self.options or ('interval' in self.options and not self.options['interval']):
             logging.error("[update] main.plugins.auto-update.interval is not set")
             return
         self.ready = True
@@ -183,7 +183,7 @@ class AutoUpdate(plugins.Plugin):
                 to_check = [
                     ('bettercap/bettercap', parse_version('bettercap -version'), True, 'bettercap'),
                     ('evilsocket/pwngrid', parse_version('pwngrid -version'), True, 'pwngrid-peer'),
-                    ('evilsocket/pwnagotchi', pwnagotchi.version, False, 'pwnagotchi')
+                    ('evilsocket/pwnagotchi', pwnagotchi.__version__, False, 'pwnagotchi')
                 ]
 
                 for repo, local_version, is_native, svc_name in to_check:
