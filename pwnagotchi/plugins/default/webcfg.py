@@ -450,10 +450,12 @@ INDEX = """
 </html>
 """
 
+
 def serializer(obj):
     if isinstance(obj, set):
         return list(obj)
     raise TypeError
+
 
 class WebConfig(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
@@ -479,7 +481,6 @@ class WebConfig(plugins.Plugin):
         Gets called when the plugin gets loaded
         """
         logging.info("webcfg: Plugin loaded.")
-
 
     def on_webhook(self, path, request):
         """

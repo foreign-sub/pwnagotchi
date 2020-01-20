@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+from PIL import Image
+from pwnagotchi.ui.display import Display
+import pwnagotchi.ui.faces as faces
 import sys
 import os
 import argparse
@@ -8,10 +11,6 @@ import toml
 sys.path.insert(0,
                 os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              '../'))
-
-import pwnagotchi.ui.faces as faces
-from pwnagotchi.ui.display import Display
-from PIL import Image
 
 
 class CustomDisplay(Display):
@@ -88,11 +87,14 @@ def append_images(images, horizontal=True, xmargin=0, ymargin=0):
 def main():
     parser = argparse.ArgumentParser(description="This program emulates\
                                      the pwnagotchi display")
-    parser.add_argument('--displays', help="Which displays to use.", nargs="+", default=["waveshare_2"])
+    parser.add_argument('--displays', help="Which displays to use.",
+                        nargs="+", default=["waveshare_2"])
     parser.add_argument('--lang', help="Language to use",
                         default="en")
-    parser.add_argument('--output', help="Path to output image (PNG)", default="preview.png")
-    parser.add_argument('--show-peer', dest="showpeer", help="This options will show a dummy peer", action="store_true")
+    parser.add_argument(
+        '--output', help="Path to output image (PNG)", default="preview.png")
+    parser.add_argument('--show-peer', dest="showpeer",
+                        help="This options will show a dummy peer", action="store_true")
     parser.add_argument('--xmargin', help="Add X-Margin", type=int, default=5)
     parser.add_argument('--ymargin', help="Add Y-Margin", type=int, default=5)
     args = parser.parse_args()
@@ -141,7 +143,8 @@ def main():
     for display_type in args.displays:
         config = yaml.safe_load(config_template.format(display=display_type,
                                                        lang=args.lang))
-        display = CustomDisplay(config=config, state={'name': f"{display_type}>"})
+        display = CustomDisplay(config=config, state={
+                                'name': f"{display_type}>"})
         list_of_displays.append(display)
 
     columns = list()
@@ -203,10 +206,12 @@ def main():
         emotions.append(display.get_image())
 
         # append them all together (vertical)
-        columns.append(append_images(emotions, horizontal=False, xmargin=args.xmargin, ymargin=args.ymargin))
+        columns.append(append_images(emotions, horizontal=False,
+                                     xmargin=args.xmargin, ymargin=args.ymargin))
 
     # append columns side by side
-    final_image = append_images(columns, horizontal=True, xmargin=args.xmargin, ymargin=args.ymargin)
+    final_image = append_images(
+        columns, horizontal=True, xmargin=args.xmargin, ymargin=args.ymargin)
     final_image.save(args.output, 'PNG')
 
 

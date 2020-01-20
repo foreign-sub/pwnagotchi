@@ -2,7 +2,7 @@ import os
 import logging
 import threading
 from time import sleep
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 from pwnagotchi import plugins
 from pwnagotchi.utils import StatusFile
 from flask import render_template_string
@@ -145,6 +145,7 @@ TEMPLATE = """
 {% endblock %}
 """
 
+
 class GhettoClock:
     def __init__(self):
         self.lock = threading.Lock()
@@ -183,7 +184,8 @@ class SessionStats(plugins.Plugin):
         # this has to happen in "loaded" because the options are not yet
         # available in the __init__
         os.makedirs(self.options['save_directory'], exist_ok=True)
-        self.session_name = "stats_{}.json".format(self.clock.now().strftime("%Y_%m_%d_%H_%M"))
+        self.session_name = "stats_{}.json".format(
+            self.clock.now().strftime("%Y_%m_%d_%H_%M"))
         self.session = StatusFile(os.path.join(self.options['save_directory'],
                                                self.session_name),
                                   data_format='json')
@@ -206,7 +208,7 @@ class SessionStats(plugins.Plugin):
         result['values'] = list()
         result['labels'] = subkeys
         for plot_key in subkeys:
-            v = [ [ts,d[plot_key]] for ts, d in data.items()]
+            v = [[ts, d[plot_key]] for ts, d in data.items()]
             result['values'].append(v)
         return result
 
@@ -217,7 +219,7 @@ class SessionStats(plugins.Plugin):
         session_param = request.args.get('session')
 
         if path == "os":
-            extract_keys = ['cpu_load','mem_usage',]
+            extract_keys = ['cpu_load', 'mem_usage', ]
         elif path == "temp":
             extract_keys = ['temperature']
         elif path == "nums":
@@ -247,6 +249,7 @@ class SessionStats(plugins.Plugin):
         with self.lock:
             data = self.stats
             if session_param and session_param != 'Current':
-                file_stats = StatusFile(os.path.join(self.options['save_directory'], session_param), data_format='json')
+                file_stats = StatusFile(os.path.join(
+                    self.options['save_directory'], session_param), data_format='json')
                 data = file_stats.data_field_or('data', default=dict())
             return jsonify(SessionStats.extract_key_values(data, extract_keys))

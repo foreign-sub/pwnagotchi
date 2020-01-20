@@ -18,10 +18,12 @@ class WpaSec(plugins.Plugin):
         self.ready = False
         self.lock = Lock()
         try:
-            self.report = StatusFile('/root/.wpa_sec_uploads', data_format='json')
+            self.report = StatusFile(
+                '/root/.wpa_sec_uploads', data_format='json')
         except JSONDecodeError as json_err:
             os.remove("/root/.wpa_sec_uploads")
-            self.report = StatusFile('/root/.wpa_sec_uploads', data_format='json')
+            self.report = StatusFile(
+                '/root/.wpa_sec_uploads', data_format='json')
         self.options = dict()
         self.skip = list()
 
@@ -42,7 +44,6 @@ class WpaSec(plugins.Plugin):
                     logging.warning("%s was already submitted.", path)
             except requests.exceptions.RequestException as req_e:
                 raise req_e
-
 
     def _download_from_wpasec(self, output, timeout=30):
         """
@@ -65,17 +66,18 @@ class WpaSec(plugins.Plugin):
         except OSError as os_e:
             raise os_e
 
-
     def on_loaded(self):
         """
         Gets called when the plugin gets loaded
         """
         if 'api_key' not in self.options or ('api_key' in self.options and not self.options['api_key']):
-            logging.error("WPA_SEC: API-KEY isn't set. Can't upload to wpa-sec.stanev.org")
+            logging.error(
+                "WPA_SEC: API-KEY isn't set. Can't upload to wpa-sec.stanev.org")
             return
 
         if 'api_url' not in self.options or ('api_url' in self.options and not self.options['api_url']):
-            logging.error("WPA_SEC: API-URL isn't set. Can't upload, no endpoint configured.")
+            logging.error(
+                "WPA_SEC: API-URL isn't set. Can't upload, no endpoint configured.")
             return
 
         self.ready = True
@@ -88,25 +90,30 @@ class WpaSec(plugins.Plugin):
             if self.ready:
                 config = agent.config()
                 display = agent.view()
-                reported = self.report.data_field_or('reported', default=list())
+                reported = self.report.data_field_or(
+                    'reported', default=list())
 
                 handshake_dir = config['bettercap']['handshakes']
                 handshake_filenames = os.listdir(handshake_dir)
                 handshake_paths = [os.path.join(handshake_dir, filename) for filename in handshake_filenames if
                                    filename.endswith('.pcap')]
-                handshake_new = set(handshake_paths) - set(reported) - set(self.skip)
+                handshake_new = set(handshake_paths) - \
+                    set(reported) - set(self.skip)
 
                 if handshake_new:
-                    logging.info("WPA_SEC: Internet connectivity detected. Uploading new handshakes to wpa-sec.stanev.org")
+                    logging.info(
+                        "WPA_SEC: Internet connectivity detected. Uploading new handshakes to wpa-sec.stanev.org")
 
                     for idx, handshake in enumerate(handshake_new):
-                        display.set('status', f"Uploading handshake to wpa-sec.stanev.org ({idx + 1}/{len(handshake_new)})")
+                        display.set(
+                            'status', f"Uploading handshake to wpa-sec.stanev.org ({idx + 1}/{len(handshake_new)})")
                         display.update(force=True)
                         try:
                             self._upload_to_wpasec(handshake)
                             reported.append(handshake)
                             self.report.update(data={'reported': reported})
-                            logging.info("WPA_SEC: Successfully uploaded %s", handshake)
+                            logging.info(
+                                "WPA_SEC: Successfully uploaded %s", handshake)
                         except requests.exceptions.RequestException as req_e:
                             self.skip.append(handshake)
                             logging.error("WPA_SEC: %s", req_e)
@@ -116,14 +123,17 @@ class WpaSec(plugins.Plugin):
                             continue
 
                 if 'download_results' in self.options and self.options['download_results']:
-                    cracked_file = os.path.join(handshake_dir, 'wpa-sec.cracked.potfile')
+                    cracked_file = os.path.join(
+                        handshake_dir, 'wpa-sec.cracked.potfile')
                     if os.path.exists(cracked_file):
-                        last_check = datetime.fromtimestamp(os.path.getmtime(cracked_file))
+                        last_check = datetime.fromtimestamp(
+                            os.path.getmtime(cracked_file))
                         if last_check is not None and ((datetime.now() - last_check).seconds / (60 * 60)) < 1:
                             return
 
                     try:
-                        self._download_from_wpasec(os.path.join(handshake_dir, 'wpa-sec.cracked.potfile'))
+                        self._download_from_wpasec(os.path.join(
+                            handshake_dir, 'wpa-sec.cracked.potfile'))
                         logging.info("WPA_SEC: Downloaded cracked passwords.")
                     except requests.exceptions.RequestException as req_e:
                         logging.debug("WPA_SEC: %s", req_e)

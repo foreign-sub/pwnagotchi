@@ -68,6 +68,8 @@ class UPSLite(plugins.Plugin):
         capacity = self.ups.capacity()
         ui.set('ups', "%2i%%" % capacity)
         if capacity <= self.options['shutdown']:
-            logging.info('[ups_lite] Empty battery (<= %s%%): shuting down' % self.options['shutdown'])
-            ui.update(force=True, new_data={'status': 'Battery exhausted, bye ...'})
+            logging.info(
+                '[ups_lite] Empty battery (<= %s%%): shuting down' % self.options['shutdown'])
+            ui.update(force=True, new_data={
+                      'status': 'Battery exhausted, bye ...'})
             pwnagotchi.shutdown()

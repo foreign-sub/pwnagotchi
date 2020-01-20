@@ -44,11 +44,13 @@ def installer():
     # for people updating https://github.com/evilsocket/pwnagotchi/pull/551/files
     os.system("systemctl enable fstrim.timer")
 
+
 def version(version_file):
     with open(version_file, 'rt') as vf:
         version_file_content = vf.read()
 
-    version_match = re.search(r"__version__\s*=\s*[\"\']([^\"\']+)", version_file_content)
+    version_match = re.search(
+        r"__version__\s*=\s*[\"\']([^\"\']+)", version_file_content)
     if version_match:
         return version_match.groups()[0]
 
@@ -73,7 +75,8 @@ setup(name='pwnagotchi',
       license='GPL',
       install_requires=required,
       scripts=['bin/pwnagotchi'],
-      package_data={'pwnagotchi': ['defaults.yml', 'pwnagotchi/defaults.yml', 'locale/*/LC_MESSAGES/*.mo']},
+      package_data={'pwnagotchi': [
+          'defaults.yml', 'pwnagotchi/defaults.yml', 'locale/*/LC_MESSAGES/*.mo']},
       include_package_data=True,
       packages=find_packages(),
       classifiers=[

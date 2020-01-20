@@ -43,5 +43,5 @@ class Waveshare213bc(DisplayImpl):
         self._display.pwndisplay(buf)
 
     def clear(self):
-        #pass
+        # pass
         self._display.pwnclear()

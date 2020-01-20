@@ -5,7 +5,8 @@ import os
 
 class Voice:
     def __init__(self, lang):
-        localedir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'locale')
+        localedir = os.path.join(os.path.abspath(
+            os.path.dirname(__file__)), 'locale')
         translation = gettext.translation(
             'voice', localedir,
             languages=[lang],
@@ -89,7 +90,8 @@ class Voice:
         else:
             return random.choice([
                 self._('Yo {name}! Sup?').format(name=peer.name()),
-                self._('Hey {name} how are you doing?').format(name=peer.name()),
+                self._('Hey {name} how are you doing?').format(
+                    name=peer.name()),
                 self._('Unit {name} is nearby!').format(name=peer.name())])
 
     def on_lost_peer(self, peer):
@@ -144,7 +146,8 @@ class Voice:
 
     def on_deauth(self, sta):
         return random.choice([
-            self._('Just decided that {mac} needs no WiFi!').format(mac=sta['mac']),
+            self._('Just decided that {mac} needs no WiFi!').format(
+                mac=sta['mac']),
             self._('Deauthenticating {mac}').format(mac=sta['mac']),
             self._('Kickbanning {mac}!').format(mac=sta['mac'])])
 
@@ -160,12 +163,15 @@ class Voice:
         return self._("Oops, something went wrong ... Rebooting ...")
 
     def on_last_session_data(self, last_session):
-        status = self._('Kicked {num} stations\n').format(num=last_session.deauthed)
+        status = self._('Kicked {num} stations\n').format(
+            num=last_session.deauthed)
         if last_session.associated > 999:
             status += self._('Made >999 new friends\n')
         else:
-            status += self._('Made {num} new friends\n').format(num=last_session.associated)
-        status += self._('Got {num} handshakes\n').format(num=last_session.handshakes)
+            status += self._('Made {num} new friends\n').format(
+                num=last_session.associated)
+        status += self._('Got {num} handshakes\n').format(
+            num=last_session.handshakes)
         if last_session.peers == 1:
             status += self._('Met 1 peer')
         elif last_session.peers > 0:
