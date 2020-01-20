@@ -59,14 +59,22 @@
           - golang
           - git
           - build-essential
+          - python-scipy
+          - python3-pybind11
+          - python3-pil
           - python3-pip
           - python3-mpi4py
           - python3-smbus
           - unzip
           - gawk
           - libopenmpi-dev
+          - liblapack-dev
+          - liblapack3
           - libatlas-base-dev
+          - libblas-dev
+          - libblas3
           - libjasper-dev
+          - libjpeg-dev
           - libqtgui4
           - libqt4-test
           - libopenjp2-7
@@ -95,7 +103,6 @@
           - fonts-dejavu
           - fonts-dejavu-core
           - fonts-dejavu-extra
-          - python3-pil
           - python3-smbus
           - libfuse-dev
           - bc
@@ -162,6 +169,18 @@
       name: "{{ packages.apt.install }}"
       state: present
 
+  - name: remove useless packages from the cache
+    apt:
+      autoclean: yes
+
+  - name: remove dependencies that are no longer required
+    apt:
+      autoremove: yes
+
+  - name: clean apt cache
+    command: apt-get clean
+    become: yes
+
   - name: configure dphys-swapfile
     file:
       path: /etc/dphys-swapfile
@@ -213,7 +232,7 @@
 
   - name: clone pwnagotchi repository
     git:
-      repo: https://github.com/evilsocket/pwnagotchi.git
+      repo: https://github.com/foreign-sub/pwnagotchi.git
       dest: /usr/local/src/pwnagotchi
     register: pwnagotchigit
 
@@ -224,12 +243,6 @@
   - name: pwnagotchi version found
     debug:
       msg: "{{ pwnagotchi_version }}"
-
-  - name: build pwnagotchi wheel
-    command: "python3 setup.py sdist bdist_wheel"
-    args:
-      chdir: /usr/local/src/pwnagotchi
-    when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi_version)
 
   - name: install opencv-python
     pip:
@@ -242,6 +255,16 @@
       name: "https://www.piwheels.hostedpi.com/simple/tensorflow/tensorflow-1.13.1-cp37-none-linux_armv6l.whl"
       extra_args: "--no-deps --no-cache-dir --platform=linux_armv6l --only-binary=:all: --target={{ pip_target.stdout }}"
     when: (pip_packages['tensorflow'] is undefined) or (pip_packages['tensorflow'] != '1.13.1')
+
+  - name: install requirements
+    pip:
+      requirements: /usr/local/src/pwnagotchi/requirements.txt
+
+  - name: build pwnagotchi wheel
+    command: "python3 setup.py bdist_wheel"
+    args:
+      chdir: /usr/local/src/pwnagotchi
+    when: (pwnagotchigit.changed) or (pip_packages['pwnagotchi'] is undefined) or (pip_packages['pwnagotchi'] != pwnagotchi.version)
 
   - name: install pwnagotchi wheel and dependencies
     pip:
