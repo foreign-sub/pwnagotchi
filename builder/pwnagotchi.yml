@@ -223,9 +223,8 @@
       regexp: "#EPD_SIZE=2.0"
       line: "EPD_SIZE=2.0"
 
-  - shell: source pip3 install -U pip setuptools
-    args:
-      executable: /bin/bash
+  - name: upgrade pip
+    command: pip3 install -U pip
 
   - name: collect python pip package list
     command: "pip3 list"
