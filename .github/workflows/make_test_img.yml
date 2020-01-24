@@ -35,8 +35,8 @@ jobs:
           ${{ runner.os }}-go-
     - name: Get version
       run: |
-        VERSION_FILE=pwnagotchi/__init__.py
-        PWN_VERSION=v$(cat $VERSION_FILE | grep version | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
+        VERSION_FILE=pwnagotchi/_version.py
+        PWN_VERSION=v$(cat $VERSION_FILE | grep __version__ | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
         echo "::set-env name=PWN_VERSION::${PWN_VERSION}"
         PWN_DESC="$(git describe --tags --abbrev=0 @^)"
         PWN_LOG="$(git log --pretty=format:'%h %s \n' ${PWN_DESC}..@)"
