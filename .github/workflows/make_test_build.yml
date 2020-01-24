@@ -12,11 +12,39 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: make
+    - name: Init packer-builder cache
+      id: builder-cache
+      uses: actions/cache@v1.1.0
+      with:
+        path: /tmp/packer-builder-arm-image
+        key: cache-${{ runner.os }}-packer-builder-arm-image-${{ github.sha }}
+        restore-keys: cache-${{ runner.os }}-packer-builder-arm-image-
+    - name: Get packer-builder go.sum
+      run: |
+        if [ -d "/tmp/packer-builder-arm-image" ]; then
+          echo "@ Using go.sum from builder cache"
+          cp /tmp/packer-builder-arm-image/go.sum go.sum
+        else
+          curl https://github.com/solo-io/packer-builder-arm-image/raw/master/go.sum -o go.sum
+        fi
+    - name: Init go cache
+      id: go-cache
+      uses: actions/cache@v1.1.0
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    - name: Get version
+      run: |
+        VERSION_FILE=pwnagotchi/_version.py
+        PWN_VERSION=v$(cat $VERSION_FILE | grep __version__ | cut -d"'" -f2)-$(echo $GITHUB_SHA | head -c7)
+        echo "::set-env name=PWN_VERSION::${PWN_VERSION}"
+    - name: Make test build for ${{ env.PWN_VERSION }}
       run: |
         export TERM=linux
         #sudo apt-get update
         sudo apt-get install kpartx qemu-user-static
         sudo make clean
         sudo -E env "PATH=$PATH" make install
-        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=$(echo $GITHUB_SHA | head -c7)
+        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
