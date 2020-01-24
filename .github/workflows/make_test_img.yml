@@ -48,17 +48,17 @@ jobs:
         sudo apt-get install kpartx qemu-user-static
     - name: Make install for ${{ env.PWN_VERSION }}
       run: |
-        if [ -d "/tmp/packer-builder-arm-image" ]; then
-          PACKER_VERSION="1.4.5"
-          curl https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o /tmp/packer.zip
-          unzip /tmp/packer.zip -d /tmp
-          sudo mv /tmp/packer /usr/bin/packer
-          cd /tmp/packer-builder-arm-image && git fetch --all
-          cd /tmp/packer-builder-arm-image && go get -d ./... && go build
-          sudo cp /tmp/packer-builder-arm-image/packer-builder-arm-image /usr/bin
-        else
-          sudo -E env "PATH=$PATH" make install
-        fi
+        #if [ -d "/tmp/packer-builder-arm-image" ]; then
+        #  PACKER_VERSION="1.4.5"
+        #  curl https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o /tmp/packer.zip
+        #  unzip /tmp/packer.zip -d /tmp
+        #  sudo mv /tmp/packer /usr/bin/packer
+        #  cd /tmp/packer-builder-arm-image && git fetch --all
+        #  cd /tmp/packer-builder-arm-image && go get -d ./... && go build
+        #  sudo cp /tmp/packer-builder-arm-image/packer-builder-arm-image /usr/bin
+        #else
+        sudo -E env "PATH=$PATH" make install
+        #fi
     - name: Make image for ${{ env.PWN_VERSION }}
       run: |
         sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
