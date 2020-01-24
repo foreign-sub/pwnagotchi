@@ -7,7 +7,7 @@ all: clean install image
 install:
 	curl -LJ https://github.com/hashicorp/packer/releases/download/nightly/packer_linux_amd64.zip -o /tmp/packer.zip
 	unzip /tmp/packer.zip -d /tmp
-	sudo mv /tmp/packer /usr/bin/packer
+	sudo mv /tmp/pkg/packer_linux_amd64 /usr/bin/packer
 	git clone https://github.com/solo-io/packer-builder-arm-image /tmp/packer-builder-arm-image
 	cd /tmp/packer-builder-arm-image && go get -d ./... && go build
 	sudo cp /tmp/packer-builder-arm-image/packer-builder-arm-image /usr/bin
