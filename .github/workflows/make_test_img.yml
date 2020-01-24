@@ -44,7 +44,7 @@ jobs:
     - name: Install required packages
       run: |
         export TERM=linux
-        sudo apt-get update
+        #sudo apt-get update
         sudo apt-get install kpartx qemu-user-static
     - name: Make install for ${{ env.PWN_VERSION }}
       run: |
