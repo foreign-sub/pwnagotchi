@@ -6,23 +6,25 @@ import re
 import datetime
 from flask import Response
 from functools import lru_cache
+from dateutil.parser import parse
 
 '''
-2do:
-    - make+test the cache handling multiple clients
-    - cleanup the javascript in a class and handle "/newest" additions
-    - create map filters (only cracked APs, only last xx days, between 2 days with slider)
-        http://www.gistechsolutions.com/leaflet/DEMO/filter/filter.html
-        https://gis.stackexchange.com/questions/312737/filtering-interactive-leaflet-map-with-dropdown-menu
-        https://blogs.kent.ac.uk/websolutions/2015/01/29/filtering-map-markers-with-leaflet-js-a-brief-technical-overview/
-        http://www.digital-geography.com/filter-leaflet-maps-slider/
-        http://bl.ocks.org/zross/47760925fcb1643b4225
-    - 
+    webgpsmap shows existing position data stored in your /handshakes/ directory
+    
+    the plugin does the following:
+        - search for *.pcap files in your /handshakes/ dir
+            - for every found .pcap file it looks for a .geo.json or .gps.json or .paw-gps.json file with
+              latitude+longitude data inside and shows this position on the map
+            - if also an .cracked file with a plaintext password inside exist, it reads the content and shows the 
+              position as green instead of red and the password inside the infopox of the position
+    special:
+        you can save the html-map as one file for offline use or host on your own webspace with "/plugins/webgpsmap/offlinemap"
+
 '''
 
 class Webgpsmap(plugins.Plugin):
     __author__ = 'https://github.com/xenDE and https://github.com/dadav'
-    __version__ = '1.3.0'
+    __version__ = '1.4.0'
     __name__ = 'webgpsmap'
     __license__ = 'GPL3'
     __description__ = 'a plugin for pwnagotchi that shows a openstreetmap with positions of ap-handshakes in your webbrowser'
@@ -49,6 +51,7 @@ class Webgpsmap(plugins.Plugin):
         """
         # defaults:
         response_header_contenttype = None
+        response_header_contentdisposition = None
         response_mimetype = "application/xhtml+xml"
         if not self.ready:
             try:
@@ -63,7 +66,7 @@ class Webgpsmap(plugins.Plugin):
                 response_mimetype = "application/xhtml+xml"
                 response_header_contenttype = 'text/html'
             except Exception as error:
-                logging.error(f"[webgpsmap] error: {error}")
+                logging.error(f"[webgpsmap] on_webhook NOT_READY error: {error}")
                 return
         else:
             if request.method == "GET":
@@ -73,7 +76,7 @@ class Webgpsmap(plugins.Plugin):
                     try:
                         response_data = bytes(self.get_html(), "utf-8")
                     except Exception as error:
-                        logging.error(f"[webgpsmap] error: {error}")
+                        logging.error(f"[webgpsmap] on_webhook / error: {error}")
                         return
                     response_status = 200
                     response_mimetype = "application/xhtml+xml"
@@ -87,7 +90,22 @@ class Webgpsmap(plugins.Plugin):
                         response_mimetype = "application/json"
                         response_header_contenttype = 'application/json'
                     except Exception as error:
-                        logging.error(f"[webgpsmap] error: {error}")
+                        logging.error(f"[webgpsmap] on_webhook all error: {error}")
+                        return
+                elif path.startswith('offlinemap'):
+                    # for download an all-in-one html file with positions.json inside
+                    try:
+                        self.ALREADY_SENT = list()
+                        json_data = json.dumps(self.load_gps_from_dir(self.config['bettercap']['handshakes']))
+                        html_data = self.get_html()
+                        html_data = html_data.replace('var positions = [];', 'var positions = ' + json_data + ';positionsLoaded=true;drawPositions();')
+                        response_data = bytes(html_data, "utf-8")
+                        response_status = 200
+                        response_mimetype = "application/xhtml+xml"
+                        response_header_contenttype = 'text/html'
+                        response_header_contentdisposition = 'attachment; filename=webgpsmap.html';
+                    except Exception as error:
+                        logging.error(f"[webgpsmap] on_webhook offlinemap: error: {error}")
                         return
                 # elif path.startswith('/newest'):
                 #     # returns all positions newer then timestamp
@@ -119,9 +137,11 @@ class Webgpsmap(plugins.Plugin):
             r = Response(response=response_data, status=response_status, mimetype=response_mimetype)
             if response_header_contenttype is not None:
                 r.headers["Content-Type"] = response_header_contenttype
+            if response_header_contentdisposition is not None:
+                r.headers["Content-Disposition"] = response_header_contentdisposition
             return r
         except Exception as error:
-            logging.error(f"[webgpsmap] error: {error}")
+            logging.error(f"[webgpsmap] on_webhook CREATING_RESPONSE error: {error}")
             return
 
     # cache 2048 items
@@ -217,15 +237,15 @@ class Webgpsmap(plugins.Plugin):
                 self.ALREADY_SENT += pos_file
             except json.JSONDecodeError as error:
                 self.SKIP += pos_file
-                logging.error(f"[webgpsmap] JSONDecodeError in: {error}")
+                logging.error(f"[webgpsmap] JSONDecodeError in: {pos_file} - error: {error}")
                 continue
             except ValueError as error:
                 self.SKIP += pos_file
-                logging.error(f"[webgpsmap] ValueError: {error}")
+                logging.error(f"[webgpsmap] ValueError: {pos_file} - error: {error}")
                 continue
             except OSError as error:
                 self.SKIP += pos_file
-                logging.error(f"[webgpsmap] OSError: {error}")
+                logging.error(f"[webgpsmap] OSError: {pos_file} - error: {error}")
                 continue
         logging.info(f"[webgpsmap] loaded {len(gps_data)} positions")
         return gps_data
@@ -303,18 +323,7 @@ class PositionFile:
             return_ts = self._json['ts']
         elif 'Updated' in self._json:
             # convert gps datetime to unix timestamp: "2019-10-05T23:12:40.422996+01:00"
-            date_iso_formated = self._json['Updated']
-            #fix timezone "Z": "2019-11-28T04:44:46.79231Z" >> "2019-11-28T04:44:46.79231+00:00"
-            if date_iso_formated.endswith("Z"):
-              date_iso_formated = date_iso_formated[:-1] + "+00:00"
-            # bad microseconds fix: fill/cut microseconds to 6 numbers
-            part1, part2, part3 = re.split('\.|\+', date_iso_formated)
-            part2 = part2.ljust(6, '0')[:6]
-            # timezone fix: 0200 >>> 02:00
-            if len(part3) == 4:
-                part3 = part3[1:2].rjust(2, '0') + ':' + part3[3:4].rjust(2, '0')
-            date_iso_formated = part1 + "." + part2 + "+" + part3
-            dateObj = datetime.datetime.fromisoformat(date_iso_formated)
+            dateObj = parse(self._json['Updated'])
             return_ts = int("%.0f" % dateObj.timestamp())
         else:
             # use file timestamp last modification of the json file
@@ -335,9 +344,9 @@ class PositionFile:
                 return_pass = password_file.read()
                 password_file.close()
             except OSError as error:
-                logging.error(f"[webgpsmap] OS error: {format(error)}")
+                logging.error(f"[webgpsmap] OS error loading password: {password_file_path} - error: {format(error)}")
             except:
-                logging.error(f"[webgpsmap] Unexpected error: {sys.exc_info()[0]}")
+                logging.error(f"[webgpsmap] Unexpected error loading password: {password_file_path} - error: {sys.exc_info()[0]}")
                 raise
         return return_pass
 
