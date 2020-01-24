@@ -15,7 +15,7 @@ jobs:
     - name: make
       run: |
         export TERM=linux
-        sudo apt-get update
+        #sudo apt-get update
         sudo apt-get install kpartx qemu-user-static
         sudo make clean
         sudo -E env "PATH=$PATH" make install
