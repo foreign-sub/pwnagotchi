@@ -6,12 +6,15 @@ After=pwngrid-peer.service
 
 [Service]
 Type=simple
+WorkingDirectory=/tmp
 PermissionsStartOnly=true
 ExecStart=/usr/bin/pwnagotchi-launcher
 Restart=always
 RestartSec=30
 TasksMax=infinity
 LimitNPROC=infinity
+StandartOutput=null
+StandartError=null
 
 [Install]
 WantedBy=multi-user.target
