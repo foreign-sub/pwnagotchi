@@ -44,8 +44,8 @@ jobs:
       run: |
         export TERM=linux
         sudo apt-get update --fix-missing
-        sudo apt-get install ansible --fix-missing
-        sudo dpkg –configure -a
+        sudo apt-get install ansible
+        #sudo dpkg --configure -a
         sudo apt-get install kpartx qemu-user-static
         sudo make clean
         sudo -E env "PATH=$PATH" make install
