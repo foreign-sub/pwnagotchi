@@ -226,6 +226,9 @@
   - name: upgrade pip
     command: pip3 install -U pip
 
+- name: upgrade setuptools
+    command: pip3 install -U setuptools
+
   - name: collect python pip package list
     command: "pip3 list"
     register: pip_output
