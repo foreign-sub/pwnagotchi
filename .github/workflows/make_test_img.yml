@@ -61,7 +61,7 @@ jobs:
         #fi
     - name: Make image for ${{ env.PWN_VERSION }}
       run: |
-        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
+        sudo -E env "PATH=$PATH" make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
     - name: Set cache permissions
       run: |
         sudo chmod -R 777 /tmp/packer-builder-arm-image
