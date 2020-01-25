@@ -43,8 +43,10 @@ jobs:
     - name: Make test build for ${{ env.PWN_VERSION }}
       run: |
         export TERM=linux
-        #sudo apt-get update
+        sudo apt-get update --fix-missing
+        sudo apt-get upgrade --fix-missing
+        sudo dpkg –configure -a
         sudo apt-get install kpartx qemu-user-static
         sudo make clean
         sudo -E env "PATH=$PATH" make install
-        sudo make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
+        sudo -E env "PATH=$PATH" make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
