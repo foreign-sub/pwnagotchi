@@ -49,4 +49,4 @@ jobs:
         sudo apt-get install kpartx qemu-user-static
         sudo make clean
         sudo -E env "PATH=$PATH" make install
-        sudo -E env "PATH=$PATH" make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
+        #sudo -E env "PATH=$PATH" make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
