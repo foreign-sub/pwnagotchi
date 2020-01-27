@@ -45,11 +45,8 @@ jobs:
       run: |
         export TERM=linux
         sudo apt-get update --fix-missing
-        sudo apt-get install ansible
-        #sudo dpkg --configure -a
         sudo apt-get install kpartx qemu-user-static
         sudo make clean
-        sudo pip install -U setuptools
         sudo -E env "PATH=$PATH" make install
         sudo -E env "PATH=$PATH" make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
         sudo chmod -R 777 ~/go/pkg/mod
