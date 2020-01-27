@@ -217,7 +217,7 @@
       line: "EPD_SIZE=2.0"
 
   - name: remove pyaml
-    command: "apt-get remove --purge python3-yaml"
+    command: "apt-get remove -y python3-yaml"
 
   - name: collect python pip package list
     command: "pip3 list"
