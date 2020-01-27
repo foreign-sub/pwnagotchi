@@ -32,7 +32,7 @@ jobs:
       uses: actions/cache@v1.1.0
       with:
         path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        key: ${{ runner.os }}-go- #${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
           ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -51,5 +51,5 @@ jobs:
         sudo make clean
         sudo pip install -U setuptools
         sudo -E env "PATH=$PATH" make install
-        sudo -E env "PATH=$PATH" make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
+        #sudo -E env "PATH=$PATH" make image -e PWN_HOSTNAME=pwnagotchi PWN_VERSION=${PWN_VERSION}
         sudo chmod -R 777 ~/go/pkg/mod
