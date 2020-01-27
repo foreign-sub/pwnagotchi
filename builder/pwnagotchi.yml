@@ -220,6 +220,9 @@
     command: "pip3 list"
     register: pip_output
 
+  - name: remove pip components 
+    command: "pip3 uninstall PyYAML numpy"
+
   - name: set python pip package facts
     set_fact:
       pip_packages: >
