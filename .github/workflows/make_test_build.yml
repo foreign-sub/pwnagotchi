@@ -35,6 +35,7 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
+          ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
     - name: Get version
       run: |
         VERSION_FILE=pwnagotchi/_version.py
