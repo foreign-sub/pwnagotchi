@@ -220,6 +220,12 @@
     command: "pip3 list"
     register: pip_output
 
+  - name: remove unecessary apt packages
+    apt:
+      name: "python3-yaml"
+      state: absent
+      purge: yes
+
   - name: remove pip components 
     command: "pip3 uninstall PyYAML numpy"
 
