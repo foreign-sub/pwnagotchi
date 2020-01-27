@@ -245,10 +245,10 @@
       msg: "{{ pwnagotchi_version }}"
 
   - name: update pip
-    command: "pip install -U pip"
+    command: "pip3 install -U pip"
 
   - name: update setuptools
-    command: "pip install -U setuptools"
+    command: "pip3 install -U setuptools"
 
   - name: install opencv-python
     pip:
