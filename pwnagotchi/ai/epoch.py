@@ -89,7 +89,8 @@ class Epoch(object):
         self.num_peers = len(peers)
         num_peers = self.num_peers + 1e-10  # avoid division by 0
 
-        self.tot_bond_factor = sum((peer.encounters for peer in peers)) / bond_unit_scale
+        self.tot_bond_factor = sum(
+            (peer.encounters for peer in peers)) / bond_unit_scale
         self.avg_bond_factor = self.tot_bond_factor / num_peers
 
         num_aps = len(aps) + 1e-10
@@ -104,7 +105,8 @@ class Epoch(object):
                 aps_per_chan[ch_idx] += 1.0
                 sta_per_chan[ch_idx] += len(ap['clients'])
             except IndexError:
-                logging.error("got data on channel %d, we can store %d channels" % (ap['channel'], wifi.NumChannels))
+                logging.error("got data on channel %d, we can store %d channels" % (
+                    ap['channel'], wifi.NumChannels))
 
         for peer in peers:
             try:
@@ -205,7 +207,8 @@ class Epoch(object):
             'temperature': temp
         }
 
-        self._epoch_data['reward'] = self._reward(self.epoch + 1, self._epoch_data)
+        self._epoch_data['reward'] = self._reward(
+            self.epoch + 1, self._epoch_data)
         self._epoch_data_ready.set()
 
         logging.info("[epoch %d] duration=%s slept_for=%s blind=%d sad=%d bored=%d inactive=%d active=%d peers=%d tot_bond=%.2f "

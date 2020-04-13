@@ -59,7 +59,7 @@ class DottedTomlEncoder(TomlEncoder):
                         retstr += '\n'
                 else:
                     retstr += (pre + qsection + " = " +
-                                str(self.dump_value(value)) + '\n')
+                               str(self.dump_value(value)) + '\n')
         return (retstr, self._dict())
 
 
@@ -75,6 +75,7 @@ def remove_whitelisted(list_of_handshakes, list_of_whitelisted_strings, valid_on
     Removes a given list of whitelisted handshakes from a path list
     """
     filtered = list()
+
     def normalize(name):
         """
         Only allow alpha/nums
@@ -83,7 +84,8 @@ def remove_whitelisted(list_of_handshakes, list_of_whitelisted_strings, valid_on
 
     for handshake in list_of_handshakes:
         try:
-            normalized_handshake = normalize(os.path.basename(handshake).rstrip('.pcap'))
+            normalized_handshake = normalize(
+                os.path.basename(handshake).rstrip('.pcap'))
             for whitelist in list_of_whitelisted_strings:
                 normalized_whitelist = normalize(whitelist)
                 if normalized_whitelist in normalized_handshake:
@@ -96,7 +98,6 @@ def remove_whitelisted(list_of_handshakes, list_of_whitelisted_strings, valid_on
     return filtered
 
 
-
 def download_file(url, destination, chunk_size=128):
     import requests
     resp = requests.get(url)
@@ -106,12 +107,14 @@ def download_file(url, destination, chunk_size=128):
         for chunk in resp.iter_content(chunk_size):
             fd.write(chunk)
 
+
 def unzip(file, destination, strip_dirs=0):
     os.makedirs(destination, exist_ok=True)
     with ZipFile(file, 'r') as zip:
         if strip_dirs:
             for info in zip.infolist():
-                new_filename = info.filename.split('/', maxsplit=strip_dirs)[strip_dirs]
+                new_filename = info.filename.split(
+                    '/', maxsplit=strip_dirs)[strip_dirs]
                 if new_filename:
                     info.filename = new_filename
                     zip.extract(info, destination)
@@ -129,11 +132,12 @@ def merge_config(user, default):
                 user[k] = merge_config(user[k], v)
     return user
 
+
 def keys_to_str(data):
-    if isinstance(data,list):
+    if isinstance(data, list):
         converted_list = list()
         for item in data:
-            if isinstance(item,list) or isinstance(item,dict):
+            if isinstance(item, list) or isinstance(item, dict):
                 converted_list.append(keys_to_str(item))
             else:
                 converted_list.append(item)
@@ -148,10 +152,12 @@ def keys_to_str(data):
 
     return converted_dict
 
+
 def save_config(config, target):
     with open(target, 'wt') as fp:
         fp.write(toml.dumps(config, encoder=DottedTomlEncoder()))
     return True
+
 
 def load_config(args):
     default_config_path = os.path.dirname(args.config)
@@ -159,7 +165,8 @@ def load_config(args):
         os.makedirs(default_config_path)
 
     import pwnagotchi
-    ref_defaults_file = os.path.join(os.path.dirname(pwnagotchi.__file__), 'defaults.toml')
+    ref_defaults_file = os.path.join(
+        os.path.dirname(pwnagotchi.__file__), 'defaults.toml')
     ref_defaults_data = None
 
     # check for a config.yml file on /boot/
@@ -191,7 +198,8 @@ def load_config(args):
             defaults_data = fp.read()
 
         if ref_defaults_data != defaults_data:
-            print("!!! file in %s is different than release defaults, overwriting !!!" % args.config)
+            print(
+                "!!! file in %s is different than release defaults, overwriting !!!" % args.config)
             shutil.copy(ref_defaults_file, args.config)
 
     # load the defaults
@@ -220,13 +228,15 @@ def load_config(args):
         if user_config:
             config = merge_config(user_config, config)
     except Exception as ex:
-        logging.error("There was an error processing the configuration file:\n%s ",ex)
+        logging.error(
+            "There was an error processing the configuration file:\n%s ", ex)
         sys.exit(1)
 
     # dropins
     dropin = config['main']['confd']
     if dropin and os.path.isdir(dropin):
-        dropin += '*.toml' if dropin.endswith('/') else '/*.toml' # only toml here; yaml is no more
+        # only toml here; yaml is no more
+        dropin += '*.toml' if dropin.endswith('/') else '/*.toml'
         for conf in glob.glob(dropin):
             with open(conf) as toml_file:
                 additional_config = toml.load(toml_file)
@@ -363,7 +373,8 @@ def extract_from_pcap(path, fields):
         if field == WifiInfo.BSSID:
             from scapy.all import Dot11Beacon, Dot11ProbeResp, Dot11AssoReq, Dot11ReassoReq, Dot11, sniff
             subtypes.add('beacon')
-            bpf_filter = " or ".join([f"wlan type mgt subtype {subtype}" for subtype in subtypes])
+            bpf_filter = " or ".join(
+                [f"wlan type mgt subtype {subtype}" for subtype in subtypes])
             packets = sniff(offline=path, filter=bpf_filter)
             try:
                 for packet in packets:
@@ -380,7 +391,8 @@ def extract_from_pcap(path, fields):
             subtypes.add('beacon')
             subtypes.add('assoc-req')
             subtypes.add('reassoc-req')
-            bpf_filter = " or ".join([f"wlan type mgt subtype {subtype}" for subtype in subtypes])
+            bpf_filter = " or ".join(
+                [f"wlan type mgt subtype {subtype}" for subtype in subtypes])
             packets = sniff(offline=path, filter=bpf_filter)
             try:
                 for packet in packets:
@@ -394,17 +406,20 @@ def extract_from_pcap(path, fields):
         elif field == WifiInfo.ENCRYPTION:
             from scapy.all import Dot11Beacon, sniff
             subtypes.add('beacon')
-            bpf_filter = " or ".join([f"wlan type mgt subtype {subtype}" for subtype in subtypes])
+            bpf_filter = " or ".join(
+                [f"wlan type mgt subtype {subtype}" for subtype in subtypes])
             packets = sniff(offline=path, filter=bpf_filter)
             try:
                 for packet in packets:
                     if packet.haslayer(Dot11Beacon) and hasattr(packet[Dot11Beacon], 'network_stats'):
                         stats = packet[Dot11Beacon].network_stats()
                         if 'crypto' in stats:
-                            results[field] = stats['crypto']  # set with encryption types
+                            # set with encryption types
+                            results[field] = stats['crypto']
                             break
                 else:  # magic
-                    raise FieldNotFoundError("Could not find field [ENCRYPTION]")
+                    raise FieldNotFoundError(
+                        "Could not find field [ENCRYPTION]")
             except Exception:
                 raise FieldNotFoundError("Could not find field [ENCRYPTION]")
         elif field == WifiInfo.CHANNEL:
@@ -412,7 +427,8 @@ def extract_from_pcap(path, fields):
             from pwnagotchi.mesh.wifi import freq_to_channel
             packets = sniff(offline=path, count=1)
             try:
-                results[field] = freq_to_channel(packets[0][RadioTap].ChannelFrequency)
+                results[field] = freq_to_channel(
+                    packets[0][RadioTap].ChannelFrequency)
             except Exception:
                 raise FieldNotFoundError("Could not find field [CHANNEL]")
         elif field == WifiInfo.RSSI:
@@ -425,6 +441,7 @@ def extract_from_pcap(path, fields):
                 raise FieldNotFoundError("Could not find field [RSSI]")
 
     return results
+
 
 class StatusFile(object):
     def __init__(self, path, data_format='raw'):

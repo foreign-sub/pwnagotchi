@@ -64,7 +64,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         password = body.decode('UTF-8').split('=')[1]
 
         with open('/tmp/.pwnagotchi-secret', 'wt') as pwfile:
-          pwfile.write(password)
+            pwfile.write(password)
 
 
 httpd = HTTPServer(('0.0.0.0', 80), SimpleHTTPRequestHandler)

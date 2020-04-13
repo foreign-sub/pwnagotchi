@@ -36,7 +36,8 @@ class Automata(object):
 
     def _has_support_network_for(self, factor):
         bond_factor = self._config['personality']['bond_encounters_factor']
-        total_encounters = sum(peer.encounters for _, peer in self._peers.items())
+        total_encounters = sum(peer.encounters for _,
+                               peer in self._peers.items())
         support_factor = total_encounters / bond_factor
         return support_factor >= factor
 
@@ -55,9 +56,11 @@ class Automata(object):
             self.set_grateful()
 
     def set_bored(self):
-        factor = self._epoch.inactive_for / self._config['personality']['bored_num_epochs']
+        factor = self._epoch.inactive_for / \
+            self._config['personality']['bored_num_epochs']
         if not self._has_support_network_for(factor):
-            logging.warning("%d epochs with no activity -> bored", self._epoch.inactive_for)
+            logging.warning("%d epochs with no activity -> bored",
+                            self._epoch.inactive_for)
             self._view.on_bored()
             plugins.on('bored', self)
         else:
@@ -65,9 +68,11 @@ class Automata(object):
             self.set_grateful()
 
     def set_sad(self):
-        factor = self._epoch.inactive_for / self._config['personality']['sad_num_epochs']
+        factor = self._epoch.inactive_for / \
+            self._config['personality']['sad_num_epochs']
         if not self._has_support_network_for(factor):
-            logging.warning("%d epochs with no activity -> sad", self._epoch.inactive_for)
+            logging.warning("%d epochs with no activity -> sad",
+                            self._epoch.inactive_for)
             self._view.on_sad()
             plugins.on('sad', self)
         else:
@@ -76,7 +81,8 @@ class Automata(object):
 
     def set_angry(self, factor):
         if not self._has_support_network_for(factor):
-            logging.warning("%d epochs with no activity -> angry", self._epoch.inactive_for)
+            logging.warning("%d epochs with no activity -> angry",
+                            self._epoch.inactive_for)
             self._view.on_angry()
             plugins.on('angry', self)
         else:
@@ -84,7 +90,8 @@ class Automata(object):
             self.set_grateful()
 
     def set_excited(self):
-        logging.warning("%d epochs with activity -> excited", self._epoch.active_for)
+        logging.warning("%d epochs with activity -> excited",
+                        self._epoch.active_for)
         self._view.on_excited()
         plugins.on('excited', self)
 
@@ -113,15 +120,18 @@ class Automata(object):
 
         # after X misses during an epoch, set the status to lonely or angry
         if was_stale:
-            factor = did_miss / self._config['personality']['max_misses_for_recon']
+            factor = did_miss / \
+                self._config['personality']['max_misses_for_recon']
             if factor >= 2.0:
                 self.set_angry(factor)
             else:
-                logging.warning("agent missed %d interactions -> lonely", did_miss)
+                logging.warning(
+                    "agent missed %d interactions -> lonely", did_miss)
                 self.set_lonely()
         # after X times being bored, the status is set to sad or angry
         elif self._epoch.sad_for:
-            factor = self._epoch.inactive_for / self._config['personality']['sad_num_epochs']
+            factor = self._epoch.inactive_for / \
+                self._config['personality']['sad_num_epochs']
             if factor >= 2.0:
                 self.set_angry(factor)
             else:
@@ -138,6 +148,7 @@ class Automata(object):
         plugins.on('epoch', self, self._epoch.epoch - 1, self._epoch.data())
 
         if self._epoch.blind_for >= self._config['main']['mon_max_blind_epochs']:
-            logging.critical("%d epochs without visible access points -> rebooting ...", self._epoch.blind_for)
+            logging.critical(
+                "%d epochs without visible access points -> rebooting ...", self._epoch.blind_for)
             self._reboot()
             self._epoch.blind_for = 0

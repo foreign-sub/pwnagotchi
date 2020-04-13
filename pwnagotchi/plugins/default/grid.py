@@ -77,17 +77,20 @@ class Grid(plugins.Plugin):
         logging.debug("checking mailbox ...")
         messages = grid.inbox()
         self.total_messages = len(messages)
-        self.unread_messages = len([m for m in messages if m['seen_at'] is None])
+        self.unread_messages = len(
+            [m for m in messages if m['seen_at'] is None])
 
         if self.unread_messages:
             plugins.on('unread_inbox', self.unread_messages)
-            logging.debug("[grid] unread:%d total:%d" % (self.unread_messages, self.total_messages))
+            logging.debug("[grid] unread:%d total:%d" %
+                          (self.unread_messages, self.total_messages))
             agent.view().on_unread_messages(self.unread_messages, self.total_messages)
 
     def check_handshakes(self, agent):
         logging.debug("checking pcaps")
 
-        pcap_files = glob.glob(os.path.join(agent.config()['bettercap']['handshakes'], "*.pcap"))
+        pcap_files = glob.glob(os.path.join(
+            agent.config()['bettercap']['handshakes'], "*.pcap"))
         num_networks = len(pcap_files)
         reported = self.report.data_field_or('reported', default=[])
         num_reported = len(reported)
@@ -103,14 +106,16 @@ class Grid(plugins.Plugin):
                     net_id = os.path.basename(pcap_file).replace('.pcap', '')
                     if net_id not in reported:
                         if self.is_excluded(net_id):
-                            logging.debug("skipping %s due to exclusion filter" % pcap_file)
+                            logging.debug(
+                                "skipping %s due to exclusion filter" % pcap_file)
                             self.set_reported(reported, net_id)
                             continue
 
                         essid, bssid = parse_pcap(pcap_file)
                         if bssid:
                             if self.is_excluded(essid) or self.is_excluded(bssid):
-                                logging.debug("not reporting %s due to exclusion filter" % pcap_file)
+                                logging.debug(
+                                    "not reporting %s due to exclusion filter" % pcap_file)
                                 self.set_reported(reported, net_id)
                             else:
                                 if grid.report_ap(essid, bssid):
@@ -131,7 +136,8 @@ class Grid(plugins.Plugin):
             try:
                 grid.update_data(agent.last_session)
             except Exception as e:
-                logging.error("error connecting to the pwngrid-peer service: %s" % e)
+                logging.error(
+                    "error connecting to the pwngrid-peer service: %s" % e)
                 logging.debug(e, exc_info=True)
                 return
 

@@ -4,7 +4,6 @@ import time
 import re
 
 
-
 from pwnagotchi._version import __version__
 
 _name = None
@@ -20,7 +19,8 @@ def set_name(new_name):
         return
 
     if not re.match(r'^[a-zA-Z0-9\-]{2,25}$', new_name):
-        logging.warning("name '%s' is invalid: min length is 2, max length 25, only a-zA-Z0-9- allowed", new_name)
+        logging.warning(
+            "name '%s' is invalid: min length is 2, max length 25, only a-zA-Z0-9- allowed", new_name)
         return
 
     current = name()
@@ -80,7 +80,7 @@ def _cpu_stat():
     Returns the splitted first line of the /proc/stat file
     """
     with open('/proc/stat', 'rt') as fp:
-        return list(map(int,fp.readline().split()[1:]))
+        return list(map(int, fp.readline().split()[1:]))
 
 
 def cpu_load():

@@ -55,9 +55,11 @@ def setup_mounts(config):
     for name, options in fs_cfg['mounts'].items():
         if not options['enabled']:
             continue
-        logging.debug("[FS] Trying to setup mount %s (%s)", name, options['mount'])
-        size,unit = re.match(r"(\d+)([a-zA-Z]+)", options['size']).groups()
-        target = os.path.join('/run/pwnagotchi/disk/', os.path.basename(options['mount']))
+        logging.debug("[FS] Trying to setup mount %s (%s)",
+                      name, options['mount'])
+        size, unit = re.match(r"(\d+)([a-zA-Z]+)", options['size']).groups()
+        target = os.path.join('/run/pwnagotchi/disk/',
+                              os.path.basename(options['mount']))
 
         is_mounted = is_mountpoint(target)
         logging.debug("[FS] %s is %s mounted", options['mount'],
@@ -84,11 +86,11 @@ def setup_mounts(config):
         interval = int(options['sync'])
         if interval:
             logging.debug("[FS] Starting thread to sync %s (interval: %d)",
-                        options['mount'], interval)
+                          options['mount'], interval)
             _thread.start_new_thread(m.daemonize, (interval,))
         else:
             logging.debug("[FS] Not syncing %s, because interval is 0",
-            options['mount'])
+                          options['mount'])
 
         mounts.append(m)
 
@@ -101,12 +103,10 @@ class MemoryFS:
             return os.system("modprobe zram") == 0
         return True
 
-
     @staticmethod
     def zram_dev():
         logging.debug("[FS] Adding zram device")
         return open("/sys/class/zram-control/hot_add", "rt").read().strip("\n")
-
 
     def __init__(self, mount, disk, size="40M",
                  zram=True, zram_alg="lz4", zram_disk_size="100M",
@@ -122,16 +122,19 @@ class MemoryFS:
         self.rsync = True
         self._setup()
 
-
     def _setup(self):
         if self.zram and MemoryFS.zram_install():
             # setup zram
             self.zdev = MemoryFS.zram_dev()
-            open(f"/sys/block/zram{self.zdev}/comp_algorithm", "wt").write(self.zram_alg)
-            open(f"/sys/block/zram{self.zdev}/disksize", "wt").write(self.zram_disk_size)
-            open(f"/sys/block/zram{self.zdev}/mem_limit", "wt").write(self.size)
+            open(f"/sys/block/zram{self.zdev}/comp_algorithm",
+                 "wt").write(self.zram_alg)
+            open(f"/sys/block/zram{self.zdev}/disksize",
+                 "wt").write(self.zram_disk_size)
+            open(f"/sys/block/zram{self.zdev}/mem_limit",
+                 "wt").write(self.size)
             logging.debug("[FS] Creating fs (type: %s)", self.zram_fs_type)
-            os.system(f"mke2fs -t {self.zram_fs_type} /dev/zram{self.zdev} >/dev/null 2>&1")
+            os.system(
+                f"mke2fs -t {self.zram_fs_type} /dev/zram{self.zdev} >/dev/null 2>&1")
 
         # ensure mountpoints exist
         if not os.path.exists(self.disk):
@@ -142,27 +145,26 @@ class MemoryFS:
             logging.debug("[FS] Creating %s", self.mountpoint)
             os.makedirs(self.mountpoint)
 
-
     def daemonize(self, interval=60):
         logging.debug("[FS] Daemonized...")
         while True:
             self.sync()
             sleep(interval)
 
-
     def sync(self, to_ram=False):
-        source, dest = (self.disk, self.mountpoint) if to_ram else (self.mountpoint, self.disk)
+        source, dest = (self.disk, self.mountpoint) if to_ram else (
+            self.mountpoint, self.disk)
         needed, actually_free = size_of(source), shutil.disk_usage(dest)[2]
         if actually_free >= needed:
-            logging.debug("[FS] Syning %s -> %s", source,dest)
+            logging.debug("[FS] Syning %s -> %s", source, dest)
             if self.rsync:
-                os.system(f"rsync -aXv --inplace --no-whole-file --delete-after {source}/ {dest}/ >/dev/null 2>&1")
+                os.system(
+                    f"rsync -aXv --inplace --no-whole-file --delete-after {source}/ {dest}/ >/dev/null 2>&1")
             else:
                 copy_tree(source, dest, preserve_symlinks=True)
             os.system("sync")
             return True
         return False
-
 
     def mount(self):
         if os.system(f"mount --bind {self.mountpoint} {self.disk}"):
@@ -179,7 +181,6 @@ class MemoryFS:
                 return False
 
         return True
-
 
     def umount(self):
         if os.system(f"umount -l {self.mountpoint}"):
