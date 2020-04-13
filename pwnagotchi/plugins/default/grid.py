@@ -1,13 +1,15 @@
-import os
-import logging
-import time
 import glob
+import logging
+import os
 import re
+import time
+from threading import Lock
 
 import pwnagotchi.grid as grid
 import pwnagotchi.plugins as plugins
-from pwnagotchi.utils import StatusFile, WifiInfo, extract_from_pcap
-from threading import Lock
+from pwnagotchi.utils import extract_from_pcap
+from pwnagotchi.utils import StatusFile
+from pwnagotchi.utils import WifiInfo
 
 
 def parse_pcap(filename):

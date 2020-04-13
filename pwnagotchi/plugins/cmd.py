@@ -1,14 +1,18 @@
 # Handles the commandline stuff
-
-import sys
-import os
-import logging
 import glob
+import logging
+import os
 import re
 import shutil
+import sys
 from fnmatch import fnmatch
-from pwnagotchi.utils import download_file, unzip, save_config, parse_version, md5
+
 from pwnagotchi.plugins import default_path
+from pwnagotchi.utils import download_file
+from pwnagotchi.utils import md5
+from pwnagotchi.utils import parse_version
+from pwnagotchi.utils import save_config
+from pwnagotchi.utils import unzip
 
 
 REPO_URL = "https://github.com/evilsocket/pwnagotchi-plugins-contrib/archive/master.zip"

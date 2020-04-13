@@ -1,16 +1,18 @@
-import os
-import re
-import logging
-import subprocess
-import requests
-import platform
-import shutil
 import glob
+import logging
+import os
+import platform
+import re
+import shutil
+import subprocess
 from threading import Lock
+
+import requests
 
 import pwnagotchi
 import pwnagotchi.plugins as plugins
-from pwnagotchi.utils import StatusFile, parse_version as version_to_tuple
+from pwnagotchi.utils import parse_version as version_to_tuple
+from pwnagotchi.utils import StatusFile
 
 
 def check(version, repo, native=True):

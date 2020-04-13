@@ -1,12 +1,15 @@
-import os
 import logging
+import os
 import threading
+from datetime import datetime
+from datetime import timedelta
 from time import sleep
-from datetime import datetime, timedelta
+
+from flask import jsonify
+from flask import render_template_string
+
 from pwnagotchi import plugins
 from pwnagotchi.utils import StatusFile
-from flask import render_template_string
-from flask import jsonify
 
 TEMPLATE = """
 {% extends "base.html" %}

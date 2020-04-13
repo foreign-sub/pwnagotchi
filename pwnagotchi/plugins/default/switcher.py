@@ -1,7 +1,8 @@
-import os
 import logging
-from threading import Lock
+import os
 from functools import partial
+from threading import Lock
+
 from pwnagotchi import plugins
 from pwnagotchi import reboot
 

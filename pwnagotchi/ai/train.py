@@ -1,13 +1,13 @@
 import _thread
-import threading
-import time
-import random
-import os
 import json
 import logging
+import os
+import random
+import threading
+import time
 
-import pwnagotchi.plugins as plugins
 import pwnagotchi.ai as ai
+import pwnagotchi.plugins as plugins
 
 
 class Stats(object):

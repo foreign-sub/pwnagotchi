@@ -1,11 +1,10 @@
-import time
-import threading
 import logging
+import threading
+import time
 
 import pwnagotchi
-import pwnagotchi.utils as utils
 import pwnagotchi.mesh.wifi as wifi
-
+import pwnagotchi.utils as utils
 from pwnagotchi.ai.reward import RewardFunction
 
 

@@ -1,16 +1,17 @@
-import hashlib
-import time
-import re
-import os
-import logging
-import shutil
 import gzip
+import hashlib
+import logging
+import os
+import re
+import shutil
+import time
 import warnings
 from datetime import datetime
 
-from pwnagotchi.voice import Voice
-from pwnagotchi.mesh.peer import Peer
 from file_read_backwards import FileReadBackwards
+
+from pwnagotchi.mesh.peer import Peer
+from pwnagotchi.voice import Voice
 
 LAST_SESSION_FILE = "/root/.pwnagotchi-last-session"
 
