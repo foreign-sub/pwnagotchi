@@ -9,7 +9,6 @@ from dateutil.parser import parse
 from flask import Response
 
 import pwnagotchi.plugins as plugins
-
 """
     webgpsmap shows existing position data stored in your /handshakes/ directory
 
@@ -72,7 +71,8 @@ class Webgpsmap(plugins.Plugin):
                 response_mimetype = "application/xhtml+xml"
                 response_header_contenttype = "text/html"
             except Exception as error:
-                logging.error(f"[webgpsmap] on_webhook NOT_READY error: {error}")
+                logging.error(
+                    f"[webgpsmap] on_webhook NOT_READY error: {error}")
                 return
         else:
             if request.method == "GET":
@@ -82,7 +82,8 @@ class Webgpsmap(plugins.Plugin):
                     try:
                         response_data = bytes(self.get_html(), "utf-8")
                     except Exception as error:
-                        logging.error(f"[webgpsmap] on_webhook / error: {error}")
+                        logging.error(
+                            f"[webgpsmap] on_webhook / error: {error}")
                         return
                     response_status = 200
                     response_mimetype = "application/xhtml+xml"
@@ -94,16 +95,15 @@ class Webgpsmap(plugins.Plugin):
                         response_data = bytes(
                             json.dumps(
                                 self.load_gps_from_dir(
-                                    self.config["bettercap"]["handshakes"]
-                                )
-                            ),
+                                    self.config["bettercap"]["handshakes"])),
                             "utf-8",
                         )
                         response_status = 200
                         response_mimetype = "application/json"
                         response_header_contenttype = "application/json"
                     except Exception as error:
-                        logging.error(f"[webgpsmap] on_webhook all error: {error}")
+                        logging.error(
+                            f"[webgpsmap] on_webhook all error: {error}")
                         return
                 elif path.startswith("offlinemap"):
                     # for download an all-in-one html file with positions.json inside
@@ -111,23 +111,19 @@ class Webgpsmap(plugins.Plugin):
                         self.ALREADY_SENT = list()
                         json_data = json.dumps(
                             self.load_gps_from_dir(
-                                self.config["bettercap"]["handshakes"]
-                            )
-                        )
+                                self.config["bettercap"]["handshakes"]))
                         html_data = self.get_html()
                         html_data = html_data.replace(
                             "var positions = [];",
-                            "var positions = "
-                            + json_data
-                            + ";positionsLoaded=true;drawPositions();",
+                            "var positions = " + json_data +
+                            ";positionsLoaded=true;drawPositions();",
                         )
                         response_data = bytes(html_data, "utf-8")
                         response_status = 200
                         response_mimetype = "application/xhtml+xml"
                         response_header_contenttype = "text/html"
                         response_header_contentdisposition = (
-                            "attachment; filename=webgpsmap.html"
-                        )
+                            "attachment; filename=webgpsmap.html")
                     except Exception as error:
                         logging.error(
                             f"[webgpsmap] on_webhook offlinemap: error: {error}"
@@ -174,10 +170,12 @@ class Webgpsmap(plugins.Plugin):
             if response_header_contenttype is not None:
                 r.headers["Content-Type"] = response_header_contenttype
             if response_header_contentdisposition is not None:
-                r.headers["Content-Disposition"] = response_header_contentdisposition
+                r.headers[
+                    "Content-Disposition"] = response_header_contentdisposition
             return r
         except Exception as error:
-            logging.error(f"[webgpsmap] on_webhook CREATING_RESPONSE error: {error}")
+            logging.error(
+                f"[webgpsmap] on_webhook CREATING_RESPONSE error: {error}")
             return
 
     # cache 2048 items
@@ -198,8 +196,7 @@ class Webgpsmap(plugins.Plugin):
         all_files = os.listdir(handshake_dir)
         # print(all_files)
         all_pcap_files = [
-            os.path.join(handshake_dir, filename)
-            for filename in all_files
+            os.path.join(handshake_dir, filename) for filename in all_files
             if filename.endswith(".pcap")
         ]
         all_geo_or_gps_files = []
@@ -233,7 +230,8 @@ class Webgpsmap(plugins.Plugin):
         #    all_geo_or_gps_files = set(all_geo_or_gps_files) - set(SKIP)   # remove skipped networks? No!
 
         if newest_only:
-            all_geo_or_gps_files = set(all_geo_or_gps_files) - set(self.ALREADY_SENT)
+            all_geo_or_gps_files = set(all_geo_or_gps_files) - set(
+                self.ALREADY_SENT)
 
         logging.info(
             f"[webgpsmap] Found {len(all_geo_or_gps_files)} position-data files from {len(all_pcap_files)} handshakes. Fetching positions ..."
@@ -242,11 +240,9 @@ class Webgpsmap(plugins.Plugin):
         for pos_file in all_geo_or_gps_files:
             try:
                 pos = self._get_pos_from_file(pos_file)
-                if (
-                    not pos.type() == PositionFile.GPS
-                    and not pos.type() == PositionFile.GEO
-                    and not pos.type() == PositionFile.PAWGPS
-                ):
+                if (not pos.type() == PositionFile.GPS
+                        and not pos.type() == PositionFile.GEO
+                        and not pos.type() == PositionFile.PAWGPS):
                     continue
 
                 ssid, mac = pos.ssid(), pos.mac()
@@ -286,11 +282,13 @@ class Webgpsmap(plugins.Plugin):
                 continue
             except ValueError as error:
                 self.SKIP += pos_file
-                logging.error(f"[webgpsmap] ValueError: {pos_file} - error: {error}")
+                logging.error(
+                    f"[webgpsmap] ValueError: {pos_file} - error: {error}")
                 continue
             except OSError as error:
                 self.SKIP += pos_file
-                logging.error(f"[webgpsmap] OSError: {pos_file} - error: {error}")
+                logging.error(
+                    f"[webgpsmap] OSError: {pos_file} - error: {error}")
                 continue
         logging.info(f"[webgpsmap] loaded {len(gps_data)} positions")
         return gps_data
@@ -300,9 +298,8 @@ class Webgpsmap(plugins.Plugin):
         Returns the html page
         """
         try:
-            template_file = (
-                os.path.dirname(os.path.realpath(__file__)) + "/" + "webgpsmap.html"
-            )
+            template_file = (os.path.dirname(os.path.realpath(__file__)) +
+                             "/" + "webgpsmap.html")
             html_data = open(template_file, "r").read()
         except Exception as error:
             logging.error(
@@ -336,8 +333,8 @@ class PositionFile:
         Returns the mac from filename
         """
         parsed_mac = re.search(
-            r".*_?([a-zA-Z0-9]{12})\.(?:gps|geo|paw-gps)\.json", self._filename
-        )
+            r".*_?([a-zA-Z0-9]{12})\.(?:gps|geo|paw-gps)\.json",
+            self._filename)
         if parsed_mac:
             mac = parsed_mac.groups()[0]
             return mac
@@ -348,8 +345,7 @@ class PositionFile:
         Returns the ssid from filename
         """
         parsed_ssid = re.search(
-            r"(.+)_[a-zA-Z0-9]{12}\.(?:gps|geo|paw-gps)\.json", self._filename
-        )
+            r"(.+)_[a-zA-Z0-9]{12}\.(?:gps|geo|paw-gps)\.json", self._filename)
         if parsed_ssid:
             return parsed_ssid.groups()[0]
         return None

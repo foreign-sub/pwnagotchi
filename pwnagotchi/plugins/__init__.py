@@ -5,8 +5,8 @@ import logging
 import os
 import threading
 
-
-default_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "default")
+default_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                            "default")
 loaded = {}
 database = {}
 locks = {}
@@ -20,14 +20,16 @@ class Plugin:
 
         plugin_name = cls.__module__.split(".")[0]
         plugin_instance = cls()
-        logging.debug("loaded plugin %s as %s" % (plugin_name, plugin_instance))
+        logging.debug("loaded plugin %s as %s" %
+                      (plugin_name, plugin_instance))
         loaded[plugin_name] = plugin_instance
 
         for attr_name in plugin_instance.__dir__():
             if attr_name.startswith("on_"):
                 cb = getattr(plugin_instance, attr_name, None)
                 if cb is not None and callable(cb):
-                    locks["%s::%s" % (plugin_name, attr_name)] = threading.Lock()
+                    locks["%s::%s" %
+                          (plugin_name, attr_name)] = threading.Lock()
 
 
 def toggle_plugin(name, enable=True):
@@ -93,9 +95,8 @@ def one(plugin_name, event_name, *args, **kwargs):
                 locked_cb_args = (lock_name, callback, *args, *kwargs)
                 _thread.start_new_thread(locked_cb, locked_cb_args)
             except Exception as e:
-                logging.error(
-                    "error while running %s.%s : %s" % (plugin_name, cb_name, e)
-                )
+                logging.error("error while running %s.%s : %s" %
+                              (plugin_name, cb_name, e))
                 logging.error(e, exc_info=True)
 
 
@@ -126,8 +127,7 @@ def load_from_path(path, enabled=()):
 
 def load(config):
     enabled = [
-        name
-        for name, options in config["main"]["plugins"].items()
+        name for name, options in config["main"]["plugins"].items()
         if "enabled" in options and options["enabled"]
     ]
 
@@ -135,9 +135,8 @@ def load(config):
     load_from_path(default_path, enabled=enabled)
 
     # load custom ones
-    custom_path = (
-        config["main"]["custom_plugins"] if "custom_plugins" in config["main"] else None
-    )
+    custom_path = (config["main"]["custom_plugins"]
+                   if "custom_plugins" in config["main"] else None)
     if custom_path is not None:
         load_from_path(custom_path, enabled=enabled)
 

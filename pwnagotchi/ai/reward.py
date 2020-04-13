@@ -7,13 +7,10 @@ fuck_zero = 1e-20
 class RewardFunction(object):
     def __call__(self, epoch_n, state):
         tot_epochs = epoch_n + fuck_zero
-        tot_interactions = (
-            max(
-                state["num_deauths"] + state["num_associations"],
-                state["num_handshakes"],
-            )
-            + fuck_zero
-        )
+        tot_interactions = (max(
+            state["num_deauths"] + state["num_associations"],
+            state["num_handshakes"],
+        ) + fuck_zero)
         tot_channels = wifi.NumChannels
 
         h = state["num_handshakes"] / tot_interactions
@@ -26,7 +23,8 @@ class RewardFunction(object):
 
         # include emotions if state >= 5 epochs
         _sad = state["sad_for_epochs"] if state["sad_for_epochs"] >= 5 else 0
-        _bored = state["bored_for_epochs"] if state["bored_for_epochs"] >= 5 else 0
+        _bored = state[
+            "bored_for_epochs"] if state["bored_for_epochs"] >= 5 else 0
         s = -0.2 * (_sad / tot_epochs)
         l = -0.1 * (_bored / tot_epochs)
 

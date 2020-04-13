@@ -511,10 +511,9 @@ class WebConfig(plugins.Plugin):
         elif request.method == "POST":
             if path == "save-config":
                 try:
-                    save_config(
-                        request.get_json(), "/etc/pwnagotchi/config.toml"
-                    )  # test
-                    _thread.start_new_thread(restart, (self.mode,))
+                    save_config(request.get_json(),
+                                "/etc/pwnagotchi/config.toml")  # test
+                    _thread.start_new_thread(restart, (self.mode, ))
                     return "success"
                 except Exception as ex:
                     logging.error(ex)

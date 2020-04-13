@@ -25,17 +25,20 @@ def load(config, agent, epoch, from_disk=True):
         start = time.time()
         from stable_baselines.common.policies import MlpLstmPolicy
 
-        logging.debug("[ai] MlpLstmPolicy imported in %.2fs" % (time.time() - start))
+        logging.debug("[ai] MlpLstmPolicy imported in %.2fs" %
+                      (time.time() - start))
 
         start = time.time()
         from stable_baselines.common.vec_env import DummyVecEnv
 
-        logging.debug("[ai] DummyVecEnv imported in %.2fs" % (time.time() - start))
+        logging.debug("[ai] DummyVecEnv imported in %.2fs" %
+                      (time.time() - start))
 
         start = time.time()
         import pwnagotchi.ai.gym as wrappers
 
-        logging.debug("[ai] gym wrapper imported in %.2fs" % (time.time() - start))
+        logging.debug("[ai] gym wrapper imported in %.2fs" %
+                      (time.time() - start))
 
         env = wrappers.Environment(agent, epoch)
         env = DummyVecEnv([lambda: env])
@@ -56,7 +59,8 @@ def load(config, agent, epoch, from_disk=True):
             for key, value in config["params"].items():
                 logging.info("      %s: %s" % (key, value))
 
-        logging.debug("[ai] total loading time is %.2fs" % (time.time() - begin))
+        logging.debug("[ai] total loading time is %.2fs" %
+                      (time.time() - begin))
 
         return a2c
     except Exception as e:

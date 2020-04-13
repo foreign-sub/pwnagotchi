@@ -42,9 +42,9 @@ def run_task(name, options):
     os.system("chmod a+x %s" % script_path)
 
     # here we create the service which runs the tasks
-    with open("/etc/systemd/system/%s" % task_service_name, "wt") as task_service:
-        task_service.write(
-            """
+    with open("/etc/systemd/system/%s" % task_service_name,
+              "wt") as task_service:
+        task_service.write("""
         [Unit]
         Description=Executes the tasks of the pwnagotchi switcher plugin
         After=pwnagotchi.service bettercap.service
@@ -58,9 +58,7 @@ def run_task(name, options):
 
         [Install]
         WantedBy=multi-user.target
-        """
-            % (name, task_service_name, name)
-        )
+        """ % (name, task_service_name, name))
 
     if "reboot" in options and options["reboot"]:
         # create a indication file!
@@ -90,9 +88,9 @@ def run_task(name, options):
         ExecStart=-/bin/rm /etc/systemd/system/switcher-reboot.timer""",
         )
 
-        with open("/etc/systemd/system/switcher-reboot.timer", "wt") as reboot_timer:
-            reboot_timer.write(
-                """
+        with open("/etc/systemd/system/switcher-reboot.timer",
+                  "wt") as reboot_timer:
+            reboot_timer.write("""
             [Unit]
             Description=Reboot when time is up
             ConditionPathExists=/root/.switcher
@@ -103,9 +101,7 @@ def run_task(name, options):
 
             [Install]
             WantedBy=timers.target
-            """
-                % options["stopwatch"]
-            )
+            """ % options["stopwatch"])
 
         systemctl("daemon-reload")
         systemctl("enable", "switcher-reboot.timer")
@@ -135,7 +131,8 @@ class Switcher(plugins.Plugin):
                 task = self.tasks[function_name]
 
                 # is this task enabled?
-                if "enabled" not in task or ("enabled" in task and not task["enabled"]):
+                if "enabled" not in task or ("enabled" in task
+                                             and not task["enabled"]):
                     return
 
                 run_task(function_name, task)

@@ -2,7 +2,6 @@
 from http.server import BaseHTTPRequestHandler
 from http.server import HTTPServer
 
-
 HTML_FORM = """
 <!DOCTYPE html>
 <html>

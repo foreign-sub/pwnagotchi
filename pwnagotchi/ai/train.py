@@ -72,14 +72,15 @@ class Stats(object):
         with self._lock:
             logging.info("[ai] saving %s" % self.path)
 
-            data = json.dumps(
-                {
-                    "born_at": self.born_at,
-                    "epochs_lived": self.epochs_lived,
-                    "epochs_trained": self.epochs_trained,
-                    "rewards": {"best": self.best_reward, "worst": self.worst_reward},
-                }
-            )
+            data = json.dumps({
+                "born_at": self.born_at,
+                "epochs_lived": self.epochs_lived,
+                "epochs_trained": self.epochs_trained,
+                "rewards": {
+                    "best": self.best_reward,
+                    "worst": self.worst_reward
+                },
+            })
 
             temp = "%s.tmp" % self.path
             with open(temp, "wt") as fp:
@@ -95,7 +96,8 @@ class AsyncTrainer(object):
         self._is_training = False
         self._training_epochs = 0
         self._nn_path = self._config["ai"]["path"]
-        self._stats = Stats("%s.json" % os.path.splitext(self._nn_path)[0], self)
+        self._stats = Stats("%s.json" % os.path.splitext(self._nn_path)[0],
+                            self)
 
     def set_training(self, training, for_epochs=0):
         self._is_training = training
@@ -140,14 +142,18 @@ class AsyncTrainer(object):
             if name in self._config["personality"]:
                 curr_value = self._config["personality"][name]
                 if curr_value != value:
-                    logging.info("[ai] ! %s: %s -> %s" % (name, curr_value, value))
+                    logging.info("[ai] ! %s: %s -> %s" %
+                                 (name, curr_value, value))
                     self._config["personality"][name] = value
             else:
-                logging.error("[ai] param %s not in personality configuration!" % name)
+                logging.error(
+                    "[ai] param %s not in personality configuration!" % name)
 
         self.run("set wifi.ap.ttl %d" % self._config["personality"]["ap_ttl"])
-        self.run("set wifi.sta.ttl %d" % self._config["personality"]["sta_ttl"])
-        self.run("set wifi.rssi.min %d" % self._config["personality"]["min_rssi"])
+        self.run("set wifi.sta.ttl %d" %
+                 self._config["personality"]["sta_ttl"])
+        self.run("set wifi.rssi.min %d" %
+                 self._config["personality"]["min_rssi"])
 
     def on_ai_ready(self):
         self._view.on_ai_ready()
@@ -176,7 +182,8 @@ class AsyncTrainer(object):
                 self._model.env.render()
                 # enter in training mode?
                 if random.random() > self._config["ai"]["laziness"]:
-                    logging.info("[ai] learning for %d epochs ..." % epochs_per_episode)
+                    logging.info("[ai] learning for %d epochs ..." %
+                                 epochs_per_episode)
                     try:
                         self.set_training(True, epochs_per_episode)
                         self._model.learn(

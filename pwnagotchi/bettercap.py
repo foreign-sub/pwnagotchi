@@ -11,9 +11,8 @@ def decode(r, verbose_errors=True):
         return r.json()
     except Exception as e:
         if r.status_code == 200:
-            logging.error(
-                "error while decoding json: error='%s' resp='%s'" % (e, r.text)
-            )
+            logging.error("error while decoding json: error='%s' resp='%s'" %
+                          (e, r.text))
         else:
             err = "error %d: %s" % (r.status_code, r.text.strip())
             if verbose_errors:
@@ -24,12 +23,12 @@ def decode(r, verbose_errors=True):
 
 class Client(object):
     def __init__(
-        self,
-        hostname="localhost",
-        scheme="http",
-        port=8081,
-        username="user",
-        password="pass",
+            self,
+            hostname="localhost",
+            scheme="http",
+            port=8081,
+            username="user",
+            password="pass",
     ):
         self.hostname = hostname
         self.scheme = scheme
@@ -37,7 +36,8 @@ class Client(object):
         self.username = username
         self.password = password
         self.url = "%s://%s:%d/api" % (scheme, hostname, port)
-        self.websocket = "ws://%s:%s@%s:%d/api" % (username, password, hostname, port)
+        self.websocket = "ws://%s:%s@%s:%d/api" % (username, password,
+                                                   hostname, port)
         self.auth = HTTPBasicAuth(username, password)
 
     def session(self):
@@ -48,9 +48,9 @@ class Client(object):
         s = "%s/events" % self.websocket
         while True:
             try:
-                async with websockets.connect(
-                    s, ping_interval=60, ping_timeout=90
-                ) as ws:
+                async with websockets.connect(s,
+                                              ping_interval=60,
+                                              ping_timeout=90) as ws:
                     async for msg in ws:
                         try:
                             await consumer(msg)
@@ -60,7 +60,7 @@ class Client(object):
                 logging.debug("Lost websocket connection. Reconnecting...")
 
     def run(self, command, verbose_errors=True):
-        r = requests.post(
-            "%s/session" % self.url, auth=self.auth, json={"cmd": command}
-        )
+        r = requests.post("%s/session" % self.url,
+                          auth=self.auth,
+                          json={"cmd": command})
         return decode(r, verbose_errors=verbose_errors)

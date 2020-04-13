@@ -71,11 +71,10 @@ class Epoch(object):
         #    self._observation_ready.clear()
         self._epoch_data_ready.wait(timeout)
         self._epoch_data_ready.clear()
-        return (
-            self._epoch_data
-            if with_observation is False
-            else {**self._observation, **self._epoch_data}
-        )
+        return (self._epoch_data if with_observation is False else {
+            **self._observation,
+            **self._epoch_data
+        })
 
     def data(self):
         return self._epoch_data
@@ -92,9 +91,8 @@ class Epoch(object):
         self.num_peers = len(peers)
         num_peers = self.num_peers + 1e-10  # avoid division by 0
 
-        self.tot_bond_factor = (
-            sum((peer.encounters for peer in peers)) / bond_unit_scale
-        )
+        self.tot_bond_factor = (sum(
+            (peer.encounters for peer in peers)) / bond_unit_scale)
         self.avg_bond_factor = self.tot_bond_factor / num_peers
 
         num_aps = len(aps) + 1e-10
@@ -110,18 +108,16 @@ class Epoch(object):
                 sta_per_chan[ch_idx] += len(ap["clients"])
             except IndexError:
                 logging.error(
-                    "got data on channel %d, we can store %d channels"
-                    % (ap["channel"], wifi.NumChannels)
-                )
+                    "got data on channel %d, we can store %d channels" %
+                    (ap["channel"], wifi.NumChannels))
 
         for peer in peers:
             try:
                 peers_per_chan[peer.last_channel - 1] += 1.0
             except IndexError:
                 logging.error(
-                    "got peer data on channel %d, we can store %d channels"
-                    % (peer.last_channel, wifi.NumChannels)
-                )
+                    "got peer data on channel %d, we can store %d channels" %
+                    (peer.last_channel, wifi.NumChannels))
 
         # normalize
         aps_per_chan = [e / num_aps for e in aps_per_chan]
@@ -136,14 +132,14 @@ class Epoch(object):
         self._observation_ready.set()
 
     def track(
-        self,
-        deauth=False,
-        assoc=False,
-        handshake=False,
-        hop=False,
-        sleep=False,
-        miss=False,
-        inc=1,
+            self,
+            deauth=False,
+            assoc=False,
+            handshake=False,
+            hop=False,
+            sleep=False,
+            miss=False,
+            inc=1,
     ):
         if deauth:
             self.num_deauths += inc
@@ -187,7 +183,8 @@ class Epoch(object):
             # sad > bored; cant be sad and bored
             self.bored_for = 0
             self.sad_for += 1
-        elif self.inactive_for >= self.config["personality"]["bored_num_epochs"]:
+        elif self.inactive_for >= self.config["personality"][
+                "bored_num_epochs"]:
             # sad_treshhold > inactive > bored_treshhold; cant be sad and bored
             self.sad_for = 0
             self.bored_for += 1
@@ -224,14 +221,14 @@ class Epoch(object):
             "temperature": temp,
         }
 
-        self._epoch_data["reward"] = self._reward(self.epoch + 1, self._epoch_data)
+        self._epoch_data["reward"] = self._reward(self.epoch + 1,
+                                                  self._epoch_data)
         self._epoch_data_ready.set()
 
         logging.info(
             "[epoch %d] duration=%s slept_for=%s blind=%d sad=%d bored=%d inactive=%d active=%d peers=%d tot_bond=%.2f "
             "avg_bond=%.2f hops=%d missed=%d deauths=%d assocs=%d handshakes=%d cpu=%d%% mem=%d%% "
-            "temperature=%dC reward=%s"
-            % (
+            "temperature=%dC reward=%s" % (
                 self.epoch,
                 utils.secs_to_hhmmss(self.epoch_duration),
                 utils.secs_to_hhmmss(self.num_slept),
@@ -252,8 +249,7 @@ class Epoch(object):
                 mem * 100,
                 temp,
                 self._epoch_data["reward"],
-            )
-        )
+            ))
 
         self.epoch += 1
         self.epoch_started = now
