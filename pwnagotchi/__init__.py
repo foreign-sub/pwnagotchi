@@ -15,12 +15,14 @@ def set_name(new_name):
         return
 
     new_name = new_name.strip()
-    if new_name == '':
+    if new_name == "":
         return
 
-    if not re.match(r'^[a-zA-Z0-9\-]{2,25}$', new_name):
+    if not re.match(r"^[a-zA-Z0-9\-]{2,25}$", new_name):
         logging.warning(
-            "name '%s' is invalid: min length is 2, max length 25, only a-zA-Z0-9- allowed", new_name)
+            "name '%s' is invalid: min length is 2, max length 25, only a-zA-Z0-9- allowed",
+            new_name,
+        )
         return
 
     current = name()
@@ -28,14 +30,14 @@ def set_name(new_name):
         global _name
 
         logging.info("setting unit hostname '%s' -> '%s'", current, new_name)
-        with open('/etc/hostname', 'wt') as fp:
+        with open("/etc/hostname", "wt") as fp:
             fp.write(new_name)
 
-        with open('/etc/hosts', 'rt') as fp:
+        with open("/etc/hosts", "rt") as fp:
             prev = fp.read()
             logging.debug("old hosts:\n%s\n", prev)
 
-        with open('/etc/hosts', 'wt') as fp:
+        with open("/etc/hosts", "wt") as fp:
             patched = prev.replace(current, new_name, -1)
             logging.debug("new hosts:\n%s\n", patched)
             fp.write(patched)
@@ -47,18 +49,18 @@ def set_name(new_name):
 def name():
     global _name
     if _name is None:
-        with open('/etc/hostname', 'rt') as fp:
+        with open("/etc/hostname", "rt") as fp:
             _name = fp.read().strip()
     return _name
 
 
 def uptime():
-    with open('/proc/uptime') as fp:
-        return int(fp.read().split('.')[0])
+    with open("/proc/uptime") as fp:
+        return int(fp.read().split(".")[0])
 
 
 def mem_usage():
-    with open('/proc/meminfo') as fp:
+    with open("/proc/meminfo") as fp:
         for line in fp:
             line = line.strip()
             if line.startswith("MemTotal:"):
@@ -79,7 +81,7 @@ def _cpu_stat():
     """
     Returns the splitted first line of the /proc/stat file
     """
-    with open('/proc/stat', 'rt') as fp:
+    with open("/proc/stat", "rt") as fp:
         return list(map(int, fp.readline().split()[1:]))
 
 
@@ -99,7 +101,7 @@ def cpu_load():
 
 
 def temperature(celsius=True):
-    with open('/sys/class/thermal/thermal_zone0/temp', 'rt') as fp:
+    with open("/sys/class/thermal/thermal_zone0/temp", "rt") as fp:
         temp = int(fp.read().strip())
     c = int(temp / 1000)
     return c if celsius else ((c * (9 / 5)) + 32)
@@ -109,12 +111,14 @@ def shutdown():
     logging.warning("syncing...")
 
     from pwnagotchi import fs
+
     for m in fs.mounts:
         m.sync()
 
     logging.warning("shutting down ...")
 
     from pwnagotchi.ui import view
+
     if view.ROOT:
         view.ROOT.on_shutdown()
         # give it some time to refresh the ui
@@ -126,7 +130,7 @@ def shutdown():
 def restart(mode):
     logging.warning("restarting in %s mode ...", mode)
 
-    if mode == 'AUTO':
+    if mode == "AUTO":
         os.system("touch /root/.pwnagotchi-auto")
     else:
         os.system("touch /root/.pwnagotchi-manual")
@@ -143,14 +147,15 @@ def reboot(mode=None):
         logging.warning("rebooting ...")
 
     from pwnagotchi.ui import view
+
     if view.ROOT:
         view.ROOT.on_rebooting()
         # give it some time to refresh the ui
         time.sleep(10)
 
-    if mode == 'AUTO':
+    if mode == "AUTO":
         os.system("touch /root/.pwnagotchi-auto")
-    elif mode == 'MANU':
+    elif mode == "MANU":
         os.system("touch /root/.pwnagotchi-manual")
 
     os.system("sync")

@@ -57,9 +57,9 @@ class Epoch(object):
         self.non_overlapping_channels = {1: 0, 6: 0, 11: 0}
         # observation vectors
         self._observation = {
-            'aps_histogram': [0.0] * wifi.NumChannels,
-            'sta_histogram': [0.0] * wifi.NumChannels,
-            'peers_histogram': [0.0] * wifi.NumChannels
+            "aps_histogram": [0.0] * wifi.NumChannels,
+            "sta_histogram": [0.0] * wifi.NumChannels,
+            "peers_histogram": [0.0] * wifi.NumChannels,
         }
         self._observation_ready = threading.Event()
         self._epoch_data = {}
@@ -72,7 +72,11 @@ class Epoch(object):
         #    self._observation_ready.clear()
         self._epoch_data_ready.wait(timeout)
         self._epoch_data_ready.clear()
-        return self._epoch_data if with_observation is False else {**self._observation, **self._epoch_data}
+        return (
+            self._epoch_data
+            if with_observation is False
+            else {**self._observation, **self._epoch_data}
+        )
 
     def data(self):
         return self._epoch_data
@@ -84,36 +88,41 @@ class Epoch(object):
         else:
             self.blind_for = 0
 
-        bond_unit_scale = self.config['personality']['bond_encounters_factor']
+        bond_unit_scale = self.config["personality"]["bond_encounters_factor"]
 
         self.num_peers = len(peers)
         num_peers = self.num_peers + 1e-10  # avoid division by 0
 
-        self.tot_bond_factor = sum(
-            (peer.encounters for peer in peers)) / bond_unit_scale
+        self.tot_bond_factor = (
+            sum((peer.encounters for peer in peers)) / bond_unit_scale
+        )
         self.avg_bond_factor = self.tot_bond_factor / num_peers
 
         num_aps = len(aps) + 1e-10
-        num_sta = sum(len(ap['clients']) for ap in aps) + 1e-10
+        num_sta = sum(len(ap["clients"]) for ap in aps) + 1e-10
         aps_per_chan = [0.0] * wifi.NumChannels
         sta_per_chan = [0.0] * wifi.NumChannels
         peers_per_chan = [0.0] * wifi.NumChannels
 
         for ap in aps:
-            ch_idx = ap['channel'] - 1
+            ch_idx = ap["channel"] - 1
             try:
                 aps_per_chan[ch_idx] += 1.0
-                sta_per_chan[ch_idx] += len(ap['clients'])
+                sta_per_chan[ch_idx] += len(ap["clients"])
             except IndexError:
-                logging.error("got data on channel %d, we can store %d channels" % (
-                    ap['channel'], wifi.NumChannels))
+                logging.error(
+                    "got data on channel %d, we can store %d channels"
+                    % (ap["channel"], wifi.NumChannels)
+                )
 
         for peer in peers:
             try:
                 peers_per_chan[peer.last_channel - 1] += 1.0
             except IndexError:
                 logging.error(
-                    "got peer data on channel %d, we can store %d channels" % (peer.last_channel, wifi.NumChannels))
+                    "got peer data on channel %d, we can store %d channels"
+                    % (peer.last_channel, wifi.NumChannels)
+                )
 
         # normalize
         aps_per_chan = [e / num_aps for e in aps_per_chan]
@@ -121,13 +130,22 @@ class Epoch(object):
         peers_per_chan = [e / num_peers for e in peers_per_chan]
 
         self._observation = {
-            'aps_histogram': aps_per_chan,
-            'sta_histogram': sta_per_chan,
-            'peers_histogram': peers_per_chan
+            "aps_histogram": aps_per_chan,
+            "sta_histogram": sta_per_chan,
+            "peers_histogram": peers_per_chan,
         }
         self._observation_ready.set()
 
-    def track(self, deauth=False, assoc=False, handshake=False, hop=False, sleep=False, miss=False, inc=1):
+    def track(
+        self,
+        deauth=False,
+        assoc=False,
+        handshake=False,
+        hop=False,
+        sleep=False,
+        miss=False,
+        inc=1,
+    ):
         if deauth:
             self.num_deauths += inc
             self.did_deauth = True
@@ -166,11 +184,11 @@ class Epoch(object):
             self.sad_for = 0
             self.bored_for = 0
 
-        if self.inactive_for >= self.config['personality']['sad_num_epochs']:
+        if self.inactive_for >= self.config["personality"]["sad_num_epochs"]:
             # sad > bored; cant be sad and bored
             self.bored_for = 0
             self.sad_for += 1
-        elif self.inactive_for >= self.config['personality']['bored_num_epochs']:
+        elif self.inactive_for >= self.config["personality"]["bored_num_epochs"]:
             # sad_treshhold > inactive > bored_treshhold; cant be sad and bored
             self.sad_for = 0
             self.bored_for += 1
@@ -187,53 +205,56 @@ class Epoch(object):
 
         # cache the state of this epoch for other threads to read
         self._epoch_data = {
-            'duration_secs': self.epoch_duration,
-            'slept_for_secs': self.num_slept,
-            'blind_for_epochs': self.blind_for,
-            'inactive_for_epochs': self.inactive_for,
-            'active_for_epochs': self.active_for,
-            'sad_for_epochs': self.sad_for,
-            'bored_for_epochs': self.bored_for,
-            'missed_interactions': self.num_missed,
-            'num_hops': self.num_hops,
-            'num_peers': self.num_peers,
-            'tot_bond': self.tot_bond_factor,
-            'avg_bond': self.avg_bond_factor,
-            'num_deauths': self.num_deauths,
-            'num_associations': self.num_assocs,
-            'num_handshakes': self.num_shakes,
-            'cpu_load': cpu,
-            'mem_usage': mem,
-            'temperature': temp
+            "duration_secs": self.epoch_duration,
+            "slept_for_secs": self.num_slept,
+            "blind_for_epochs": self.blind_for,
+            "inactive_for_epochs": self.inactive_for,
+            "active_for_epochs": self.active_for,
+            "sad_for_epochs": self.sad_for,
+            "bored_for_epochs": self.bored_for,
+            "missed_interactions": self.num_missed,
+            "num_hops": self.num_hops,
+            "num_peers": self.num_peers,
+            "tot_bond": self.tot_bond_factor,
+            "avg_bond": self.avg_bond_factor,
+            "num_deauths": self.num_deauths,
+            "num_associations": self.num_assocs,
+            "num_handshakes": self.num_shakes,
+            "cpu_load": cpu,
+            "mem_usage": mem,
+            "temperature": temp,
         }
 
-        self._epoch_data['reward'] = self._reward(
-            self.epoch + 1, self._epoch_data)
+        self._epoch_data["reward"] = self._reward(self.epoch + 1, self._epoch_data)
         self._epoch_data_ready.set()
 
-        logging.info("[epoch %d] duration=%s slept_for=%s blind=%d sad=%d bored=%d inactive=%d active=%d peers=%d tot_bond=%.2f "
-                     "avg_bond=%.2f hops=%d missed=%d deauths=%d assocs=%d handshakes=%d cpu=%d%% mem=%d%% "
-                     "temperature=%dC reward=%s" % (
-                         self.epoch,
-                         utils.secs_to_hhmmss(self.epoch_duration),
-                         utils.secs_to_hhmmss(self.num_slept),
-                         self.blind_for,
-                         self.sad_for,
-                         self.bored_for,
-                         self.inactive_for,
-                         self.active_for,
-                         self.num_peers,
-                         self.tot_bond_factor,
-                         self.avg_bond_factor,
-                         self.num_hops,
-                         self.num_missed,
-                         self.num_deauths,
-                         self.num_assocs,
-                         self.num_shakes,
-                         cpu * 100,
-                         mem * 100,
-                         temp,
-                         self._epoch_data['reward']))
+        logging.info(
+            "[epoch %d] duration=%s slept_for=%s blind=%d sad=%d bored=%d inactive=%d active=%d peers=%d tot_bond=%.2f "
+            "avg_bond=%.2f hops=%d missed=%d deauths=%d assocs=%d handshakes=%d cpu=%d%% mem=%d%% "
+            "temperature=%dC reward=%s"
+            % (
+                self.epoch,
+                utils.secs_to_hhmmss(self.epoch_duration),
+                utils.secs_to_hhmmss(self.num_slept),
+                self.blind_for,
+                self.sad_for,
+                self.bored_for,
+                self.inactive_for,
+                self.active_for,
+                self.num_peers,
+                self.tot_bond_factor,
+                self.avg_bond_factor,
+                self.num_hops,
+                self.num_missed,
+                self.num_deauths,
+                self.num_assocs,
+                self.num_shakes,
+                cpu * 100,
+                mem * 100,
+                temp,
+                self._epoch_data["reward"],
+            )
+        )
 
         self.epoch += 1
         self.epoch_started = now

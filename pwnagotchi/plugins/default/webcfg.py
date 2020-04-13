@@ -465,24 +465,24 @@ def serializer(obj):
 
 
 class WebConfig(plugins.Plugin):
-    __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '1.0.0'
-    __license__ = 'GPL3'
-    __description__ = 'This plugin allows the user to make runtime changes.'
+    __author__ = "33197631+dadav@users.noreply.github.com"
+    __version__ = "1.0.0"
+    __license__ = "GPL3"
+    __description__ = "This plugin allows the user to make runtime changes."
 
     def __init__(self):
         self.ready = False
-        self.mode = 'MANU'
+        self.mode = "MANU"
 
     def on_config_changed(self, config):
         self.config = config
         self.ready = True
 
     def on_ready(self, agent):
-        self.mode = 'MANU' if agent.mode == 'manual' else 'AUTO'
+        self.mode = "MANU" if agent.mode == "manual" else "AUTO"
 
     def on_internet_available(self, agent):
-        self.mode = 'MANU' if agent.mode == 'manual' else 'AUTO'
+        self.mode = "MANU" if agent.mode == "manual" else "AUTO"
 
     def on_loaded(self):
         """
@@ -508,8 +508,9 @@ class WebConfig(plugins.Plugin):
         elif request.method == "POST":
             if path == "save-config":
                 try:
-                    save_config(request.get_json(),
-                                '/etc/pwnagotchi/config.toml')  # test
+                    save_config(
+                        request.get_json(), "/etc/pwnagotchi/config.toml"
+                    )  # test
                     _thread.start_new_thread(restart, (self.mode,))
                     return "success"
                 except Exception as ex:

@@ -13,7 +13,7 @@ mounts = list()
 
 
 @contextlib.contextmanager
-def ensure_write(filename, mode='w'):
+def ensure_write(filename, mode="w"):
     path = os.path.dirname(filename)
     fd, tmp = tempfile.mkstemp(dir=path)
 
@@ -48,30 +48,34 @@ def setup_mounts(config):
     Sets up all the configured mountpoints
     """
     global mounts
-    fs_cfg = config['fs']['memory']
-    if not fs_cfg['enabled']:
+    fs_cfg = config["fs"]["memory"]
+    if not fs_cfg["enabled"]:
         return
 
-    for name, options in fs_cfg['mounts'].items():
-        if not options['enabled']:
+    for name, options in fs_cfg["mounts"].items():
+        if not options["enabled"]:
             continue
-        logging.debug("[FS] Trying to setup mount %s (%s)",
-                      name, options['mount'])
-        size, unit = re.match(r"(\d+)([a-zA-Z]+)", options['size']).groups()
-        target = os.path.join('/run/pwnagotchi/disk/',
-                              os.path.basename(options['mount']))
+        logging.debug("[FS] Trying to setup mount %s (%s)", name, options["mount"])
+        size, unit = re.match(r"(\d+)([a-zA-Z]+)", options["size"]).groups()
+        target = os.path.join(
+            "/run/pwnagotchi/disk/", os.path.basename(options["mount"])
+        )
 
         is_mounted = is_mountpoint(target)
-        logging.debug("[FS] %s is %s mounted", options['mount'],
-                      "already" if is_mounted else "not yet")
+        logging.debug(
+            "[FS] %s is %s mounted",
+            options["mount"],
+            "already" if is_mounted else "not yet",
+        )
 
         m = MemoryFS(
-            options['mount'],
+            options["mount"],
             target,
-            size=options['size'],
-            zram=options['zram'],
+            size=options["size"],
+            zram=options["zram"],
             zram_disk_size=f"{int(size)*2}{unit}",
-            rsync=options['rsync'])
+            rsync=options["rsync"],
+        )
 
         if not is_mounted:
             if not m.mount():
@@ -83,14 +87,18 @@ def setup_mounts(config):
                 m.umount()
                 continue
 
-        interval = int(options['sync'])
+        interval = int(options["sync"])
         if interval:
-            logging.debug("[FS] Starting thread to sync %s (interval: %d)",
-                          options['mount'], interval)
+            logging.debug(
+                "[FS] Starting thread to sync %s (interval: %d)",
+                options["mount"],
+                interval,
+            )
             _thread.start_new_thread(m.daemonize, (interval,))
         else:
-            logging.debug("[FS] Not syncing %s, because interval is 0",
-                          options['mount'])
+            logging.debug(
+                "[FS] Not syncing %s, because interval is 0", options["mount"]
+            )
 
         mounts.append(m)
 
@@ -108,9 +116,17 @@ class MemoryFS:
         logging.debug("[FS] Adding zram device")
         return open("/sys/class/zram-control/hot_add", "rt").read().strip("\n")
 
-    def __init__(self, mount, disk, size="40M",
-                 zram=True, zram_alg="lz4", zram_disk_size="100M",
-                 zram_fs_type="ext4", rsync=True):
+    def __init__(
+        self,
+        mount,
+        disk,
+        size="40M",
+        zram=True,
+        zram_alg="lz4",
+        zram_disk_size="100M",
+        zram_fs_type="ext4",
+        rsync=True,
+    ):
         self.mountpoint = mount
         self.disk = disk
         self.size = size
@@ -126,15 +142,17 @@ class MemoryFS:
         if self.zram and MemoryFS.zram_install():
             # setup zram
             self.zdev = MemoryFS.zram_dev()
-            open(f"/sys/block/zram{self.zdev}/comp_algorithm",
-                 "wt").write(self.zram_alg)
-            open(f"/sys/block/zram{self.zdev}/disksize",
-                 "wt").write(self.zram_disk_size)
-            open(f"/sys/block/zram{self.zdev}/mem_limit",
-                 "wt").write(self.size)
+            open(f"/sys/block/zram{self.zdev}/comp_algorithm", "wt").write(
+                self.zram_alg
+            )
+            open(f"/sys/block/zram{self.zdev}/disksize", "wt").write(
+                self.zram_disk_size
+            )
+            open(f"/sys/block/zram{self.zdev}/mem_limit", "wt").write(self.size)
             logging.debug("[FS] Creating fs (type: %s)", self.zram_fs_type)
             os.system(
-                f"mke2fs -t {self.zram_fs_type} /dev/zram{self.zdev} >/dev/null 2>&1")
+                f"mke2fs -t {self.zram_fs_type} /dev/zram{self.zdev} >/dev/null 2>&1"
+            )
 
         # ensure mountpoints exist
         if not os.path.exists(self.disk):
@@ -152,14 +170,16 @@ class MemoryFS:
             sleep(interval)
 
     def sync(self, to_ram=False):
-        source, dest = (self.disk, self.mountpoint) if to_ram else (
-            self.mountpoint, self.disk)
+        source, dest = (
+            (self.disk, self.mountpoint) if to_ram else (self.mountpoint, self.disk)
+        )
         needed, actually_free = size_of(source), shutil.disk_usage(dest)[2]
         if actually_free >= needed:
             logging.debug("[FS] Syning %s -> %s", source, dest)
             if self.rsync:
                 os.system(
-                    f"rsync -aXv --inplace --no-whole-file --delete-after {source}/ {dest}/ >/dev/null 2>&1")
+                    f"rsync -aXv --inplace --no-whole-file --delete-after {source}/ {dest}/ >/dev/null 2>&1"
+                )
             else:
                 copy_tree(source, dest, preserve_symlinks=True)
             os.system("sync")
@@ -174,10 +194,14 @@ class MemoryFS:
             return False
 
         if self.zram and self.zdev is not None:
-            if os.system(f"mount -t {self.zram_fs_type} -o nosuid,noexec,nodev,user=pwnagotchi /dev/zram{self.zdev} {self.mountpoint}/"):
+            if os.system(
+                f"mount -t {self.zram_fs_type} -o nosuid,noexec,nodev,user=pwnagotchi /dev/zram{self.zdev} {self.mountpoint}/"
+            ):
                 return False
         else:
-            if os.system(f"mount -t tmpfs -o nosuid,noexec,nodev,mode=0755,size={self.size} pwnagotchi {self.mountpoint}/"):
+            if os.system(
+                f"mount -t tmpfs -o nosuid,noexec,nodev,mode=0755,size={self.size} pwnagotchi {self.mountpoint}/"
+            ):
                 return False
 
         return True

@@ -7,8 +7,7 @@ import importlib.util
 import logging
 
 
-default_path = os.path.join(os.path.dirname(
-    os.path.realpath(__file__)), "default")
+default_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "default")
 loaded = {}
 database = {}
 locks = {}
@@ -20,18 +19,16 @@ class Plugin:
         super().__init_subclass__(**kwargs)
         global loaded, locks
 
-        plugin_name = cls.__module__.split('.')[0]
+        plugin_name = cls.__module__.split(".")[0]
         plugin_instance = cls()
-        logging.debug("loaded plugin %s as %s" %
-                      (plugin_name, plugin_instance))
+        logging.debug("loaded plugin %s as %s" % (plugin_name, plugin_instance))
         loaded[plugin_name] = plugin_instance
 
         for attr_name in plugin_instance.__dir__():
-            if attr_name.startswith('on_'):
+            if attr_name.startswith("on_"):
                 cb = getattr(plugin_instance, attr_name, None)
                 if cb is not None and callable(cb):
-                    locks["%s::%s" % (plugin_name, attr_name)
-                          ] = threading.Lock()
+                    locks["%s::%s" % (plugin_name, attr_name)] = threading.Lock()
 
 
 def toggle_plugin(name, enable=True):
@@ -47,11 +44,11 @@ def toggle_plugin(name, enable=True):
     global loaded, database
 
     if pwnagotchi.config:
-        pwnagotchi.config['main']['plugins'][name]['enabled'] = enable
-        save_config(pwnagotchi.config, '/etc/pwnagotchi/config.toml')
+        pwnagotchi.config["main"]["plugins"][name]["enabled"] = enable
+        save_config(pwnagotchi.config, "/etc/pwnagotchi/config.toml")
 
     if not enable and name in loaded:
-        if getattr(loaded[name], 'on_unload', None):
+        if getattr(loaded[name], "on_unload", None):
             loaded[name].on_unload(view.ROOT)
         del loaded[name]
 
@@ -59,11 +56,11 @@ def toggle_plugin(name, enable=True):
 
     if enable and name in database and name not in loaded:
         load_from_file(database[name])
-        one(name, 'loaded')
+        one(name, "loaded")
         if pwnagotchi.config:
-            one(name, 'config_changed', pwnagotchi.config)
-        one(name, 'ui_setup', view.ROOT)
-        one(name, 'ready', view.ROOT._agent)
+            one(name, "config_changed", pwnagotchi.config)
+        one(name, "ui_setup", view.ROOT)
+        one(name, "ready", view.ROOT._agent)
         return True
 
     return False
@@ -89,7 +86,7 @@ def one(plugin_name, event_name, *args, **kwargs):
 
     if plugin_name in loaded:
         plugin = loaded[plugin_name]
-        cb_name = 'on_%s' % event_name
+        cb_name = "on_%s" % event_name
         callback = getattr(plugin, cb_name, None)
         if callback is not None and callable(callback):
             try:
@@ -97,8 +94,9 @@ def one(plugin_name, event_name, *args, **kwargs):
                 locked_cb_args = (lock_name, callback, *args, *kwargs)
                 _thread.start_new_thread(locked_cb, locked_cb_args)
             except Exception as e:
-                logging.error("error while running %s.%s : %s" %
-                              (plugin_name, cb_name, e))
+                logging.error(
+                    "error while running %s.%s : %s" % (plugin_name, cb_name, e)
+                )
                 logging.error(e, exc_info=True)
 
 
@@ -128,20 +126,25 @@ def load_from_path(path, enabled=()):
 
 
 def load(config):
-    enabled = [name for name, options in config['main']['plugins'].items() if
-               'enabled' in options and options['enabled']]
+    enabled = [
+        name
+        for name, options in config["main"]["plugins"].items()
+        if "enabled" in options and options["enabled"]
+    ]
 
     # load default plugins
     load_from_path(default_path, enabled=enabled)
 
     # load custom ones
-    custom_path = config['main']['custom_plugins'] if 'custom_plugins' in config['main'] else None
+    custom_path = (
+        config["main"]["custom_plugins"] if "custom_plugins" in config["main"] else None
+    )
     if custom_path is not None:
         load_from_path(custom_path, enabled=enabled)
 
     # propagate options
     for name, plugin in loaded.items():
-        plugin.options = config['main']['plugins'][name]
+        plugin.options = config["main"]["plugins"][name]
 
-    on('loaded')
-    on('config_changed', config)
+    on("loaded")
+    on("config_changed", config)

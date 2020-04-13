@@ -31,7 +31,7 @@ class Stats(object):
         best_r = False
         worst_r = False
         with self._lock:
-            reward = data['reward']
+            reward = data["reward"]
             if reward < self.worst_reward:
                 self.worst_reward = reward
                 worst_r = True
@@ -55,29 +55,34 @@ class Stats(object):
         with self._lock:
             if os.path.exists(self.path) and os.path.getsize(self.path) > 0:
                 logging.info("[ai] loading %s" % self.path)
-                with open(self.path, 'rt') as fp:
+                with open(self.path, "rt") as fp:
                     obj = json.load(fp)
 
-                self.born_at = obj['born_at']
-                self.epochs_lived, self.epochs_trained = obj['epochs_lived'], obj['epochs_trained']
-                self.best_reward, self.worst_reward = obj['rewards']['best'], obj['rewards']['worst']
+                self.born_at = obj["born_at"]
+                self.epochs_lived, self.epochs_trained = (
+                    obj["epochs_lived"],
+                    obj["epochs_trained"],
+                )
+                self.best_reward, self.worst_reward = (
+                    obj["rewards"]["best"],
+                    obj["rewards"]["worst"],
+                )
 
     def save(self):
         with self._lock:
             logging.info("[ai] saving %s" % self.path)
 
-            data = json.dumps({
-                'born_at': self.born_at,
-                'epochs_lived': self.epochs_lived,
-                'epochs_trained': self.epochs_trained,
-                'rewards': {
-                    'best': self.best_reward,
-                    'worst': self.worst_reward
+            data = json.dumps(
+                {
+                    "born_at": self.born_at,
+                    "epochs_lived": self.epochs_lived,
+                    "epochs_trained": self.epochs_trained,
+                    "rewards": {"best": self.best_reward, "worst": self.worst_reward},
                 }
-            })
+            )
 
             temp = "%s.tmp" % self.path
-            with open(temp, 'wt') as fp:
+            with open(temp, "wt") as fp:
                 fp.write(data)
 
             os.replace(temp, self.path)
@@ -89,18 +94,17 @@ class AsyncTrainer(object):
         self._model = None
         self._is_training = False
         self._training_epochs = 0
-        self._nn_path = self._config['ai']['path']
-        self._stats = Stats("%s.json" %
-                            os.path.splitext(self._nn_path)[0], self)
+        self._nn_path = self._config["ai"]["path"]
+        self._stats = Stats("%s.json" % os.path.splitext(self._nn_path)[0], self)
 
     def set_training(self, training, for_epochs=0):
         self._is_training = training
         self._training_epochs = for_epochs
 
         if training:
-            plugins.on('ai_training_start', self, for_epochs)
+            plugins.on("ai_training_start", self, for_epochs)
         else:
-            plugins.on('ai_training_end', self)
+            plugins.on("ai_training_end", self)
 
     def is_training(self):
         return self._is_training
@@ -127,41 +131,37 @@ class AsyncTrainer(object):
 
     def on_ai_training_step(self, _locals, _globals):
         self._model.env.render()
-        plugins.on('ai_training_step', self, _locals, _globals)
+        plugins.on("ai_training_step", self, _locals, _globals)
 
     def on_ai_policy(self, new_params):
-        plugins.on('ai_policy', self, new_params)
+        plugins.on("ai_policy", self, new_params)
         logging.info("[ai] setting new policy:")
         for name, value in new_params.items():
-            if name in self._config['personality']:
-                curr_value = self._config['personality'][name]
+            if name in self._config["personality"]:
+                curr_value = self._config["personality"][name]
                 if curr_value != value:
-                    logging.info("[ai] ! %s: %s -> %s" %
-                                 (name, curr_value, value))
-                    self._config['personality'][name] = value
+                    logging.info("[ai] ! %s: %s -> %s" % (name, curr_value, value))
+                    self._config["personality"][name] = value
             else:
-                logging.error(
-                    "[ai] param %s not in personality configuration!" % name)
+                logging.error("[ai] param %s not in personality configuration!" % name)
 
-        self.run('set wifi.ap.ttl %d' % self._config['personality']['ap_ttl'])
-        self.run('set wifi.sta.ttl %d' %
-                 self._config['personality']['sta_ttl'])
-        self.run('set wifi.rssi.min %d' %
-                 self._config['personality']['min_rssi'])
+        self.run("set wifi.ap.ttl %d" % self._config["personality"]["ap_ttl"])
+        self.run("set wifi.sta.ttl %d" % self._config["personality"]["sta_ttl"])
+        self.run("set wifi.rssi.min %d" % self._config["personality"]["min_rssi"])
 
     def on_ai_ready(self):
         self._view.on_ai_ready()
-        plugins.on('ai_ready', self)
+        plugins.on("ai_ready", self)
 
     def on_ai_best_reward(self, r):
         logging.info("[ai] best reward so far: %s" % r)
         self._view.on_motivated(r)
-        plugins.on('ai_best_reward', self, r)
+        plugins.on("ai_best_reward", self, r)
 
     def on_ai_worst_reward(self, r):
         logging.info("[ai] worst reward so far: %s" % r)
         self._view.on_demotivated(r)
-        plugins.on('ai_worst_reward', self, r)
+        plugins.on("ai_worst_reward", self, r)
 
     def _ai_worker(self):
         self._model = ai.load(self._config, self, self._epoch)
@@ -169,19 +169,20 @@ class AsyncTrainer(object):
         if self._model:
             self.on_ai_ready()
 
-            epochs_per_episode = self._config['ai']['epochs_per_episode']
+            epochs_per_episode = self._config["ai"]["epochs_per_episode"]
 
             obs = None
             while True:
                 self._model.env.render()
                 # enter in training mode?
-                if random.random() > self._config['ai']['laziness']:
-                    logging.info("[ai] learning for %d epochs ..." %
-                                 epochs_per_episode)
+                if random.random() > self._config["ai"]["laziness"]:
+                    logging.info("[ai] learning for %d epochs ..." % epochs_per_episode)
                     try:
                         self.set_training(True, epochs_per_episode)
                         self._model.learn(
-                            total_timesteps=epochs_per_episode, callback=self.on_ai_training_step)
+                            total_timesteps=epochs_per_episode,
+                            callback=self.on_ai_training_step,
+                        )
                     except Exception as e:
                         logging.exception("[ai] error while training (%s)", e)
                     finally:
