@@ -14,7 +14,6 @@ from flask import Response
 from pwnagotchi import plugins
 from pwnagotchi.utils import StatusFile
 
-
 TEMPLATE = """
 {% extends "base.html" %}
 {% set active_page = "plugins" %}
