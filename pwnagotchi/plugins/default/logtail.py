@@ -234,10 +234,10 @@ TEMPLATE = """
 
 
 class Logtail(plugins.Plugin):
-    __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '0.1.0'
-    __license__ = 'GPL3'
-    __description__ = 'This plugin tails the logfile.'
+    __author__ = "33197631+dadav@users.noreply.github.com"
+    __version__ = "0.1.0"
+    __license__ = "GPL3"
+    __description__ = "This plugin tails the logfile."
 
     def __init__(self):
         self.lock = threading.Lock()
@@ -261,16 +261,17 @@ class Logtail(plugins.Plugin):
         if not path or path == "/":
             return render_template_string(TEMPLATE)
 
-        if path == 'stream':
+        if path == "stream":
+
             def generate():
-                with open(self.config['main']['log']['path']) as f:
+                with open(self.config["main"]["log"]["path"]) as f:
                     # https://stackoverflow.com/questions/39549426/read-multiple-lines-from-a-file-batch-by-batch/39549901#39549901
                     n = 1024
-                    for n_lines in iter(lambda: ''.join(islice(f, n)), ''):
+                    for n_lines in iter(lambda: "".join(islice(f, n)), ""):
                         yield n_lines
                     while True:
                         yield f.readline()
 
-            return Response(generate(), mimetype='text/plain')
+            return Response(generate(), mimetype="text/plain")
 
         abort(404)
