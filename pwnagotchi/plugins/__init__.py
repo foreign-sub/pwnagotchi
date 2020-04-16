@@ -1,10 +1,9 @@
-import os
-import glob
 import _thread
-import threading
-import importlib
+import glob
 import importlib.util
 import logging
+import os
+import threading
 
 
 default_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "default")
