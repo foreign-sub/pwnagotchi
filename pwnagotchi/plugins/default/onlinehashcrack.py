@@ -1,13 +1,16 @@
-import os
 import csv
 import logging
+import os
 import re
-import requests
 from datetime import datetime
-from threading import Lock
-from pwnagotchi.utils import StatusFile, remove_whitelisted
-import pwnagotchi.plugins as plugins
 from json.decoder import JSONDecodeError
+from threading import Lock
+
+import requests
+
+import pwnagotchi.plugins as plugins
+from pwnagotchi.utils import remove_whitelisted
+from pwnagotchi.utils import StatusFile
 
 
 class OnlineHashCrack(plugins.Plugin):

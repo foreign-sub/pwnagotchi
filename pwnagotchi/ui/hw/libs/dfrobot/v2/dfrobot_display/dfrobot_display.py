@@ -1,9 +1,8 @@
 # -*- coding:utf-8 -*-
-
 import sys
 
-from .dfrobot_printString import PrintString
 from .dfrobot_fonts import Fonts
+from .dfrobot_printString import PrintString
 
 
 def color24to16(color):

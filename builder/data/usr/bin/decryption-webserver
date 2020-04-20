@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler
+from http.server import HTTPServer
 from urllib.parse import parse_qsl
 
 

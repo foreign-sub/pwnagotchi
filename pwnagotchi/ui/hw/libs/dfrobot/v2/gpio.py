@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
-
 import time
+
 import RPi.GPIO as RPIGPIO
 
 RPIGPIO.setmode(RPIGPIO.BCM)

@@ -1,8 +1,8 @@
 import json
 import logging
+
 import requests
 import websockets
-
 from requests.auth import HTTPBasicAuth
 
 

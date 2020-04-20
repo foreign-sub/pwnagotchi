@@ -1,8 +1,9 @@
-import os
 import logging
+import os
 import re
 import subprocess
 from io import TextIOWrapper
+
 from pwnagotchi import plugins
 
 

@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
-
-from .display_extension import fonts_8_16 as fonts_ABC
-from .dfrobot_display.dfrobot_display import DFRobot_Display
-import RPi.GPIO as RPIGPIO
+import sys
 import time
 
-import sys
+import RPi.GPIO as RPIGPIO
+
+from .dfrobot_display.dfrobot_display import DFRobot_Display
+from .display_extension import fonts_8_16 as fonts_ABC
 
 sys.path.append("..")
 

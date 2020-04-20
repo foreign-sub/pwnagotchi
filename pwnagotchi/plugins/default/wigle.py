@@ -1,20 +1,19 @@
-import os
-import logging
-import json
 import csv
+import json
+import logging
+import os
+from datetime import datetime
+from io import StringIO
+from threading import Lock
+
 import requests
 
-from io import StringIO
-from datetime import datetime
-from pwnagotchi.utils import (
-    WifiInfo,
-    FieldNotFoundError,
-    extract_from_pcap,
-    StatusFile,
-    remove_whitelisted,
-)
-from threading import Lock
 from pwnagotchi import plugins
+from pwnagotchi.utils import extract_from_pcap
+from pwnagotchi.utils import FieldNotFoundError
+from pwnagotchi.utils import remove_whitelisted
+from pwnagotchi.utils import StatusFile
+from pwnagotchi.utils import WifiInfo
 
 
 def _extract_gps_data(path):

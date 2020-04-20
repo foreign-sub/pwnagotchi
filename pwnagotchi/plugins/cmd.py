@@ -1,13 +1,17 @@
 # Handles the commandline stuff
-
-import os
-import logging
 import glob
+import logging
+import os
 import re
 import shutil
 from fnmatch import fnmatch
-from pwnagotchi.utils import download_file, unzip, save_config, parse_version, md5
+
 from pwnagotchi.plugins import default_path
+from pwnagotchi.utils import download_file
+from pwnagotchi.utils import md5
+from pwnagotchi.utils import parse_version
+from pwnagotchi.utils import save_config
+from pwnagotchi.utils import unzip
 
 
 SAVE_DIR = "/usr/local/share/pwnagotchi/availaible-plugins/"

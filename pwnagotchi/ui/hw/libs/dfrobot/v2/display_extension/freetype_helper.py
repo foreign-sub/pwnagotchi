@@ -1,18 +1,15 @@
 # -*- coding:utf-8 -*-
-
 """
 depends: freetype-py
 """
+import importlib
+import math
+import sys
 
 import freetype
-import math
-
 # import sys
-
 # reload(sys)
 # sys.setdefaultencoding("utf-8")
-import importlib
-import sys
 
 # importlib.reload(sys)
 

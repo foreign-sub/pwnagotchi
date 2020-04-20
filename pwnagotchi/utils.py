@@ -1,19 +1,19 @@
-import logging
 import glob
-import os
-import time
-import subprocess
-
 import json
-import shutil
-import toml
-import sys
+import logging
+import os
 import re
-
-from toml.encoder import TomlEncoder, _dump_str
-from zipfile import ZipFile
+import shutil
+import subprocess
+import sys
+import time
 from datetime import datetime
 from enum import Enum
+from zipfile import ZipFile
+
+import toml
+from toml.encoder import _dump_str
+from toml.encoder import TomlEncoder
 
 
 class DottedTomlEncoder(TomlEncoder):

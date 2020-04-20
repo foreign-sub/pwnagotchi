@@ -1,6 +1,6 @@
 # DFRobot display support
-
 import logging
+
 from . import dfrobot_epaper
 
 # Resolution of display
