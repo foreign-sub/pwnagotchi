@@ -2,7 +2,7 @@
 
 # well ... it blinks the led
 blink_led() {
-  for i in $(seq 1 "$1"); do
+  for i in "$(seq 1 "$1")"; do
     echo 0 >/sys/class/leds/led0/brightness
     sleep 0.3
     echo 1 >/sys/class/leds/led0/brightness
@@ -43,7 +43,7 @@ stop_monitor_interface() {
 
 # returns 0 if the specificed network interface is up
 is_interface_up() {
-  if grep -qi 'up' /sys/class/net/$1/operstate; then
+  if grep -qi 'up' /sys/class/net/"$1"/operstate; then
     return 0
   fi
   return 1
