@@ -74,14 +74,14 @@ class DFRobot_Epaper(DFRobot_Display):
         sy = int((y + 1) % 8)
         if color == self.WHITE:
             if sy != 0:
-                self._displayBuffer[m] = self._displayBuffer[m] | int(pow(2, 8 - sy))
+                self._displayBuffer[m] = self._displayBuffer[m] | int(
+                    pow(2, 8 - sy))
             else:
                 self._displayBuffer[m - 1] = self._displayBuffer[m - 1] | 1
         elif color == self.BLACK:
             if sy != 0:
                 self._displayBuffer[m] = self._displayBuffer[m] & (
-                    0xFF - int(pow(2, 8 - sy))
-                )
+                    0xFF - int(pow(2, 8 - sy)))
             else:
                 self._displayBuffer[m - 1] = self._displayBuffer[m - 1] & 0xFE
 
@@ -329,7 +329,7 @@ class DFRobot_Epaper(DFRobot_Display):
             sizeX = sizeX + (8 - sizeX % 8)
         sizeX = sizeX // 8
 
-        self.writeCmdAndData(0x24, self._displayBuffer[0 : sizeX * sizeY])
+        self.writeCmdAndData(0x24, self._displayBuffer[0:sizeX * sizeY])
 
     def _updateDis(self, mode):
         if mode == self.FULL:
@@ -357,9 +357,8 @@ class DFRobot_Epaper(DFRobot_Display):
         time.sleep(0.1)
 
     def _disPart(self, xStart, xEnd, yStart, yEnd):
-        self._setRamData(
-            xStart // 8, xEnd // 8, yEnd % 256, yEnd // 256, yStart % 256, yStart // 256
-        )
+        self._setRamData(xStart // 8, xEnd // 8, yEnd % 256, yEnd // 256,
+                         yStart % 256, yStart // 256)
         self._setRamPointer(xStart // 8, yEnd % 256, yEnd // 256)
         self._writeDisRam(xEnd - xStart, yEnd - yStart + 1)
         self._updateDis(self.PART)
@@ -373,7 +372,8 @@ class DFRobot_Epaper(DFRobot_Display):
         if mode == self.PART:
             self._disPart(0, self.XDOT - 1, 0, self.YDOT - 1)
         else:
-            self._setRamPointer(0x00, (self.YDOT - 1) % 256, (self.YDOT - 1) // 256)
+            self._setRamPointer(0x00, (self.YDOT - 1) % 256,
+                                (self.YDOT - 1) // 256)
             self._writeDisRam(self.XDOT, self.YDOT)
             self._updateDis(self.FULL)
 
@@ -384,10 +384,13 @@ class DFRobot_Epaper(DFRobot_Display):
     def bitmapFileHelper(self, buf):
         for i in range(len(buf) // 3):
             addr = i * 3
-            if buf[addr] == 0x00 and buf[addr + 1] == 0x00 and buf[addr + 2] == 0x00:
-                self.pixel(self._bitmapFileStartX, self._bitmapFileStartY, self.BLACK)
+            if buf[addr] == 0x00 and buf[addr + 1] == 0x00 and buf[addr +
+                                                                   2] == 0x00:
+                self.pixel(self._bitmapFileStartX, self._bitmapFileStartY,
+                           self.BLACK)
             else:
-                self.pixel(self._bitmapFileStartX, self._bitmapFileStartY, self.WHITE)
+                self.pixel(self._bitmapFileStartX, self._bitmapFileStartY,
+                           self.WHITE)
             self._bitmapFileStartX += 1
 
     def endDrawBitmapFile(self):

@@ -84,8 +84,7 @@ class BTNap:
         """
 
         return BTNap.find_adapter_in_objects(
-            BTNap.get_manager().GetManagedObjects(), pattern
-        )
+            BTNap.get_manager().GetManagedObjects(), pattern)
 
     @staticmethod
     def find_adapter_in_objects(objects, pattern=None):
@@ -97,7 +96,8 @@ class BTNap:
             adapter = ifaces.get(BTNap.IFACE_ADAPTER)
             if adapter is None:
                 continue
-            if not pattern or pattern == adapter["Address"] or path.endswith(pattern):
+            if not pattern or pattern == adapter["Address"] or path.endswith(
+                    pattern):
                 obj = bus.get_object(BTNap.IFACE_BASE, path)
                 yield dbus.Interface(obj, BTNap.IFACE_ADAPTER)
         if obj is None:
@@ -109,8 +109,8 @@ class BTNap:
         Finds the device
         """
         return BTNap.find_device_in_objects(
-            BTNap.get_manager().GetManagedObjects(), device_address, adapter_pattern
-        )
+            BTNap.get_manager().GetManagedObjects(), device_address,
+            adapter_pattern)
 
     @staticmethod
     def find_device_in_objects(objects, device_address, adapter_pattern=None):
@@ -123,15 +123,15 @@ class BTNap:
             if not isinstance(adapter_pattern, str):
                 adapter = adapter_pattern
             else:
-                adapter = BTNap.find_adapter_in_objects(objects, adapter_pattern)
+                adapter = BTNap.find_adapter_in_objects(
+                    objects, adapter_pattern)
             path_prefix = adapter.object_path
         for path, ifaces in objects.items():
             device = ifaces.get(BTNap.IFACE_DEV)
             if device is None:
                 continue
-            if str(
-                device["Address"]
-            ).lower() == device_address.lower() and path.startswith(path_prefix):
+            if str(device["Address"]).lower() == device_address.lower(
+            ) and path.startswith(path_prefix):
                 obj = bus.get_object(BTNap.IFACE_BASE, path)
                 return dbus.Interface(obj, BTNap.IFACE_DEV)
         raise BTError("Bluetooth device not found")
@@ -151,9 +151,8 @@ class BTNap:
 
         for dev_addr, dev in devs.items():
             BTNap.prop_set(dev, "Powered", on)
-            logging.debug(
-                "Set power of %s (addr %s) to %s", dev.object_path, dev_addr, str(on)
-            )
+            logging.debug("Set power of %s (addr %s) to %s", dev.object_path,
+                          dev_addr, str(on))
 
         if devs:
             return list(devs.values())[0]
@@ -420,19 +419,19 @@ class IfaceWrapper:
 
 class Device:
     def __init__(
-        self,
-        name,
-        share_internet,
-        mac,
-        ip,
-        netmask,
-        interval,
-        gateway=None,
-        priority=10,
-        scantime=15,
-        search_order=0,
-        max_tries=0,
-        **kwargs,
+            self,
+            name,
+            share_internet,
+            mac,
+            ip,
+            netmask,
+            interval,
+            gateway=None,
+            priority=10,
+            scantime=15,
+            search_order=0,
+            max_tries=0,
+            **kwargs,
     ):
         self.name = name
         self.status = StatusFile(f"/root/.bt-tether-{name}")
@@ -486,18 +485,19 @@ class BTTether(plugins.Plugin):
             for device, options in self.options["devices"].items():
                 if "enabled" in options and options["enabled"]:
                     for device_opt in [
-                        "enabled",
-                        "priority",
-                        "scantime",
-                        "search_order",
-                        "max_tries",
-                        "share_internet",
-                        "mac",
-                        "ip",
-                        "netmask",
-                        "interval",
+                            "enabled",
+                            "priority",
+                            "scantime",
+                            "search_order",
+                            "max_tries",
+                            "share_internet",
+                            "mac",
+                            "ip",
+                            "netmask",
+                            "interval",
                     ]:
-                        if device_opt not in options or options[device_opt] is None:
+                        if device_opt not in options or options[
+                                device_opt] is None:
                             logging.error(
                                 "BT-TETHER: Please specify the %s for device %s.",
                                 device_opt,
@@ -506,15 +506,16 @@ class BTTether(plugins.Plugin):
                             break
                     else:
                         if options["enabled"]:
-                            self.devices[device] = Device(name=device, **options)
+                            self.devices[device] = Device(name=device,
+                                                          **options)
 
         # legacy
         if "mac" in self.options:
             for opt in ["share_internet", "mac", "ip", "netmask", "interval"]:
                 if opt not in self.options or self.options[opt] is None:
                     logging.error(
-                        "BT-TETHER: Please specify the %s in your config.toml.", opt
-                    )
+                        "BT-TETHER: Please specify the %s in your config.toml.",
+                        opt)
                     return
 
             self.devices["legacy"] = Device(name="legacy", **self.options)
@@ -553,7 +554,8 @@ class BTTether(plugins.Plugin):
                         device.status.update()
                         device.tries += 1
 
-            sorted_devices = sorted(devices_to_try, key=lambda x: x.search_order)
+            sorted_devices = sorted(devices_to_try,
+                                    key=lambda x: x.search_order)
 
             for device in sorted_devices:
                 bt = BTNap(device.mac)
@@ -581,19 +583,19 @@ class BTTether(plugins.Plugin):
                 paired = bt.is_paired()
                 if not paired:
                     if BTNap.pair(dev_remote):
-                        logging.debug("BT-TETHER: Paired with %s.", device.name)
+                        logging.debug("BT-TETHER: Paired with %s.",
+                                      device.name)
                     else:
-                        logging.debug(
-                            "BT-TETHER: Pairing with %s failed ...", device.name
-                        )
+                        logging.debug("BT-TETHER: Pairing with %s failed ...",
+                                      device.name)
                         self.status = "PE"
                         continue
                 else:
                     logging.debug("BT-TETHER: Already paired.")
 
                 logging.debug(
-                    "BT-TETHER: Try to create nap connection with %s ...", device.name
-                )
+                    "BT-TETHER: Try to create nap connection with %s ...",
+                    device.name)
                 device.network, success = BTNap.nap(dev_remote)
                 interface = None
 
@@ -615,7 +617,8 @@ class BTTether(plugins.Plugin):
                         )
                         continue
 
-                    logging.debug("BT-TETHER: Created interface (%s)", interface)
+                    logging.debug("BT-TETHER: Created interface (%s)",
+                                  interface)
                     self.status = "C"
                     any_device_connected = True
                     device.tries = 0  # reset tries
@@ -637,13 +640,13 @@ class BTTether(plugins.Plugin):
                 logging.debug("BT-TETHER: Add ip to %s", interface)
                 if not wrapped_interface.set_addr(addr):
                     self.status = "AE"
-                    logging.debug("BT-TETHER: Could not add ip to %s", interface)
+                    logging.debug("BT-TETHER: Could not add ip to %s",
+                                  interface)
                     continue
 
                 if device.share_internet:
                     if not connected_priorities or device.priority > max(
-                        connected_priorities
-                    ):
+                            connected_priorities):
                         logging.debug(
                             "BT-TETHER: Set default route to %s via %s",
                             gateway,
@@ -652,13 +655,15 @@ class BTTether(plugins.Plugin):
                         IfaceWrapper.set_route(gateway, interface)
                         connected_priorities.append(device.priority)
 
-                        logging.debug("BT-TETHER: Change resolv.conf if necessary ...")
+                        logging.debug(
+                            "BT-TETHER: Change resolv.conf if necessary ...")
                         with open("/etc/resolv.conf", "r+") as resolv:
                             nameserver = resolv.read()
                             if "nameserver 9.9.9.9" not in nameserver:
                                 logging.debug("BT-TETHER: Added nameserver")
                                 resolv.seek(0)
-                                resolv.write(nameserver + "nameserver 9.9.9.9\n")
+                                resolv.write(nameserver +
+                                             "nameserver 9.9.9.9\n")
 
             if any_device_connected:
                 self.status = "C"

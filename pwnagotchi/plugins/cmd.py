@@ -13,7 +13,6 @@ from pwnagotchi.utils import parse_version
 from pwnagotchi.utils import save_config
 from pwnagotchi.utils import unzip
 
-
 SAVE_DIR = "/usr/local/share/pwnagotchi/availaible-plugins/"
 DEFAULT_INSTALL_PATH = "/usr/local/share/pwnagotchi/installed-plugins/"
 
@@ -29,16 +28,13 @@ def add_parsers(parser):
 
     # pwnagotchi plugins search
     parser_plugins_search = plugin_subparsers.add_parser(
-        "search", help="Search for pwnagotchi plugins"
-    )
+        "search", help="Search for pwnagotchi plugins")
     parser_plugins_search.add_argument(
-        "pattern", type=str, help="Search expression (wildcards allowed)"
-    )
+        "pattern", type=str, help="Search expression (wildcards allowed)")
 
     # pwnagotchi plugins list
     parser_plugins_list = plugin_subparsers.add_parser(
-        "list", help="List available pwnagotchi plugins"
-    )
+        "list", help="List available pwnagotchi plugins")
     parser_plugins_list.add_argument(
         "-i",
         "--installed",
@@ -49,13 +45,11 @@ def add_parsers(parser):
 
     # pwnagotchi plugins update
     parser_plugins_update = plugin_subparsers.add_parser(
-        "update", help="Updates the database"
-    )
+        "update", help="Updates the database")
 
     # pwnagotchi plugins upgrade
     parser_plugins_upgrade = plugin_subparsers.add_parser(
-        "upgrade", help="Upgrades plugins"
-    )
+        "upgrade", help="Upgrades plugins")
     parser_plugins_upgrade.add_argument(
         "pattern",
         type=str,
@@ -66,31 +60,38 @@ def add_parsers(parser):
 
     # pwnagotchi plugins enable
     parser_plugins_enable = plugin_subparsers.add_parser(
-        "enable", help="Enables a plugin"
-    )
-    parser_plugins_enable.add_argument("name", type=str, help="Name of the plugin")
+        "enable", help="Enables a plugin")
+    parser_plugins_enable.add_argument("name",
+                                       type=str,
+                                       help="Name of the plugin")
 
     # pwnagotchi plugins disable
     parser_plugins_disable = plugin_subparsers.add_parser(
-        "disable", help="Disables a plugin"
-    )
-    parser_plugins_disable.add_argument("name", type=str, help="Name of the plugin")
+        "disable", help="Disables a plugin")
+    parser_plugins_disable.add_argument("name",
+                                        type=str,
+                                        help="Name of the plugin")
 
     # pwnagotchi plugins install
     parser_plugins_install = plugin_subparsers.add_parser(
-        "install", help="Installs a plugin"
-    )
-    parser_plugins_install.add_argument("name", type=str, help="Name of the plugin")
+        "install", help="Installs a plugin")
+    parser_plugins_install.add_argument("name",
+                                        type=str,
+                                        help="Name of the plugin")
 
     # pwnagotchi plugins uninstall
     parser_plugins_uninstall = plugin_subparsers.add_parser(
-        "uninstall", help="Uninstalls a plugin"
-    )
-    parser_plugins_uninstall.add_argument("name", type=str, help="Name of the plugin")
+        "uninstall", help="Uninstalls a plugin")
+    parser_plugins_uninstall.add_argument("name",
+                                          type=str,
+                                          help="Name of the plugin")
 
     # pwnagotchi plugins edit
-    parser_plugins_edit = plugin_subparsers.add_parser("edit", help="Edit the options")
-    parser_plugins_edit.add_argument("name", type=str, help="Name of the plugin")
+    parser_plugins_edit = plugin_subparsers.add_parser("edit",
+                                                       help="Edit the options")
+    parser_plugins_edit.add_argument("name",
+                                     type=str,
+                                     help="Name of the plugin")
 
     return parser
 
@@ -139,7 +140,13 @@ def edit(args, config):
     if plugin not in config["main"]["plugins"]:
         return 1
 
-    plugin_config = {"main": {"plugins": {plugin: config["main"]["plugins"][plugin]}}}
+    plugin_config = {
+        "main": {
+            "plugins": {
+                plugin: config["main"]["plugins"][plugin]
+            }
+        }
+    }
 
     import toml
     from subprocess import call
@@ -156,7 +163,8 @@ def edit(args, config):
         tmp.seek(0)
         new_plugin_config = toml.load(tmp)
 
-    config["main"]["plugins"][plugin] = new_plugin_config["main"]["plugins"][plugin]
+    config["main"]["plugins"][plugin] = new_plugin_config["main"]["plugins"][
+        plugin]
     save_config(config, args.user_config)
     return 0
 
@@ -213,9 +221,8 @@ def upgrade(args, config, pattern="*"):
 
         # maybe has config
         for conf in glob.glob(available[plugin].replace(".py", ".y?ml")):
-            dst = os.path.join(
-                os.path.dirname(installed[plugin]), os.path.basename(conf)
-            )
+            dst = os.path.join(os.path.dirname(installed[plugin]),
+                               os.path.basename(conf))
             if os.path.exists(dst) and md5(dst) != md5(conf):
                 # backup
                 logging.info("Backing up config: %s", os.path.basename(conf))
@@ -236,12 +243,12 @@ def list_plugins(args, config, pattern="*"):
     available = _get_available()
     installed = _get_installed(config)
 
-    available_and_installed = set(list(available.keys()) + list(installed.keys()))
+    available_and_installed = set(
+        list(available.keys()) + list(installed.keys()))
     available_not_installed = set(available.keys()) - set(installed.keys())
 
-    max_len_list = (
-        available_and_installed if args.installed else available_not_installed
-    )
+    max_len_list = (available_and_installed
+                    if args.installed else available_not_installed)
     max_len = max(map(len, max_len_list))
     header = line.format(
         name="Plugin",
@@ -250,7 +257,8 @@ def list_plugins(args, config, pattern="*"):
         enabled="Active",
         status="Status",
     )
-    line_length = max(max_len, len("Plugin")) + len(header) - len("Plugin") - 12  # lol
+    line_length = max(max_len,
+                      len("Plugin")) + len(header) - len("Plugin") - 12  # lol
 
     print("-" * line_length)
     print(header)
@@ -272,13 +280,10 @@ def list_plugins(args, config, pattern="*"):
                 if available_version > installed_version:
                     status = "installed (^)"
 
-            enabled = (
-                "enabled"
-                if plugin in config["main"]["plugins"]
-                and "enabled" in config["main"]["plugins"][plugin]
-                and config["main"]["plugins"][plugin]["enabled"]
-                else "disabled"
-            )
+            enabled = ("enabled" if plugin in config["main"]["plugins"]
+                       and "enabled" in config["main"]["plugins"][plugin]
+                       and config["main"]["plugins"][plugin]["enabled"] else
+                       "disabled")
 
             print(
                 line.format(
@@ -287,8 +292,7 @@ def list_plugins(args, config, pattern="*"):
                     version=".".join(installed_version),
                     enabled=enabled,
                     status=status,
-                )
-            )
+                ))
 
     for plugin in sorted(available_not_installed):
         if not fnmatch(plugin, pattern):
@@ -302,8 +306,7 @@ def list_plugins(args, config, pattern="*"):
                 version=".".join(available_version),
                 enabled="-",
                 status="available",
-            )
-        )
+            ))
 
     print("-" * line_length)
 
@@ -452,7 +455,8 @@ def update(config):
 
             changed = 0
             for filename, filehash in after_update.items():
-                if filename in before_update and filehash != before_update[filename]:
+                if filename in before_update and filehash != before_update[
+                        filename]:
                     changed += 1
 
             if changed:

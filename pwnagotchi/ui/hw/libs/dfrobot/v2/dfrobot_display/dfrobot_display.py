@@ -6,11 +6,13 @@ from .dfrobot_printString import PrintString
 
 
 def color24to16(color):
-    return ((color >> 8) & 0xF800) | ((color >> 5) & 0x7E0) | ((color >> 3) & 0x1F)
+    return ((color >> 8) & 0xF800) | ((color >> 5) & 0x7E0) | (
+        (color >> 3) & 0x1F)
 
 
 def color16to24(color):
-    return ((color & 0xF800) << 8) | ((color & 0x7E0) << 5) | ((color & 0x1F) << 3)
+    return ((color & 0xF800) << 8) | ((color & 0x7E0) << 5) | (
+        (color & 0x1F) << 3)
 
 
 def swap(o1, o2):
@@ -160,7 +162,12 @@ class DFRobot_Display(PrintString):
             return
         self._lineWidth = w
 
-    def setTextFormat(self, size, color, background, intervalRow=2, intervalCol=0):
+    def setTextFormat(self,
+                      size,
+                      color,
+                      background,
+                      intervalRow=2,
+                      intervalCol=0):
         self._textColor = color
         self._textIntervalRow = intervalRow
         self._textIntervalCol = intervalCol
@@ -551,11 +558,11 @@ class DFRobot_Display(PrintString):
         self.fillCircleHelper(x + r, y + r, r, self.QUADRANT_2, color)
         self.fillCircleHelper(x + w - r - 1, y + r, r, self.QUADRANT_1, color)
         self.fillCircleHelper(x + r, y + h - r - 1, r, self.QUADRANT_3, color)
-        self.fillCircleHelper(x + w - r - 1, y + h - r - 1, r, self.QUADRANT_4, color)
+        self.fillCircleHelper(x + w - r - 1, y + h - r - 1, r, self.QUADRANT_4,
+                              color)
 
-    def _bitmapHelper(
-        self, increaseAxis, staticAxis, data, dataBit, exchange, color, background
-    ):
+    def _bitmapHelper(self, increaseAxis, staticAxis, data, dataBit, exchange,
+                      color, background):
         for i in data:
             for j in range(8):
                 if i & dataBit:
@@ -611,7 +618,7 @@ class DFRobot_Display(PrintString):
                 self._bitmapHelper(
                     x,
                     yMask,
-                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    bitmap[i * oneLineDataLen:oneLineDataLen * (i + 1)],
                     0x80,
                     False,
                     color,
@@ -624,7 +631,7 @@ class DFRobot_Display(PrintString):
                 self._bitmapHelper(
                     x,
                     yMask,
-                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    bitmap[i * oneLineDataLen:oneLineDataLen * (i + 1)],
                     0x01,
                     False,
                     color,
@@ -637,7 +644,7 @@ class DFRobot_Display(PrintString):
                 self._bitmapHelper(
                     x,
                     yMask,
-                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    bitmap[i * oneLineDataLen:oneLineDataLen * (i + 1)],
                     0x80,
                     False,
                     color,
@@ -650,7 +657,7 @@ class DFRobot_Display(PrintString):
                 self._bitmapHelper(
                     x,
                     yMask,
-                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    bitmap[i * oneLineDataLen:oneLineDataLen * (i + 1)],
                     0x01,
                     False,
                     color,
@@ -663,7 +670,7 @@ class DFRobot_Display(PrintString):
                 self._bitmapHelper(
                     y,
                     xMask,
-                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    bitmap[i * oneLineDataLen:oneLineDataLen * (i + 1)],
                     0x80,
                     True,
                     color,
@@ -676,7 +683,7 @@ class DFRobot_Display(PrintString):
                 self._bitmapHelper(
                     y,
                     xMask,
-                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    bitmap[i * oneLineDataLen:oneLineDataLen * (i + 1)],
                     0x01,
                     True,
                     color,
@@ -689,7 +696,7 @@ class DFRobot_Display(PrintString):
                 self._bitmapHelper(
                     y,
                     xMask,
-                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    bitmap[i * oneLineDataLen:oneLineDataLen * (i + 1)],
                     0x80,
                     True,
                     color,
@@ -702,7 +709,7 @@ class DFRobot_Display(PrintString):
                 self._bitmapHelper(
                     y,
                     xMask,
-                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    bitmap[i * oneLineDataLen:oneLineDataLen * (i + 1)],
                     0x01,
                     True,
                     color,
@@ -720,7 +727,7 @@ class DFRobot_Display(PrintString):
     def _getQuads(self, data, count):
         r = []
         for i in range(count):
-            r.append(data[i * 4 + 54 : i * 4 + 58])
+            r.append(data[i * 4 + 54:i * 4 + 58])
         return r
 
     BITMAP_COMPRESSION_NO = 0
@@ -823,13 +830,13 @@ class DFRobot_Display(PrintString):
                     self._textCursorX,
                     self._textCursorY,
                     self._width - self._textCursorX,
-                    self._fonts._extensionFontsHeight * ts + self._textIntervalCol,
+                    self._fonts._extensionFontsHeight * ts +
+                    self._textIntervalCol,
                     self._textBackground,
                 )
                 self._textCursorX = self._textIntervalRow
-                self._textCursorY += (
-                    ts * self._fonts._extensionFontsHeight + self._textIntervalCol
-                )
+                self._textCursorY += (ts * self._fonts._extensionFontsHeight +
+                                      self._textIntervalCol)
             self.fillRect(
                 self._textCursorX,
                 self._textCursorY,

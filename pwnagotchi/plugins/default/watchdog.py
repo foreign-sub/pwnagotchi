@@ -16,8 +16,7 @@ class Watchdog(plugins.Plugin):
     def __init__(self):
         self.options = dict()
         self.pattern = re.compile(
-            r"brcmf_cfg80211_nexmon_set_channel.*?Set Channel failed"
-        )
+            r"brcmf_cfg80211_nexmon_set_channel.*?Set Channel failed")
 
     def on_loaded(self):
         """
@@ -33,10 +32,7 @@ class Watchdog(plugins.Plugin):
                     subprocess.Popen(
                         ["journalctl", "-n10", "-k", "--since", "-5m"],
                         stdout=subprocess.PIPE,
-                    ).stdout
-                )
-            )[-10:]
-        )
+                    ).stdout))[-10:])
         if len(self.pattern.findall(last_lines)) >= 5:
             display = agent.view()
             display.set("status", "Blind-Bug detected. Restarting.")

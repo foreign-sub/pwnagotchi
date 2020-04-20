@@ -52,24 +52,24 @@ def _transform_wigle_entry(gps_data, pcap_data):
         "MAC,SSID,AuthMode,FirstSeen,Channel,RSSI,CurrentLatitude,CurrentLongitude,AltitudeMeters,AccuracyMeters,Type"
     )
 
-    writer = csv.writer(dummy, delimiter=",", quoting=csv.QUOTE_NONE, escapechar="\\")
-    writer.writerow(
-        [
-            pcap_data[WifiInfo.BSSID],
-            pcap_data[WifiInfo.ESSID],
-            _format_auth(pcap_data[WifiInfo.ENCRYPTION]),
-            datetime.strptime(
-                gps_data["Updated"].rsplit(".")[0], "%Y-%m-%dT%H:%M:%S"
-            ).strftime("%Y-%m-%d %H:%M:%S"),
-            pcap_data[WifiInfo.CHANNEL],
-            pcap_data[WifiInfo.RSSI],
-            gps_data["Latitude"],
-            gps_data["Longitude"],
-            gps_data["Altitude"],
-            0,  # accuracy?
-            "WIFI",
-        ]
-    )
+    writer = csv.writer(dummy,
+                        delimiter=",",
+                        quoting=csv.QUOTE_NONE,
+                        escapechar="\\")
+    writer.writerow([
+        pcap_data[WifiInfo.BSSID],
+        pcap_data[WifiInfo.ESSID],
+        _format_auth(pcap_data[WifiInfo.ENCRYPTION]),
+        datetime.strptime(gps_data["Updated"].rsplit(".")[0],
+                          "%Y-%m-%dT%H:%M:%S").strftime("%Y-%m-%d %H:%M:%S"),
+        pcap_data[WifiInfo.CHANNEL],
+        pcap_data[WifiInfo.RSSI],
+        gps_data["Latitude"],
+        gps_data["Longitude"],
+        gps_data["Altitude"],
+        0,  # accuracy?
+        "WIFI",
+    ])
     return dummy.getvalue()
 
 
@@ -85,7 +85,10 @@ def _send_to_wigle(lines, api_key, timeout=30):
 
     dummy.seek(0)
 
-    headers = {"Authorization": f"Basic {api_key}", "Accept": "application/json"}
+    headers = {
+        "Authorization": f"Basic {api_key}",
+        "Accept": "application/json"
+    }
     data = {"donate": "false"}
     payload = {"file": dummy, "type": "text/csv"}
 
@@ -117,10 +120,10 @@ class Wigle(plugins.Plugin):
         self.lock = Lock()
 
     def on_loaded(self):
-        if "api_key" not in self.options or (
-            "api_key" in self.options and self.options["api_key"] is None
-        ):
-            logging.debug("WIGLE: api_key isn't set. Can't upload to wigle.net")
+        if "api_key" not in self.options or ("api_key" in self.options and
+                                             self.options["api_key"] is None):
+            logging.debug(
+                "WIGLE: api_key isn't set. Can't upload to wigle.net")
             return
 
         if not "whitelist" in self.options:
@@ -143,12 +146,12 @@ class Wigle(plugins.Plugin):
         handshake_dir = config["bettercap"]["handshakes"]
         all_files = os.listdir(handshake_dir)
         all_gps_files = [
-            os.path.join(handshake_dir, filename)
-            for filename in all_files
+            os.path.join(handshake_dir, filename) for filename in all_files
             if filename.endswith(".gps.json")
         ]
 
-        all_gps_files = remove_whitelisted(all_gps_files, self.options["whitelist"])
+        all_gps_files = remove_whitelisted(all_gps_files,
+                                           self.options["whitelist"])
         new_gps_files = set(all_gps_files) - set(reported) - set(self.skip)
         if new_gps_files:
             logging.info(
@@ -192,8 +195,8 @@ class Wigle(plugins.Plugin):
                     )
                 except FieldNotFoundError:
                     logging.debug(
-                        "WIGLE: Could not extract all information. Skip %s", gps_file
-                    )
+                        "WIGLE: Could not extract all information. Skip %s",
+                        gps_file)
                     self.skip.append(gps_file)
                     continue
                 except Scapy_Exception as sc_e:
@@ -210,12 +213,12 @@ class Wigle(plugins.Plugin):
                     _send_to_wigle(csv_entries, self.options["api_key"])
                     reported += no_err_entries
                     self.report.update(data={"reported": reported})
-                    logging.info(
-                        "WIGLE: Successfully uploaded %d files", len(no_err_entries)
-                    )
+                    logging.info("WIGLE: Successfully uploaded %d files",
+                                 len(no_err_entries))
                 except requests.exceptions.RequestException as re_e:
                     self.skip += no_err_entries
-                    logging.debug("WIGLE: Got an exception while uploading %s", re_e)
+                    logging.debug("WIGLE: Got an exception while uploading %s",
+                                  re_e)
                 except OSError as os_e:
                     self.skip += no_err_entries
                     logging.debug("WIGLE: Got the following error: %s", os_e)

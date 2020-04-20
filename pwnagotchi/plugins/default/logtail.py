@@ -14,7 +14,6 @@ from flask import Response
 from pwnagotchi import plugins
 from pwnagotchi.utils import StatusFile
 
-
 TEMPLATE = """
 {% extends "base.html" %}
 {% set active_page = "plugins" %}
@@ -267,7 +266,8 @@ class Logtail(plugins.Plugin):
 
             def generate():
                 with open(self.config["main"]["log"]["path"]) as f:
-                    yield "".join(f.readlines()[-self.options.get("max-lines", 4096) :])
+                    yield "".join(
+                        f.readlines()[-self.options.get("max-lines", 4096):])
                     while True:
                         yield f.readline()
 
