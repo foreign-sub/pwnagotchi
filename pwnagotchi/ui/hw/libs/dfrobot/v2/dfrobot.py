@@ -17,7 +17,12 @@ RASPBERRY_PIN_BUSY = 4
 class DFRobot:
     def __init__(self):
         self._display = dfrobot_epaper.DFRobot_Epaper_SPI(
-            RASPBERRY_SPI_BUS, RASPBERRY_SPI_DEV, RASPBERRY_PIN_CS, RASPBERRY_PIN_CD, RASPBERRY_PIN_BUSY)
+            RASPBERRY_SPI_BUS,
+            RASPBERRY_SPI_DEV,
+            RASPBERRY_PIN_CS,
+            RASPBERRY_PIN_CD,
+            RASPBERRY_PIN_BUSY,
+        )
         self._display.begin()
         self.clear(0xFF)
         self.FULL = self._display.FULL
@@ -30,17 +35,17 @@ class DFRobot:
             linewidth = HEIGHT // 8 + 1
 
         buf = [0xFF] * (linewidth * WIDTH)
-        image_monocolor = image.convert('1')
+        image_monocolor = image.convert("1")
         imwidth, imheight = image_monocolor.size
         pixels = image_monocolor.load()
 
-        if (imwidth == HEIGHT and imheight == WIDTH):
+        if imwidth == HEIGHT and imheight == WIDTH:
             for y in range(imheight):
                 for x in range(imwidth):
                     if pixels[x, y] == 0:
                         x = imwidth - x
                         buf[x // 8 + y * linewidth] &= ~(0x80 >> (x % 8))
-        elif (imwidth == WIDTH and imheight == HEIGHT):
+        elif imwidth == WIDTH and imheight == HEIGHT:
             for y in range(imheight):
                 for x in range(imwidth):
                     newx = y

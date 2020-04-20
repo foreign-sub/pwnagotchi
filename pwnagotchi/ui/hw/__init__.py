@@ -17,47 +17,47 @@ from pwnagotchi.ui.hw.spotpear24inch import Spotpear24inch
 
 def display_for(config):
     # config has been normalized already in utils.load_config
-    if config['ui']['display']['type'] == 'inky':
+    if config["ui"]["display"]["type"] == "inky":
         return Inky(config)
 
-    elif config['ui']['display']['type'] == 'papirus':
+    elif config["ui"]["display"]["type"] == "papirus":
         return Papirus(config)
 
-    if config['ui']['display']['type'] == 'oledhat':
+    if config["ui"]["display"]["type"] == "oledhat":
         return OledHat(config)
 
-    if config['ui']['display']['type'] == 'lcdhat':
+    if config["ui"]["display"]["type"] == "lcdhat":
         return LcdHat(config)
 
-    if config['ui']['display']['type'] == 'dfrobot_1':
+    if config["ui"]["display"]["type"] == "dfrobot_1":
         return DFRobotV1(config)
 
-    if config['ui']['display']['type'] == 'dfrobot_2':
+    if config["ui"]["display"]["type"] == "dfrobot_2":
         return DFRobotV2(config)
 
-    elif config['ui']['display']['type'] == 'waveshare_1':
+    elif config["ui"]["display"]["type"] == "waveshare_1":
         return WaveshareV1(config)
 
-    elif config['ui']['display']['type'] == 'waveshare_2':
+    elif config["ui"]["display"]["type"] == "waveshare_2":
         return WaveshareV2(config)
 
-    elif config['ui']['display']['type'] == 'waveshare27inch':
+    elif config["ui"]["display"]["type"] == "waveshare27inch":
         return Waveshare27inch(config)
 
-    elif config['ui']['display']['type'] == 'waveshare29inch':
+    elif config["ui"]["display"]["type"] == "waveshare29inch":
         return Waveshare29inch(config)
 
-    elif config['ui']['display']['type'] == 'waveshare144lcd':
+    elif config["ui"]["display"]["type"] == "waveshare144lcd":
         return Waveshare144lcd(config)
 
-    elif config['ui']['display']['type'] == 'waveshare154inch':
+    elif config["ui"]["display"]["type"] == "waveshare154inch":
         return Waveshare154inch(config)
 
-    elif config['ui']['display']['type'] == 'waveshare213d':
+    elif config["ui"]["display"]["type"] == "waveshare213d":
         return Waveshare213d(config)
 
-    elif config['ui']['display']['type'] == 'waveshare213bc':
+    elif config["ui"]["display"]["type"] == "waveshare213bc":
         return Waveshare213bc(config)
 
-    elif config['ui']['display']['type'] == 'spotpear24inch':
+    elif config["ui"]["display"]["type"] == "spotpear24inch":
         return Spotpear24inch(config)

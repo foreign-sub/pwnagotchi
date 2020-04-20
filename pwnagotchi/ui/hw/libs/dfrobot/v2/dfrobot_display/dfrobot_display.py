@@ -7,11 +7,11 @@ from .dfrobot_fonts import Fonts
 
 
 def color24to16(color):
-    return (((color >> 8) & 0xf800) | ((color >> 5) & 0x7e0) | ((color >> 3) & 0x1f))
+    return ((color >> 8) & 0xF800) | ((color >> 5) & 0x7E0) | ((color >> 3) & 0x1F)
 
 
 def color16to24(color):
-    return (((color & 0xf800) << 8) | ((color & 0x7e0) << 5) | ((color & 0x1f) << 3))
+    return ((color & 0xF800) << 8) | ((color & 0x7E0) << 5) | ((color & 0x1F) << 3)
 
 
 def swap(o1, o2):
@@ -20,20 +20,20 @@ def swap(o1, o2):
 
 class DFRobot_Display(PrintString):
 
-    WHITE24 = 0xffffff
-    SILVER24 = 0xc0c0c0
+    WHITE24 = 0xFFFFFF
+    SILVER24 = 0xC0C0C0
     GRAY24 = 0x808080
     BLACK24 = 0x000000
-    RED24 = 0xff0000
+    RED24 = 0xFF0000
     MAROON24 = 0x800000
-    YELLOW24 = 0xffff00
+    YELLOW24 = 0xFFFF00
     OLIVE24 = 0x808000
-    GREEN24 = 0x00ff00
+    GREEN24 = 0x00FF00
     DARKGREEN24 = 0x008000
-    CYAN24 = 0x00ffff
-    BLUE24 = 0x0000ff
+    CYAN24 = 0x00FFFF
+    BLUE24 = 0x0000FF
     NAVY24 = 0x000080
-    FUCHSIA24 = 0xff00ff
+    FUCHSIA24 = 0xFF00FF
     PURPLE24 = 0x800080
     TEAL24 = 0x008080
 
@@ -206,7 +206,7 @@ class DFRobot_Display(PrintString):
         direction = self._getDirection(h)
         x -= self._lineWidth // 2
         h = self._ternaryExpression(h > 0, h, -h)
-        for i in range(self._ternaryExpression(h > 0, h, - h)):
+        for i in range(self._ternaryExpression(h > 0, h, -h)):
             xx = x
             for j in range(self._lineWidth):
                 self.pixel(xx, y, color)
@@ -219,7 +219,7 @@ class DFRobot_Display(PrintString):
         w = int(w)
         direction = self._getDirection(w)
         y -= self._lineWidth // 2
-        for i in range(self._ternaryExpression(w > 0, w, - w)):
+        for i in range(self._ternaryExpression(w > 0, w, -w)):
             yy = y
             for j in range(self._lineWidth):
                 self.pixel(x, yy, color)
@@ -324,17 +324,29 @@ class DFRobot_Display(PrintString):
         dy3 = y2 - y1
         if direction == self.POSITIVE:
             for i in range(dy1):
-                self.HLine(x + dx1 * i / dy1, y + i, (x + dx2 *
-                                                      i / dy2) - (x + dx1 * i / dy1) + 1, color)
+                self.HLine(
+                    x + dx1 * i / dy1,
+                    y + i,
+                    (x + dx2 * i / dy2) - (x + dx1 * i / dy1) + 1,
+                    color,
+                )
             for i in range(dy3):
-                self.HLine(x1 + dx3 * i / dy3, y1 + i, (x + dx2 *
-                                                        (i + dy1) / dy2) - (x1 + dx3 * i / dy3) + 1, color)
+                self.HLine(
+                    x1 + dx3 * i / dy3,
+                    y1 + i,
+                    (x + dx2 * (i + dy1) / dy2) - (x1 + dx3 * i / dy3) + 1,
+                    color,
+                )
         else:
             y = y1 + dy1
-            dy1 = - dy1
+            dy1 = -dy1
             for i in range(dy1):
-                self.HLine(x + dx1 * i / dy1, y1 + dy1 - i,
-                           (x + dx2 * i / dy1) - (x + dx1 * i / dy1) + 1, color)
+                self.HLine(
+                    x + dx1 * i / dy1,
+                    y1 + dy1 - i,
+                    (x + dx2 * i / dy1) - (x + dx1 * i / dy1) + 1,
+                    color,
+                )
         self._lineWidth = temp
 
     def rect(self, x, y, w, h, color):
@@ -393,25 +405,65 @@ class DFRobot_Display(PrintString):
             dx += 2
             p += dx
             if quadrant & self.QUADRANT_1:
-                self.fillRect(x + vx - halfLineWidth, y - vy - halfLineWidth,
-                              self._lineWidth, self._lineWidth, color)  # quadrant 1
-                self.fillRect(x + vy - halfLineWidth, y - vx - halfLineWidth,
-                              self._lineWidth, self._lineWidth, color)  # quadrant 1
+                self.fillRect(
+                    x + vx - halfLineWidth,
+                    y - vy - halfLineWidth,
+                    self._lineWidth,
+                    self._lineWidth,
+                    color,
+                )  # quadrant 1
+                self.fillRect(
+                    x + vy - halfLineWidth,
+                    y - vx - halfLineWidth,
+                    self._lineWidth,
+                    self._lineWidth,
+                    color,
+                )  # quadrant 1
             if quadrant & self.QUADRANT_2:
-                self.fillRect(x - vx - halfLineWidth, y - vy - halfLineWidth,
-                              self._lineWidth, self._lineWidth, color)  # quadrant 2
-                self.fillRect(x - vy - halfLineWidth, y - vx - halfLineWidth,
-                              self._lineWidth, self._lineWidth, color)  # quadrant 2
+                self.fillRect(
+                    x - vx - halfLineWidth,
+                    y - vy - halfLineWidth,
+                    self._lineWidth,
+                    self._lineWidth,
+                    color,
+                )  # quadrant 2
+                self.fillRect(
+                    x - vy - halfLineWidth,
+                    y - vx - halfLineWidth,
+                    self._lineWidth,
+                    self._lineWidth,
+                    color,
+                )  # quadrant 2
             if quadrant & self.QUADRANT_3:
-                self.fillRect(x - vx - halfLineWidth, y + vy - halfLineWidth,
-                              self._lineWidth, self._lineWidth, color)  # quadrant 3
-                self.fillRect(x - vy - halfLineWidth, y + vx - halfLineWidth,
-                              self._lineWidth, self._lineWidth, color)  # quadrant 3
+                self.fillRect(
+                    x - vx - halfLineWidth,
+                    y + vy - halfLineWidth,
+                    self._lineWidth,
+                    self._lineWidth,
+                    color,
+                )  # quadrant 3
+                self.fillRect(
+                    x - vy - halfLineWidth,
+                    y + vx - halfLineWidth,
+                    self._lineWidth,
+                    self._lineWidth,
+                    color,
+                )  # quadrant 3
             if quadrant & self.QUADRANT_4:
-                self.fillRect(x + vx - halfLineWidth, y + vy - halfLineWidth,
-                              self._lineWidth, self._lineWidth, color)  # quadrant 4
-                self.fillRect(x + vy - halfLineWidth, y + vx - halfLineWidth,
-                              self._lineWidth, self._lineWidth, color)  # quadrant 4
+                self.fillRect(
+                    x + vx - halfLineWidth,
+                    y + vy - halfLineWidth,
+                    self._lineWidth,
+                    self._lineWidth,
+                    color,
+                )  # quadrant 4
+                self.fillRect(
+                    x + vy - halfLineWidth,
+                    y + vx - halfLineWidth,
+                    self._lineWidth,
+                    self._lineWidth,
+                    color,
+                )  # quadrant 4
 
     def circle(self, x, y, r, color):
         self.circleHelper(x, y, r, self.QUADRANT_ALL, color)
@@ -430,9 +482,9 @@ class DFRobot_Display(PrintString):
         if quadrant & self.QUADRANT_1:
             self.HLine(x, y, r + 1, color)
         if quadrant & self.QUADRANT_2:
-            self.VLine(x, y, - r - 1, color)
+            self.VLine(x, y, -r - 1, color)
         if quadrant & self.QUADRANT_3:
-            self.HLine(x, y, - r - 1, color)
+            self.HLine(x, y, -r - 1, color)
         if quadrant & self.QUADRANT_4:
             self.VLine(x, y, r + 1, color)
 
@@ -451,11 +503,11 @@ class DFRobot_Display(PrintString):
                 self.VLine(x - vx, y - vy, vy, color)  # quadrant 2
                 self.VLine(x - vy, y - vx, vx, color)  # quadrant 2
             if quadrant & self.QUADRANT_3:
-                self.VLine(x - vx, y + vy, - vy, color)  # quadrant 3
-                self.VLine(x - vy, y + vx, - vx, color)  # quadrant 3
+                self.VLine(x - vx, y + vy, -vy, color)  # quadrant 3
+                self.VLine(x - vy, y + vx, -vx, color)  # quadrant 3
             if quadrant & self.QUADRANT_4:
-                self.VLine(x + vx, y + vy, - vy, color)  # quadrant 4
-                self.VLine(x + vy, y + vx, - vx, color)  # quadrant 4
+                self.VLine(x + vx, y + vy, -vy, color)  # quadrant 4
+                self.VLine(x + vy, y + vx, -vx, color)  # quadrant 4
         self._lineWidth = temp
 
     def fillCircle(self, x, y, r, color):
@@ -500,26 +552,47 @@ class DFRobot_Display(PrintString):
         self.fillCircleHelper(x + r, y + r, r, self.QUADRANT_2, color)
         self.fillCircleHelper(x + w - r - 1, y + r, r, self.QUADRANT_1, color)
         self.fillCircleHelper(x + r, y + h - r - 1, r, self.QUADRANT_3, color)
-        self.fillCircleHelper(x + w - r - 1, y + h - r -
-                              1, r, self.QUADRANT_4, color)
+        self.fillCircleHelper(x + w - r - 1, y + h - r - 1, r, self.QUADRANT_4, color)
 
-    def _bitmapHelper(self, increaseAxis, staticAxis, data, dataBit, exchange, color, background):
+    def _bitmapHelper(
+        self, increaseAxis, staticAxis, data, dataBit, exchange, color, background
+    ):
         for i in data:
             for j in range(8):
                 if i & dataBit:
                     if exchange:
-                        self.fillRect(staticAxis, increaseAxis,
-                                      self._bitmapSize, self._bitmapSize, color)
+                        self.fillRect(
+                            staticAxis,
+                            increaseAxis,
+                            self._bitmapSize,
+                            self._bitmapSize,
+                            color,
+                        )
                     else:
-                        self.fillRect(increaseAxis, staticAxis,
-                                      self._bitmapSize, self._bitmapSize, color)
+                        self.fillRect(
+                            increaseAxis,
+                            staticAxis,
+                            self._bitmapSize,
+                            self._bitmapSize,
+                            color,
+                        )
                 else:
                     if exchange:
                         self.fillRect(
-                            staticAxis, increaseAxis, self._bitmapSize, self._bitmapSize, background)
+                            staticAxis,
+                            increaseAxis,
+                            self._bitmapSize,
+                            self._bitmapSize,
+                            background,
+                        )
                     else:
                         self.fillRect(
-                            increaseAxis, staticAxis, self._bitmapSize, self._bitmapSize, background)
+                            increaseAxis,
+                            staticAxis,
+                            self._bitmapSize,
+                            self._bitmapSize,
+                            background,
+                        )
                 increaseAxis += self._bitmapSize
                 if dataBit & 0x80:
                     i <<= 1
@@ -537,49 +610,105 @@ class DFRobot_Display(PrintString):
             for i in range(h):
                 yMask = y + i * self._bitmapSize
                 self._bitmapHelper(
-                    x, yMask, bitmap[i * oneLineDataLen: oneLineDataLen * (i + 1)], 0x80, False, color, background)
+                    x,
+                    yMask,
+                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    0x80,
+                    False,
+                    color,
+                    background,
+                )
         elif self._bmpFmt == self.BITMAP_TBMRLL:
             oneLineDataLen = (w - 1) // 8 + 1
             for i in range(h):
                 yMask = y + i * self._bitmapSize
                 self._bitmapHelper(
-                    x, yMask, bitmap[i * oneLineDataLen: oneLineDataLen * (i + 1)], 0x01, False, color, background)
+                    x,
+                    yMask,
+                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    0x01,
+                    False,
+                    color,
+                    background,
+                )
         elif self._bmpFmt == self.BITMAP_BTMLLR:
             oneLineDataLen = (w - 1) // 8 + 1
             for i in range(h):
                 yMask = y + h * self._bitmapSize - i * self._bitmapSize
                 self._bitmapHelper(
-                    x, yMask, bitmap[i * oneLineDataLen: oneLineDataLen * (i + 1)], 0x80, False, color, background)
+                    x,
+                    yMask,
+                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    0x80,
+                    False,
+                    color,
+                    background,
+                )
         elif self._bmpFmt == self.BITMAP_BTMRLL:
             oneLineDataLen = (w - 1) // 8 + 1
             for i in range(h):
                 yMask = y + h * self._bitmapSize - i * self._bitmapSize
                 self._bitmapHelper(
-                    x, yMask, bitmap[i * oneLineDataLen: oneLineDataLen * (i + 1)], 0x01, False, color, background)
+                    x,
+                    yMask,
+                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    0x01,
+                    False,
+                    color,
+                    background,
+                )
         elif self._bmpFmt == self.BITMAP_LRMTLB:
             oneLineDataLen = (h - 1) // 8 + 1
             for i in range(w):
                 xMask = x + i * self._bitmapSize
                 self._bitmapHelper(
-                    y, xMask, bitmap[i * oneLineDataLen: oneLineDataLen * (i + 1)], 0x80, True, color, background)
+                    y,
+                    xMask,
+                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    0x80,
+                    True,
+                    color,
+                    background,
+                )
         elif self._bmpFmt == self.BITMAP_LRMBLT:
             oneLineDataLen = (h - 1) // 8 + 1
             for i in range(w):
                 xMask = x + i * self._bitmapSize
                 self._bitmapHelper(
-                    y, xMask, bitmap[i * oneLineDataLen: oneLineDataLen * (i + 1)], 0x01, True, color, background)
+                    y,
+                    xMask,
+                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    0x01,
+                    True,
+                    color,
+                    background,
+                )
         elif self._bmpFmt == self.BITMAP_RLMTLB:
             oneLineDataLen = (h - 1) // 8 + 1
             for i in range(w):
                 xMask = x + w * self._bitmapSize - i * self._bitmapSize
                 self._bitmapHelper(
-                    y, xMask, bitmap[i * oneLineDataLen: oneLineDataLen * (i + 1)], 0x80, True, color, background)
+                    y,
+                    xMask,
+                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    0x80,
+                    True,
+                    color,
+                    background,
+                )
         elif self._bmpFmt == self.BIMTAP_RLMBLT:
             oneLineDataLen = (h - 1) // 8 + 1
             for i in range(w):
                 xMask = x + w * self._bitmapSize - i * self._bitmapSize
                 self._bitmapHelper(
-                    y, xMask, bitmap[i * oneLineDataLen: oneLineDataLen * (i + 1)], 0x01, True, color, background)
+                    y,
+                    xMask,
+                    bitmap[i * oneLineDataLen : oneLineDataLen * (i + 1)],
+                    0x01,
+                    True,
+                    color,
+                    background,
+                )
 
     def _bytesToNumber(self, data):
         r = 0
@@ -592,7 +721,7 @@ class DFRobot_Display(PrintString):
     def _getQuads(self, data, count):
         r = []
         for i in range(count):
-            r.append(data[i * 4 + 54: i * 4 + 58])
+            r.append(data[i * 4 + 54 : i * 4 + 58])
         return r
 
     BITMAP_COMPRESSION_NO = 0
@@ -617,7 +746,7 @@ class DFRobot_Display(PrintString):
             return
         c = bytearray(f.read())
         f.close()
-        if c[0] != 0x42 and c[1] != 0x4d:
+        if c[0] != 0x42 and c[1] != 0x4D:
             print("file error")
             print(c[0])
             print(c[1])
@@ -691,14 +820,33 @@ class DFRobot_Display(PrintString):
             self._bitmapSize = ts
             self._textCursorX += self._textIntervalRow
             if self._textCursorX + ts * width > self._width:
-                self.fillRect(self._textCursorX, self._textCursorY, self._width - self._textCursorX,
-                              self._fonts._extensionFontsHeight * ts + self._textIntervalCol, self._textBackground)
+                self.fillRect(
+                    self._textCursorX,
+                    self._textCursorY,
+                    self._width - self._textCursorX,
+                    self._fonts._extensionFontsHeight * ts + self._textIntervalCol,
+                    self._textBackground,
+                )
                 self._textCursorX = self._textIntervalRow
-                self._textCursorY += ts * self._fonts._extensionFontsHeight + self._textIntervalCol
-            self.fillRect(self._textCursorX, self._textCursorY, self._fonts._extensionFontsWidth * ts +
-                          self._textIntervalRow, self._fonts._extensionFontsHeight * ts + self._textIntervalCol, self._textBackground)
-            self.bitmap(self._textCursorX, self._textCursorY, l,
-                        width, height, self._textColor, self._textBackground)
+                self._textCursorY += (
+                    ts * self._fonts._extensionFontsHeight + self._textIntervalCol
+                )
+            self.fillRect(
+                self._textCursorX,
+                self._textCursorY,
+                self._fonts._extensionFontsWidth * ts + self._textIntervalRow,
+                self._fonts._extensionFontsHeight * ts + self._textIntervalCol,
+                self._textBackground,
+            )
+            self.bitmap(
+                self._textCursorX,
+                self._textCursorY,
+                l,
+                width,
+                height,
+                self._textColor,
+                self._textBackground,
+            )
             self._textCursorX += ts * width
             self._bitmapSize = temp1
         self._bmpFmt = temp

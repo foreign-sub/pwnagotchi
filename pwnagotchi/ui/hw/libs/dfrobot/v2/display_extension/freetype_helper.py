@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*-
 
-'''
+"""
 depends: freetype-py
-'''
+"""
 
 import freetype
 import math
-#import sys
+
+# import sys
 
 # reload(sys)
 # sys.setdefaultencoding("utf-8")
@@ -17,7 +18,6 @@ import sys
 
 
 class Freetype_Helper:
-
     def __init__(self, filePath):
         self._face = freetype.Face(filePath)
         self._width = 0
@@ -46,11 +46,11 @@ class Freetype_Helper:
         # buffer = [0xff] * width * height
 
         if height > self._height:
-            buffer = buffer[0: width * self._height]
+            buffer = buffer[0 : width * self._height]
             height = self._height
         if width > self._width:
             for i in range(height):
-                rslt += buffer[i * width: i * width + self._width]
+                rslt += buffer[i * width : i * width + self._width]
             width = self._width
             buffer = rslt
             rslt = []
@@ -72,12 +72,15 @@ class Freetype_Helper:
             for j in range(width):
                 if buffer[i * width + j] > self._fade:
                     try:
-                        rslt[i * lineDataLen +
-                             (j + left) // 8 + top] |= 0x80 >> ((j + left) % 8)
+                        rslt[i * lineDataLen + (j + left) // 8 + top] |= 0x80 >> (
+                            (j + left) % 8
+                        )
                     except:
-                        print("freetype_helper getOne err: width: %d, height: %d, top: %d, left: %d, rslt_len: %d, originY: %d" % (
-                            width, height, top, left, len(rslt), originY))
-                        raise("err")
+                        print(
+                            "freetype_helper getOne err: width: %d, height: %d, top: %d, left: %d, rslt_len: %d, originY: %d"
+                            % (width, height, top, left, len(rslt), originY)
+                        )
+                        raise ("err")
                     # rslt[i * lineDataLen + (j + left) // 8 + top] |= 0x80 >> ((j + left) % 8)
         if (ord(ch) >= ord(" ") and ord(ch) <= ord("~")) or width < (self._width // 2):
             return (rslt, self._width // 2, self._height, "TBMLLR")

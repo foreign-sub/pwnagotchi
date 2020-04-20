@@ -6,7 +6,13 @@ import requests
 
 from io import StringIO
 from datetime import datetime
-from pwnagotchi.utils import WifiInfo, FieldNotFoundError, extract_from_pcap, StatusFile, remove_whitelisted
+from pwnagotchi.utils import (
+    WifiInfo,
+    FieldNotFoundError,
+    extract_from_pcap,
+    StatusFile,
+    remove_whitelisted,
+)
 from threading import Lock
 from pwnagotchi import plugins
 
@@ -19,7 +25,7 @@ def _extract_gps_data(path):
     """
 
     try:
-        with open(path, 'r') as json_file:
+        with open(path, "r") as json_file:
             return json.load(json_file)
     except OSError as os_err:
         raise os_err
@@ -41,25 +47,30 @@ def _transform_wigle_entry(gps_data, pcap_data):
     dummy = StringIO()
     # write kismet header
     dummy.write(
-        "WigleWifi-1.4,appRelease=20190201,model=Kismet,release=2019.02.01.{},device=kismet,display=kismet,board=kismet,brand=kismet\n")
+        "WigleWifi-1.4,appRelease=20190201,model=Kismet,release=2019.02.01.{},device=kismet,display=kismet,board=kismet,brand=kismet\n"
+    )
     dummy.write(
-        "MAC,SSID,AuthMode,FirstSeen,Channel,RSSI,CurrentLatitude,CurrentLongitude,AltitudeMeters,AccuracyMeters,Type")
+        "MAC,SSID,AuthMode,FirstSeen,Channel,RSSI,CurrentLatitude,CurrentLongitude,AltitudeMeters,AccuracyMeters,Type"
+    )
 
-    writer = csv.writer(dummy, delimiter=",",
-                        quoting=csv.QUOTE_NONE, escapechar="\\")
-    writer.writerow([
-        pcap_data[WifiInfo.BSSID],
-        pcap_data[WifiInfo.ESSID],
-        _format_auth(pcap_data[WifiInfo.ENCRYPTION]),
-        datetime.strptime(gps_data['Updated'].rsplit('.')[0],
-                          "%Y-%m-%dT%H:%M:%S").strftime('%Y-%m-%d %H:%M:%S'),
-        pcap_data[WifiInfo.CHANNEL],
-        pcap_data[WifiInfo.RSSI],
-        gps_data['Latitude'],
-        gps_data['Longitude'],
-        gps_data['Altitude'],
-        0,  # accuracy?
-        'WIFI'])
+    writer = csv.writer(dummy, delimiter=",", quoting=csv.QUOTE_NONE, escapechar="\\")
+    writer.writerow(
+        [
+            pcap_data[WifiInfo.BSSID],
+            pcap_data[WifiInfo.ESSID],
+            _format_auth(pcap_data[WifiInfo.ENCRYPTION]),
+            datetime.strptime(
+                gps_data["Updated"].rsplit(".")[0], "%Y-%m-%dT%H:%M:%S"
+            ).strftime("%Y-%m-%d %H:%M:%S"),
+            pcap_data[WifiInfo.CHANNEL],
+            pcap_data[WifiInfo.RSSI],
+            gps_data["Latitude"],
+            gps_data["Longitude"],
+            gps_data["Altitude"],
+            0,  # accuracy?
+            "WIFI",
+        ]
+    )
     return dummy.getvalue()
 
 
@@ -75,44 +86,46 @@ def _send_to_wigle(lines, api_key, timeout=30):
 
     dummy.seek(0)
 
-    headers = {'Authorization': f"Basic {api_key}",
-               'Accept': 'application/json'}
-    data = {'donate': 'false'}
-    payload = {'file': dummy, 'type': 'text/csv'}
+    headers = {"Authorization": f"Basic {api_key}", "Accept": "application/json"}
+    data = {"donate": "false"}
+    payload = {"file": dummy, "type": "text/csv"}
 
     try:
-        res = requests.post('https://api.wigle.net/api/v2/file/upload',
-                            data=data,
-                            headers=headers,
-                            files=payload,
-                            timeout=timeout)
+        res = requests.post(
+            "https://api.wigle.net/api/v2/file/upload",
+            data=data,
+            headers=headers,
+            files=payload,
+            timeout=timeout,
+        )
         json_res = res.json()
-        if not json_res['success']:
-            raise requests.exceptions.RequestException(json_res['message'])
+        if not json_res["success"]:
+            raise requests.exceptions.RequestException(json_res["message"])
     except requests.exceptions.RequestException as re_e:
         raise re_e
 
 
 class Wigle(plugins.Plugin):
-    __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '2.0.0'
-    __license__ = 'GPL3'
-    __description__ = 'This plugin automatically uploads collected wifis to wigle.net'
+    __author__ = "33197631+dadav@users.noreply.github.com"
+    __version__ = "2.0.0"
+    __license__ = "GPL3"
+    __description__ = "This plugin automatically uploads collected wifis to wigle.net"
 
     def __init__(self):
         self.ready = False
-        self.report = StatusFile('/root/.wigle_uploads', data_format='json')
+        self.report = StatusFile("/root/.wigle_uploads", data_format="json")
         self.skip = list()
         self.lock = Lock()
 
     def on_loaded(self):
-        if 'api_key' not in self.options or ('api_key' in self.options and self.options['api_key'] is None):
-            logging.debug(
-                "WIGLE: api_key isn't set. Can't upload to wigle.net")
+        if "api_key" not in self.options or (
+            "api_key" in self.options and self.options["api_key"] is None
+        ):
+            logging.debug("WIGLE: api_key isn't set. Can't upload to wigle.net")
             return
 
-        if not 'whitelist' in self.options:
-            self.options['whitelist'] = list()
+        if not "whitelist" in self.options:
+            self.options["whitelist"] = list()
 
         self.ready = True
 
@@ -127,23 +140,25 @@ class Wigle(plugins.Plugin):
 
         config = agent.config()
         display = agent.view()
-        reported = self.report.data_field_or('reported', default=list())
-        handshake_dir = config['bettercap']['handshakes']
+        reported = self.report.data_field_or("reported", default=list())
+        handshake_dir = config["bettercap"]["handshakes"]
         all_files = os.listdir(handshake_dir)
-        all_gps_files = [os.path.join(handshake_dir, filename)
-                         for filename in all_files
-                         if filename.endswith('.gps.json')]
+        all_gps_files = [
+            os.path.join(handshake_dir, filename)
+            for filename in all_files
+            if filename.endswith(".gps.json")
+        ]
 
-        all_gps_files = remove_whitelisted(
-            all_gps_files, self.options['whitelist'])
+        all_gps_files = remove_whitelisted(all_gps_files, self.options["whitelist"])
         new_gps_files = set(all_gps_files) - set(reported) - set(self.skip)
         if new_gps_files:
             logging.info(
-                "WIGLE: Internet connectivity detected. Uploading new handshakes to wigle.net")
+                "WIGLE: Internet connectivity detected. Uploading new handshakes to wigle.net"
+            )
             csv_entries = list()
             no_err_entries = list()
             for gps_file in new_gps_files:
-                pcap_filename = gps_file.replace('.gps.json', '.pcap')
+                pcap_filename = gps_file.replace(".gps.json", ".pcap")
                 if not os.path.exists(pcap_filename):
                     logging.debug("WIGLE: Can't find pcap for %s", gps_file)
                     self.skip.append(gps_file)
@@ -158,20 +173,28 @@ class Wigle(plugins.Plugin):
                     logging.debug("WIGLE: %s", json_err)
                     self.skip.append(gps_file)
                     continue
-                if gps_data['Latitude'] == 0 and gps_data['Longitude'] == 0:
+                if gps_data["Latitude"] == 0 and gps_data["Longitude"] == 0:
                     logging.debug(
-                        "WIGLE: Not enough gps-information for %s. Trying again next time.", gps_file)
+                        "WIGLE: Not enough gps-information for %s. Trying again next time.",
+                        gps_file,
+                    )
                     self.skip.append(gps_file)
                     continue
                 try:
-                    pcap_data = extract_from_pcap(pcap_filename, [WifiInfo.BSSID,
-                                                                  WifiInfo.ESSID,
-                                                                  WifiInfo.ENCRYPTION,
-                                                                  WifiInfo.CHANNEL,
-                                                                  WifiInfo.RSSI])
+                    pcap_data = extract_from_pcap(
+                        pcap_filename,
+                        [
+                            WifiInfo.BSSID,
+                            WifiInfo.ESSID,
+                            WifiInfo.ENCRYPTION,
+                            WifiInfo.CHANNEL,
+                            WifiInfo.RSSI,
+                        ],
+                    )
                 except FieldNotFoundError:
                     logging.debug(
-                        "WIGLE: Could not extract all information. Skip %s", gps_file)
+                        "WIGLE: Could not extract all information. Skip %s", gps_file
+                    )
                     self.skip.append(gps_file)
                     continue
                 except Scapy_Exception as sc_e:
@@ -182,18 +205,18 @@ class Wigle(plugins.Plugin):
                 csv_entries.append(new_entry)
                 no_err_entries.append(gps_file)
             if csv_entries:
-                display.set('status', "Uploading gps-data to wigle.net ...")
+                display.set("status", "Uploading gps-data to wigle.net ...")
                 display.update(force=True)
                 try:
-                    _send_to_wigle(csv_entries, self.options['api_key'])
+                    _send_to_wigle(csv_entries, self.options["api_key"])
                     reported += no_err_entries
-                    self.report.update(data={'reported': reported})
+                    self.report.update(data={"reported": reported})
                     logging.info(
-                        "WIGLE: Successfully uploaded %d files", len(no_err_entries))
+                        "WIGLE: Successfully uploaded %d files", len(no_err_entries)
+                    )
                 except requests.exceptions.RequestException as re_e:
                     self.skip += no_err_entries
-                    logging.debug(
-                        "WIGLE: Got an exception while uploading %s", re_e)
+                    logging.debug("WIGLE: Got an exception while uploading %s", re_e)
                 except OSError as os_e:
                     self.skip += no_err_entries
                     logging.debug("WIGLE: Got the following error: %s", os_e)

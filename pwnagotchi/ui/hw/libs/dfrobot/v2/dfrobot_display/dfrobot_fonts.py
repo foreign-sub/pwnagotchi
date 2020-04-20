@@ -4,7 +4,6 @@ import json
 
 
 class Fonts:
-
     def __init__(self):
         self._haveFontsABC = False
         self._fontsABC = {}

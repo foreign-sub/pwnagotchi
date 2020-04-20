@@ -4,7 +4,6 @@ import sys
 
 
 class PrintString:
-
     def __init__(self):
         pass
 
