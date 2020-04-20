@@ -14,7 +14,8 @@ class Watchdog(plugins.Plugin):
 
     def __init__(self):
         self.options = dict()
-        self.pattern = re.compile(r'brcmf_cfg80211_nexmon_set_channel.*?Set Channel failed')
+        self.pattern = re.compile(
+            r'brcmf_cfg80211_nexmon_set_channel.*?Set Channel failed')
 
     def on_loaded(self):
         """
@@ -24,8 +25,8 @@ class Watchdog(plugins.Plugin):
 
     def on_epoch(self, agent, epoch, epoch_data):
         # get last 10 lines
-        last_lines = ''.join(list(TextIOWrapper(subprocess.Popen(['journalctl','-n10','-k', '--since', '-5m'],
-                                                stdout=subprocess.PIPE).stdout))[-10:])
+        last_lines = ''.join(list(TextIOWrapper(subprocess.Popen(['journalctl', '-n10', '-k', '--since', '-5m'],
+                                                                 stdout=subprocess.PIPE).stdout))[-10:])
         if len(self.pattern.findall(last_lines)) >= 5:
             display = agent.view()
             display.set('status', 'Blind-Bug detected. Restarting.')

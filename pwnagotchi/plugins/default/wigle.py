@@ -45,7 +45,8 @@ def _transform_wigle_entry(gps_data, pcap_data):
     dummy.write(
         "MAC,SSID,AuthMode,FirstSeen,Channel,RSSI,CurrentLatitude,CurrentLongitude,AltitudeMeters,AccuracyMeters,Type")
 
-    writer = csv.writer(dummy, delimiter=",", quoting=csv.QUOTE_NONE, escapechar="\\")
+    writer = csv.writer(dummy, delimiter=",",
+                        quoting=csv.QUOTE_NONE, escapechar="\\")
     writer.writerow([
         pcap_data[WifiInfo.BSSID],
         pcap_data[WifiInfo.ESSID],
@@ -106,7 +107,8 @@ class Wigle(plugins.Plugin):
 
     def on_loaded(self):
         if 'api_key' not in self.options or ('api_key' in self.options and self.options['api_key'] is None):
-            logging.debug("WIGLE: api_key isn't set. Can't upload to wigle.net")
+            logging.debug(
+                "WIGLE: api_key isn't set. Can't upload to wigle.net")
             return
 
         if not 'whitelist' in self.options:
@@ -132,10 +134,12 @@ class Wigle(plugins.Plugin):
                          for filename in all_files
                          if filename.endswith('.gps.json')]
 
-        all_gps_files = remove_whitelisted(all_gps_files, self.options['whitelist'])
+        all_gps_files = remove_whitelisted(
+            all_gps_files, self.options['whitelist'])
         new_gps_files = set(all_gps_files) - set(reported) - set(self.skip)
         if new_gps_files:
-            logging.info("WIGLE: Internet connectivity detected. Uploading new handshakes to wigle.net")
+            logging.info(
+                "WIGLE: Internet connectivity detected. Uploading new handshakes to wigle.net")
             csv_entries = list()
             no_err_entries = list()
             for gps_file in new_gps_files:
@@ -155,7 +159,8 @@ class Wigle(plugins.Plugin):
                     self.skip.append(gps_file)
                     continue
                 if gps_data['Latitude'] == 0 and gps_data['Longitude'] == 0:
-                    logging.debug("WIGLE: Not enough gps-information for %s. Trying again next time.", gps_file)
+                    logging.debug(
+                        "WIGLE: Not enough gps-information for %s. Trying again next time.", gps_file)
                     self.skip.append(gps_file)
                     continue
                 try:
@@ -165,7 +170,8 @@ class Wigle(plugins.Plugin):
                                                                   WifiInfo.CHANNEL,
                                                                   WifiInfo.RSSI])
                 except FieldNotFoundError:
-                    logging.debug("WIGLE: Could not extract all information. Skip %s", gps_file)
+                    logging.debug(
+                        "WIGLE: Could not extract all information. Skip %s", gps_file)
                     self.skip.append(gps_file)
                     continue
                 except Scapy_Exception as sc_e:
@@ -182,10 +188,12 @@ class Wigle(plugins.Plugin):
                     _send_to_wigle(csv_entries, self.options['api_key'])
                     reported += no_err_entries
                     self.report.update(data={'reported': reported})
-                    logging.info("WIGLE: Successfully uploaded %d files", len(no_err_entries))
+                    logging.info(
+                        "WIGLE: Successfully uploaded %d files", len(no_err_entries))
                 except requests.exceptions.RequestException as re_e:
                     self.skip += no_err_entries
-                    logging.debug("WIGLE: Got an exception while uploading %s", re_e)
+                    logging.debug(
+                        "WIGLE: Got an exception while uploading %s", re_e)
                 except OSError as os_e:
                     self.skip += no_err_entries
                     logging.debug("WIGLE: Got the following error: %s", os_e)

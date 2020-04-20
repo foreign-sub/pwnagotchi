@@ -9,13 +9,14 @@ change i2c frequency on raspberry:
 
 import smbus
 
+
 class I2C:
 
-  def __init__(self, port):
-    self._bus = smbus.SMBus(port)
+    def __init__(self, port):
+        self._bus = smbus.SMBus(port)
 
-  def writeBytes(self, addr, reg, buf):
-    self._bus.write_block_data(addr, reg, buf)
-  
-  def readBytes(self, addr, reg, length):
-    return self._bus.read_block_data(addr, reg, length)
+    def writeBytes(self, addr, reg, buf):
+        self._bus.write_block_data(addr, reg, buf)
+
+    def readBytes(self, addr, reg, length):
+        return self._bus.read_block_data(addr, reg, length)

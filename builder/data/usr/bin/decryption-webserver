@@ -120,6 +120,7 @@ setTimeout(checkPwnagotchi, 1000);
 
 HTML_FORM = None
 
+
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
@@ -141,7 +142,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 with open('/root/.pwnagotchi-crypted') as crypted_file:
     mappings = [line.split()[0] for line in crypted_file.readlines()]
     fields = ''.join(['<label for="{m}">Passphrase for {m}:</label>\n<input type="password" id="{m}" name="{m}" value=""><br>'.format(m=m)
-              for m in mappings])
+                      for m in mappings])
     HTML_FORM = _HTML_FORM_TEMPLATE.format(password_fields=fields)
 
 httpd = HTTPServer(('0.0.0.0', 80), SimpleHTTPRequestHandler)

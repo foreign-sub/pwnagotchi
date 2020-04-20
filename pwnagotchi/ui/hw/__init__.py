@@ -14,6 +14,7 @@ from pwnagotchi.ui.hw.waveshare213d import Waveshare213d
 from pwnagotchi.ui.hw.waveshare213bc import Waveshare213bc
 from pwnagotchi.ui.hw.spotpear24inch import Spotpear24inch
 
+
 def display_for(config):
     # config has been normalized already in utils.load_config
     if config['ui']['display']['type'] == 'inky':
