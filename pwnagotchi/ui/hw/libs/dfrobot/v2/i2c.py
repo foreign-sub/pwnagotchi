@@ -2,7 +2,7 @@
 """
 change i2c frequency on raspberry:
   1. edit /etc/modprobe.d
-  2. add line: 
+  2. add line:
     options i2c_bcm2708 baudrate=400000
 """
 import smbus
