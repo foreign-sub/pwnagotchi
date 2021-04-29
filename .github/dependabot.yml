@@ -1,0 +1,28 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: numpy
+    versions:
+    - 1.19.5
+    - 1.20.0
+    - 1.20.1
+    - 1.20.2
+  - dependency-name: scipy
+    versions:
+    - 1.6.0
+    - 1.6.1
+    - 1.6.2
+  - dependency-name: pycryptodome
+    versions:
+    - 3.9.9
+  - dependency-name: stable-baselines
+    versions:
+    - 2.10.1
+  - dependency-name: pillow
+    versions:
+    - 6.2.0
